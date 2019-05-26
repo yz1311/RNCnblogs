@@ -1,10 +1,9 @@
 # 博客园
 
-#### 介绍
+### 介绍
 博客园是一个基于React Native开发的第三方cnblogs客户端,采用官方的提供的api接口以及部分官方接口实现的一个较完善的客户端。
 
 
-### 声明
 
 
 ### 功能描述
@@ -26,6 +25,13 @@
 
 9.全局主题(15种颜色)
 
+![](https://github.com/yz1311/RNCnblogs/screenshots/blog_list.png)
+![](https://github.com/yz1311/RNCnblogs/screenshots/blog_detail.png)
+![](https://github.com/yz1311/RNCnblogs/screenshots/comment.png)
+
+![](https://github.com/yz1311/RNCnblogs/screenshots/question_detail.png)
+![](https://github.com/yz1311/RNCnblogs/screenshots/status_detail.png)
+![](https://github.com/yz1311/RNCnblogs/screenshots/app_theme.png)
 
 ### 下载
 `Android:`
@@ -38,7 +44,7 @@ https://www.coolapk.com/apk/221669
 
 
 ### 软件架构
-整体采用Redux、Redux-saga、immer自行封装的一套基础框架(或者成为组件库+通用 业务处理库)
+整体采用[Redux](https://github.com/reduxjs/redux)、[Redux-saga](https://github.com/redux-saga/redux-saga)、[immer](https://github.com/immerjs/immer)自行封装的一套基础框架(或者成为组件库+通用业务处理库)
 
 整体采用标准的redux开发流程，包括action的SFA标准化，数据流部分只要存在副作用(主要是接口和本地realm数据库调用),
 都采用redux-saga进行处理，reducer部分采用immer的强大功能，不必自动处理深度拷贝，直接赋值处理就可以.
