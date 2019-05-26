@@ -25,13 +25,11 @@
 
 9.全局主题(15种颜色)
 
-![](https://github.com/yz1311/RNCnblogs/screenshots/blog_list.png)
-![](https://github.com/yz1311/RNCnblogs/screenshots/blog_detail.png)
-![](https://github.com/yz1311/RNCnblogs/screenshots/comment.png)
+![](./screenshots/blog_list.png) ![](./screenshots/blog_detail.png) 
 
-![](https://github.com/yz1311/RNCnblogs/screenshots/question_detail.png)
-![](https://github.com/yz1311/RNCnblogs/screenshots/status_detail.png)
-![](https://github.com/yz1311/RNCnblogs/screenshots/app_theme.png)
+![](./screenshots/comment.png) ![](./screenshots/question_detail.png) 
+
+![](./screenshots/status_detail.png) ![](./screenshots/app_theme.png)
 
 ### 下载
 `Android:`
@@ -53,8 +51,8 @@ https://www.coolapk.com/apk/221669
 通过上述的处理和一些常用的使用经验，解决了下面的常见的几个问题
 > - 支持全局loading
 > - 支持全局toast已经页面级toast(依赖于react-native-toot-toast)
-> - 任意组件支持Loading(加载中)、Empty(内容为空)、Error(错误)页面自动展示,并支持点击刷新和联网后自动刷新等常规逻辑
-> - 
+> - 任意组件支持Loading(加载中,支持lottie动画和gif)、Empty(内容为空)、Error(错误)页面自动展示,并支持点击刷新和联网后自动刷新等常规逻辑
+> - 全局导航器(封装react-navigation)
 
 
 ### 使用说明
