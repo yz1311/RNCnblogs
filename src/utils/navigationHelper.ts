@@ -38,6 +38,19 @@ export default class navigationHelper
         this.navigation.dispatch(navigateAction);
     }
 
+    /**
+     * 跟navigate一样，区别是一直会将新的页面入栈，navigate如果栈中存在相同页面，会返回到已存在的页面
+     * @param routeName
+     * @param params
+     */
+    static push(routeName: string, params) {
+        const pushAction = StackActions.push({
+            routeName: routeName,
+            params: params
+        });
+        this.navigation.dispatch(pushAction);
+    }
+
     static replace(routeName:string, params) {
         const navigateAction = StackActions.replace({
             routeName: routeName,
