@@ -2,7 +2,12 @@
           xmlns:tools="http://schemas.android.com/tools"
   package="com.cnblogs">
     <meta-data android:name="android.max_aspect" android:value="2.1" />
+    <!-- 配置APP ID -->
+    <meta-data
+        android:name="BUGLY_APPID"
+        android:value="f697123ac7" />
     <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
       android:name=".MainApplication"

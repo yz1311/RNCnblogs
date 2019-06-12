@@ -52,6 +52,7 @@
     "redux-actions": "^2.6.4",
     "redux-devtools-extension": "^2.13.7",
     "redux-saga": "^0.16.2",
+    "rn-bugly": "git+https://github.com/yz1311/rn-bugly.git",
     "rn-fetch-blob": "^0.10.13",
     "teaset": "^0.6.3"
   },

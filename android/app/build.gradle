@@ -161,6 +161,7 @@ android {
 }
 
 dependencies {
+    implementation project(':rn-bugly')
     implementation project(':react-native-intent-launcher')
     implementation project(':@react-native-community_netinfo')
     implementation project(':@react-native-community_async-storage')
