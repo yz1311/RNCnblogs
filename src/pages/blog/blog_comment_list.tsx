@@ -6,7 +6,7 @@ import {
     TouchableOpacity, Alert
 } from 'react-native'
 import {connect} from 'react-redux';
-import YZBaseDataPage from '../../components/YZBaseDataPage';
+import YZBaseDataPage, {IBaseDataPageProps} from '../../components/YZBaseDataPage';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCommentInput from '../../components/YZCommentInput';
@@ -20,32 +20,26 @@ import CommonUtils from "../../utils/commonUtils";
 import CommentItem from './comment_item'
 import {ReduxState} from '../../reducers';
 import {blogCommentModel, getBlogCommentListRequest} from "../../api/blog";
+import {createReducerResult, reducerModel} from "../../utils/reduxUtils";
 
+interface IProps extends IBaseDataPageProps{
+    blogCommentLists?: {[key:string]:reducerModel<blogCommentModel>},
+    userInfo?: any,
+    item: any,
+    commentBlogFn?: any
+}
 
 @connect((state: ReduxState)=>({
-    dataList: state.blogIndex.blogCommentList,
-    noMore: state.blogIndex.blogCommentList_noMore,
-    loadDataResult: state.blogIndex.getBlogCommentListResult,
-    item: state.blogIndex.selectedBlog,
+    blogCommentLists: state.blogIndex.blogCommentLists,
     userInfo: state.loginIndex.userInfo,
 }),dispatch=>({
     dispatch,
-    showToastFn:(data)=>dispatch(showToast(data)),
     loadDataFn:(data)=>dispatch(getBlogCommentList(data)),
     clearDataFn:(data)=>dispatch(clearBlogCommentList(data)),
     commentBlogFn:(data)=>dispatch(commentBlog(data)),
 }))
-export default class blog_comment_list extends YZBaseDataPage<any,any> {
+export default class blog_comment_list extends YZBaseDataPage<IProps,any> {
     pageIndex = 1;
-
-    static propTypes = {
-        item: PropTypes.object,
-        pageIndex: PropTypes.number
-    };
-
-    static defaultProps = {
-        pageIndex: 1
-    };
 
     static navigationOptions = ({navigation})=>{
         let {title} = ((navigation.state || {}).params || {title: undefined})
@@ -199,18 +193,28 @@ export default class blog_comment_list extends YZBaseDataPage<any,any> {
     }
 
     render() {
+        const {item,blogCommentLists} = this.props;
+        let noMore = false;
+        let loadDataResult = createReducerResult();
+        let dataList = [];
+        if(blogCommentLists[item.Id+''])
+        {
+            noMore = blogCommentLists[item.Id+''].noMore;
+            loadDataResult = blogCommentLists[item.Id+''].loadDataResult;
+            dataList = blogCommentLists[item.Id+''].list;
+        }
         return (
             <View
                 style={[Styles.container]}>
-                <YZStateView getResult={this.props.loadDataResult}
+                <YZStateView getResult={loadDataResult}
                              placeholderTitle="暂无数据"
                              errorButtonAction={this.loadData}>
                     <YZFlatList
                         ref={ref=>this._flatList=ref}
                         renderItem={this._renderItem}
-                        data={this.props.dataList}
-                        loadDataResult={this.props.loadDataResult}
-                        noMore={this.props.noMore}
+                        data={dataList}
+                        loadDataResult={loadDataResult}
+                        noMore={noMore}
                         initialNumToRender={20}
                         loadData={this.loadData}
                         onPageIndexChange={pageIndex=>{

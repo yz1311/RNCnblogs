@@ -24,13 +24,22 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from 'teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {getBlogDetail, clearBlogDetail, commentBlog, clearBlogCommentList, setBlogScrollPosition} from "../../actions/blog/blog_index_actions";
+import {
+    getBlogDetail,
+    clearBlogDetail,
+    commentBlog,
+    clearBlogCommentList,
+    setBlogScrollPosition,
+    setSelectedBlog
+} from "../../actions/blog/blog_index_actions";
 import {deleteBookmarkByUrl, setBlogIsFav, clearBlogIsFav} from "../../actions/bookmark/bookmark_index_actions";
 import {showToast} from "../../actions/app_actions";
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from "../../components/YZBackHandler";
 import {ReduxState} from "../../reducers";
+import {getBlogDetailRequest} from "../../api/blog";
+import {createReducerResult} from "../../utils/reduxUtils";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -48,8 +57,9 @@ const injectedJsCode = `var headArr = document.getElementsByTagName('head');
 // document.getElementsByTagName(‘head’)[0].appendChild(meta); `
 
 export interface IProps extends IBaseDataPageProps{
-    data?: any,
-    loadDataResult?: any,
+    // data?: any,
+    // loadDataResult?: any,
+    blogDetails: any,
     commentList?: any,
     commentList_noMore?: any,
     getCommentListResult?: any,
@@ -62,12 +72,12 @@ export interface IProps extends IBaseDataPageProps{
 
 
 @connect((state: ReduxState)=>({
-    data: state.blogIndex.blogDetail,
-    loadDataResult: state.blogIndex.getBlogDetailResult,
+    // data: state.blogIndex.blogDetail,
+    // loadDataResult: state.blogIndex.getBlogDetailResult,
+    blogDetails: state.blogIndex.blogDetails,
     commentList: state.blogIndex.blogCommentList,
     commentList_noMore: state.blogIndex.blogCommentList_noMore,
     getCommentListResult: state.blogIndex.getBlogCommentListResult,
-    item: state.blogIndex.selectedBlog,
 }),dispatch=>({
     dispatch,
     showToastFn:(data)=>dispatch(showToast(data)),
@@ -125,10 +135,11 @@ export default class blog_detail extends YZBaseDataPage<IProps,any> {
 
 
     componentWillUnmount() {
-        super.componentWillUnmount();
+        //需要传递id过去清空指定数据
+        this.props.clearDataFn(this.getParams());
         //清空isFav属性
         this.props.clearBlogIsFavFn();
-        this.props.clearBlogCommentListFn();
+        this.props.clearBlogCommentListFn(this.getParams());
         //设置滚动位置
         const {item} = this.props;
         if(this.scrollPosition > 0)
@@ -232,12 +243,17 @@ export default class blog_detail extends YZBaseDataPage<IProps,any> {
         catch (e) {
 
         }
-        const {item, data} = this.props;
+        const {item, blogDetails} = this.props;
+        let data:any = {};
+        if(blogDetails.hasOwnProperty(item.Id+''))
+        {
+            data = blogDetails[item.Id+''].data;
+        }
         switch (postedMessage.type) {
             case 'loadMore':
-                this.props.navigation.navigate('BlogCommentList',{
+                NavigationHelper.push('BlogCommentList',{
                     pageIndex: 1,
-                    // item: item
+                    item: item
                 });
                 break;
             case 'img_click':
@@ -289,7 +305,17 @@ export default class blog_detail extends YZBaseDataPage<IProps,any> {
     }
 
     render() {
-        const {item, data, commentList} = this.props;
+        const {item, blogDetails, commentList} = this.props;
+        let data:any = {};
+        let loadDataResult = createReducerResult();
+        if(blogDetails.hasOwnProperty(item.Id+''))
+        {
+            data = blogDetails[item.Id+''].data;
+            loadDataResult = blogDetails[item.Id+''].loadDataResult;
+        }
+        console.log(item.Id);
+        console.log('data',data);
+        console.log('loadDataResult',loadDataResult);
         //截取前10条记录进行显示
         let  visibleCommentList = commentList.slice(0,10);
         let showMoreButton = visibleCommentList.length===10;
@@ -406,7 +432,7 @@ export default class blog_detail extends YZBaseDataPage<IProps,any> {
         return (
             <View
                 style={[Styles.container]}>
-                <YZStateView getResult={this.props.loadDataResult}
+                <YZStateView getResult={loadDataResult}
                              placeholderTitle="暂无数据"
                              errorButtonAction={this.loadData}>
                     <View style={{flex:1,overflow:'hidden'}}>
@@ -430,9 +456,9 @@ export default class blog_detail extends YZBaseDataPage<IProps,any> {
                             data={this.props.item}
                             commentCount={item.CommentCount}
                             onClickCommentList={()=>{
-                                this.props.navigation.navigate('BlogCommentList',{
+                                NavigationHelper.push('BlogCommentList',{
                                     pageIndex: 1,
-                                    // item: item
+                                    item: item
                                 });
                             }}
                         />

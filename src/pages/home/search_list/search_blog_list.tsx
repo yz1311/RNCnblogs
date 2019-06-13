@@ -17,7 +17,7 @@ interface IState {
 
 @connect((state:ReduxState)=>({
     dataList: state.homeIndex.blog.list,
-    loadDataResult: state.homeIndex.blog.getListResult,
+    loadDataResult: state.homeIndex.blog.loadDataResult,
     noMore: state.homeIndex.blog.noMore,
     userInfo: state.loginIndex.userInfo,
 }),dispatch=>({

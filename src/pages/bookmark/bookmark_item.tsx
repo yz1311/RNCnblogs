@@ -19,7 +19,6 @@ import {deleteBookmark} from "../../actions/bookmark/bookmark_index_actions";
 import {Overlay, Label, ListRow} from 'teaset';
 import {BorderShadow} from "react-native-shadow";
 import {setSelectedQuestion} from "../../actions/question/question_detail_actions";
-import {setSelectedBlog} from "../../actions/blog/blog_index_actions";
 import {setSelectedDetail} from "../../actions/news/news_index_actions";
 import {blogSchema, newsSchema, tables} from "../../common/database";
 import {sagaActionToAction} from "../../utils/reduxUtils";
@@ -31,7 +30,6 @@ interface IProps {
     userInfo?: any,
     dispatch?: any,
     setSelectedQuestionFn?: any,
-    setSelectedBlogFn?: any,
     setSelectedDetailFn?: any,
     deleteBookmarkFn?: any,
     navigation: NavigationScreenProp<NavigationState>,
@@ -56,7 +54,6 @@ export interface bookmark {
 }),dispatch=>({
     dispatch,
     setSelectedQuestionFn:(data)=>dispatch(setSelectedQuestion(data)),
-    setSelectedBlogFn:(data)=>dispatch(setSelectedBlog(data)),
     setSelectedDetailFn:(data)=>dispatch(setSelectedDetail(data)),
     deleteBookmarkFn:(data)=>dispatch(deleteBookmark(data)),
 }))
@@ -270,9 +267,8 @@ export default class bookmark_item extends PureComponent<IProps,{}> {
                     realm.close();
                 }
             }
-            this.props.setSelectedBlogFn(selectedItem);
-            this.props.navigation.navigate('BlogDetail',{
-                // item: item
+            NavigationHelper.push('BlogDetail',{
+                item: item
             });
         }
         // this.props.navigation.navigate('YZWebPage',{

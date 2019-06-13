@@ -320,7 +320,8 @@ const takeOrCancel = (getDataType, clearDataType, worker) => fork(function* () {
         //正常情况下清空store
         if (action.type === addPendingSuffix(clearDataType)) {
             yield put({
-                type: clearDataType
+                ...action,
+                type: clearDataType,
             });
             continue;
         }
@@ -399,9 +400,10 @@ export interface invokeCommonRequest {
 }
 
 export interface reducerModel<T> {
-    list: Array<T>,
-    noMore: boolean,
-    getListResult: any
+    data?: T | {[key:string]:never},
+    list?: Array<T>,
+    noMore?: boolean,
+    loadDataResult?: any
 }
 
 export { addPendingSuffix, removePendingSuffix, createNomarlAction as createAction, createSagaAction, handleActions, resetState, createReducerResult, sagaActionToAction, actionToResult, invokeCommonAPI, takeOrCancel, takeEveryOrCancel, takeLatestOrCancel, };

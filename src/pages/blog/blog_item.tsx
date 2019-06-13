@@ -14,7 +14,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from 'teaset';
 import PropTypes from 'prop-types';
 import {showToast} from "../../actions/app_actions";
-import {setSelectedBlog} from "../../actions/blog/blog_index_actions";
 import {clearBlogIsFav, deleteBookmarkByUrl} from "../../actions/bookmark/bookmark_index_actions";
 import {BorderShadow} from 'react-native-shadow'
 import {ReduxState} from '../../reducers';
@@ -25,7 +24,6 @@ interface IProps {
     item: blogModel,
     //是否点击头像查看详情
     canViewProfile: boolean,
-    setSelectedBlogFn?: any,
     isLandscape?: boolean,
     navigation: NavigationScreenProp<NavigationState>
 }
@@ -39,7 +37,6 @@ interface IState {
     isLandscape: state.app.isLandscape
 }),dispatch=>({
     dispatch,
-    setSelectedBlogFn:(data)=>dispatch(setSelectedBlog(data)),
 }))
 export default class blog_item extends PureComponent<IProps,IState> {
 
@@ -55,9 +52,8 @@ export default class blog_item extends PureComponent<IProps,IState> {
                 <TouchableOpacity
                     activeOpacity={activeOpacity}
                     onPress={()=>{
-                        this.props.setSelectedBlogFn(item);
-                        this.props.navigation.navigate('BlogDetail',{
-                            // item: item
+                        NavigationHelper.push('BlogDetail',{
+                            item: item
                         });
                     }}
                     style={{flex:1}}

@@ -12,22 +12,22 @@ const initialState: State = {
     blog: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     news: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     question: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     kb: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
 }
 
@@ -41,7 +41,7 @@ export default handleActions( {
                 state[type].list = state[type].list.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
                 state[type].noMore = (payload.result||[]).length === 0 || payload.result.length < pageSize;
             }
-            state[type].getListResult = actionToResult(action,null,state[type].list);
+            state[type].loadDataResult = actionToResult(action,null,state[type].list);
         }
     },
     [actionTypes.HOME_SEARCH_CLEAR_LIST]:(state: State,action)=> {

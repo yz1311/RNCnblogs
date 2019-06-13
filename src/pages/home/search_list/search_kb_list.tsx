@@ -20,7 +20,7 @@ interface IState {
 
 @connect((state:ReduxState)=>({
     dataList: state.homeIndex.kb.list,
-    loadDataResult: state.homeIndex.kb.getListResult,
+    loadDataResult: state.homeIndex.kb.loadDataResult,
     noMore: state.homeIndex.kb.noMore,
 }),dispatch=>({
     dispatch,

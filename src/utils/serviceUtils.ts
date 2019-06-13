@@ -84,7 +84,7 @@ export default class serviceUtils {
                 },
                 showLoading: true,
                 successAction: () => {
-                    NavigationHelper.navigate('ProfilePerson',{
+                    NavigationHelper.push('ProfilePerson',{
                         userAlias: alias,
                         avatorUrl: iconUrl
                     });

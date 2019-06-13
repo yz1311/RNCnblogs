@@ -34,6 +34,10 @@ export type getBlogListRequest = RequestModel<{
     pageSize?: number
 }>;
 
+export type getBlogDetailRequest = RequestModel<{
+    id: string
+}>;
+
 export type getBlogCommentListRequest = RequestModel<{
     blogApp: string,
     postId: number,
@@ -90,7 +94,7 @@ export const getFollowingBlogList = (data: getBlogListRequest)=>{
     });
 }
 
-export const getBlogDetail = (data)=>{
+export const getBlogDetail = (data: getBlogDetailRequest)=>{
     const URL = `${gServerPath}/blogposts/${data.request.id}/body`;
     const options = createOptions(data, 'GET');
     return requestWithTimeout({

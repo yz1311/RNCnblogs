@@ -68,7 +68,7 @@ export default handleActions( {
                 state[type].list = state[type].list.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
                 state[type].noMore = (payload.result||[]).length === 0 || payload.result.length < pageSize;
             }
-            state[type].getListResult = actionToResult(action,null,state[type].list);
+            state[type].loadDataResult = actionToResult(action,null,state[type].list);
         }
     },
     [actionTypes.QUESTION_CLEAR_LIST]:(state: State,action)=> {
@@ -99,7 +99,7 @@ export default handleActions( {
             for (let type of questionTyes)
             {
                 state[type].list = state[type].list.filter(x=>x.Qid !== questionId);
-                state[type].getListResult = actionToResult(action,null,state[type].list);
+                state[type].loadDataResult = actionToResult(action,null,state[type].list);
             }
         }
     },
