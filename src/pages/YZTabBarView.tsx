@@ -22,7 +22,6 @@ import SplashScreen from "react-native-splash-screen";
 import {showToast} from "../actions/app_actions";
 import {getToken} from "../actions/login/login_index_actions";
 import {refreshDataTime} from "../actions/home/home_index_actions";
-import codePush from "./app";
 import * as actionTypes from "../actions/actionTypes";
 import NavigationHelper from "../utils/navigationHelper";
 import moment from "moment";

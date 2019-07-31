@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import RootToast from 'react-native-root-toast';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 export interface IProps {

@@ -20,7 +20,10 @@ import {withNavigation} from 'react-navigation';    //eslint-disable-line
 
 //反向继承
 const decorator = WrappedComponent => class extends WrappedComponent {
-    constructor(props)
+  private _didFocusSubscription: any;
+  private _willBlurSubscription: any;
+
+  constructor(props)
     {
         super(props);
         this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>

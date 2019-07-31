@@ -1,4 +1,3 @@
 <resources>
-    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">vlpR2XcR4I-ar-2-QgDp2Pj1Ma6vacc7030a-0453-42fd-844b-b496d0650e68</string>
     <string name="app_name">博客园</string>
 </resources>

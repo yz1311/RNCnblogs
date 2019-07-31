@@ -19,7 +19,7 @@ import NetInfo from '@react-native-community/netinfo';
 import {connect} from 'react-redux';
 import {showToast,showLoading,changeAppNetInfo,orientationInfoChanged} from '../actions/app_actions';
 import YZLoading from '../components/YZLoading';
-import YZPicker from '../components/YZPicker';
+import YZCodePushHandler from '../components/YZCodePushHandler';
 import {NavigationActions} from "react-navigation";
 import * as navActions from "../actions/nav_actions";
 import codePush from 'react-native-code-push';
@@ -81,7 +81,8 @@ interface IProps extends IReduxProps{
 interface IState {
     showUpdateInfo: boolean
 }
-
+//@ts-ignore
+@YZCodePushHandler
 @connect((state:ReduxState) => ({
     nav:state.nav,
     barStyle: state.app.barStyle,
@@ -95,7 +96,7 @@ interface IState {
 export default class App extends Component<IProps,IState> {
     private reloadThemeListener:EmitterSubscription;
     private updateLogModal:any;
-    
+
     constructor(props)
     {
         super(props);
@@ -113,7 +114,6 @@ export default class App extends Component<IProps,IState> {
             'connectionChange',
             this._handleConnectivityChange
         );
-        AppState.addEventListener('change', this._handleAppStateChange);
         Dimensions.removeEventListener('change', this.handleOrientationChange);
         __ANDROID__ && BackHandler.addEventListener('hardwareBackPress', this._onBackAndroid);
 
@@ -139,60 +139,10 @@ export default class App extends Component<IProps,IState> {
             'connectionChange',
             this._handleConnectivityChange
         );
-        AppState.removeEventListener('change', this._handleAppStateChange);
         Dimensions.removeEventListener('change', this.handleOrientationChange);
         __ANDROID__ && BackHandler.removeEventListener('hardwareBackPress', this._onBackAndroid);
         DeviceEventEmitter.removeListener('showUpdateInfoDialog',this.showUpdateInfoDialog);
         this.reloadThemeListener&&this.reloadThemeListener.remove();
-    }
-
-    _handleAppStateChange = appState => {
-        console.log('appstate change '+appState);
-        if (appState === 'active') {
-            //检测codePush更新
-            codePush.sync({
-                // 按返回键退出一直不会更新
-                // installMode:codePush.InstallMode.ON_NEXT_SUSPEND,
-                installMode:codePush.InstallMode.ON_NEXT_RESUME,
-                minimumBackgroundDuration:30    //暂时半分钟之后应用
-            }, (status)=>{
-                switch(status) {
-                    case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-                        console.log("Checking for updates.");
-                        break;
-                    case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-                        console.log("Downloading package.");
-                        break;
-                    case codePush.SyncStatus.INSTALLING_UPDATE:
-                        console.log("Installing update.");
-                        break;
-                    case codePush.SyncStatus.UP_TO_DATE:
-                        console.log("Up to date.");
-                        break;
-                    case codePush.SyncStatus.UPDATE_INSTALLED:
-                        console.log("Update installed.");
-                        //获取正在运行的
-                        codePush.getUpdateMetadata(codePush.UpdateState.RUNNING).then((update)=>{
-                            if(update)
-                            {
-                                gStorage.save('CODEPUSH_PACKAGE_RUNNING',update)
-                                console.log(update);
-                            }
-                        });
-                        //获取最新的
-                        codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then((update)=>{
-                            if(update)
-                            {
-                                gStorage.save('CODEPUSH_PACKAGE_LATEST',update)
-                                console.log(update);
-                            }
-                        });
-                        break;
-                }
-            },(progress) => {
-                console.log(progress.receivedBytes + " of " + progress.totalBytes + " received.");
-            });
-        }
     }
 
     handleOrientationChange = ({ window }) => {

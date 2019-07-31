@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { createStackNavigator,withNavigationFocus } from 'react-navigation';
 import { withMappedNavigationProps } from 'react-navigation-props-mapper'
-import StackViewStyleInterpolator from "react-navigation-stack/dist/views/StackView/StackViewStyleInterpolator";
+import StackViewStyleInterpolator from 'react-navigation-stack/lib/module/views/StackView/StackViewStyleInterpolator';
 import NavigationHelper from '../utils/navigationHelper';
 
 import YZTabBarView from '../pages/YZTabBarView';
