@@ -16,7 +16,7 @@ import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import Styles from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from 'teaset';
+import {ListRow, Overlay} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {getNewsDetail, clearNewsDetail, commentNews, clearNewsCommentList, setNewsScrollPosition} from "../../actions/news/news_index_actions";

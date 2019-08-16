@@ -1,4 +1,4 @@
-import { Toast } from "teaset";
+import { Toast } from "@yz1311/teaset";
 import React from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 //全局唯一的toast对象

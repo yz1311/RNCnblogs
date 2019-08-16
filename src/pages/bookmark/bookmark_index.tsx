@@ -10,7 +10,7 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import BookmarkItem from './bookmark_item'
 import {getBookmarkList, clearBookmarkList} from "../../actions/bookmark/bookmark_index_actions";
 import {NavigationScreenProp, NavigationState} from "react-navigation";
@@ -24,7 +24,7 @@ interface IProps extends IBaseDataPageProps{
 }
 
 interface IState {
-    
+
 }
 
 @connect((state: ReduxState)=>({

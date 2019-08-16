@@ -14,7 +14,7 @@ import YZCheckbox from '../../components/YZCheckbox';
 import YZManagementProfile from '../../components/YZManagementProfile';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addQuestion, modifyQuestion} from '../../actions/question/question_index_actions';

@@ -13,7 +13,7 @@ import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addStatus} from '../../actions/status/status_index_actions';

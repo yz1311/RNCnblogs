@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import {logout} from '../../actions/login/login_index_actions'
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from "react-navigation";

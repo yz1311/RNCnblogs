@@ -13,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PropTypes from 'prop-types';
 import Styles from '../../../common/styles';
 import {deleteQuestionAnswer, modifyQuestionAnswer, setSelectedAnswer} from '../../../actions/question/question_detail_actions';
-import {Overlay, Label, Input, ListRow} from 'teaset';
+import {Overlay, Label, Input, ListRow} from "@yz1311/teaset";
 import AnswerModify from './answer_modify';
 import Markdown from 'react-native-markdown-renderer';
 import {showToast} from "../../../actions/app_actions";

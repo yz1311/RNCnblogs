@@ -10,7 +10,7 @@ import YZBaseDataPage, {IBaseDataPageProps} from '../../components/YZBaseDataPag
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import KnowledgeBaseItem from './knowledgeBase_item';
 
 export interface IBaseKnowledgeProps extends IBaseDataPageProps{

@@ -9,7 +9,7 @@ import {
 import {WebView} from 'react-native-webview';
 import PropTypes from 'prop-types';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {ListRow, Overlay} from "teaset";
+import {ListRow, Overlay} from "@yz1311/teaset";
 import {connect} from "react-redux";
 import {showToast} from "../actions/app_actions";
 import CommonUtils from '../utils/commonUtils';

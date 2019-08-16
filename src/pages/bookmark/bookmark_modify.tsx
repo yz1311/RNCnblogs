@@ -10,7 +10,7 @@ import {
 import {connect} from 'react-redux';
 import Styles from '../../common/styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {ListRow, Input} from 'teaset';
+import {ListRow, Input} from "@yz1311/teaset";
 import BookmarkItem,{bookmark} from './bookmark_item'
 import {getBookmarkList, clearBookmarkList, deleteBookmark, addBookmark, modifyBookmark} from "../../actions/bookmark/bookmark_index_actions";
 import moment from "moment";
