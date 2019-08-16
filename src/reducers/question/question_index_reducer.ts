@@ -17,17 +17,17 @@ const initialState: State = {
     unsolved: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     highscore: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     noanswer: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     solved: {
         list: [],
@@ -37,22 +37,22 @@ const initialState: State = {
     myquestion: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     myunsolved: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     myanswer: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     mybestanswer: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
 }
 
