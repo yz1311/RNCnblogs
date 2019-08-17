@@ -64,25 +64,25 @@ export function* getPersonInfo(action) {
             if(matches&&matches.length>0)
             {
                 let temp = matches[0].replace('</','');
-                age = temp.substr(temp.lastIndexOf('>')).replace('>','')
+                age = temp.substr(temp.lastIndexOf('>')).replace('>','').replace('"','').trim();
             }
             matches = result.result.match(/粉丝：[\s\S]+?>[\s\S]+?<\//);
             if(matches&&matches.length>0)
             {
                 let temp = matches[0].replace('</','');
-                follows = temp.substr(temp.lastIndexOf('>')).replace('>','')
+                follows = temp.substr(temp.lastIndexOf('>')).replace('>','').replace('"','').trim()
             }
             matches = result.result.match(/关注：[\s\S]+?>[\s\S]+?<\//);
             if(matches&&matches.length>0)
             {
                 let temp = matches[0].replace('</','');
-                stars = temp.substr(temp.lastIndexOf('>')).replace('>','')
+                stars = temp.substr(temp.lastIndexOf('>')).replace('>','').replace('"','').trim()
             }
             matches = result.result.match(/昵称：[\s\S]+?>[\s\S]+?<\//);
             if(matches&&matches.length>0)
             {
                 let temp = matches[0].replace('</','');
-                nickName = temp.substr(temp.lastIndexOf('>')).replace('>','')
+                nickName = temp.substr(temp.lastIndexOf('>')).replace('>','').replace('"','').trim()
             }
             return {
                 age: age,
