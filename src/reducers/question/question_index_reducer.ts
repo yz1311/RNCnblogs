@@ -68,6 +68,10 @@ export default handleActions( {
                 state[type].list = state[type].list.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
                 state[type].noMore = (payload.result||[]).length === 0 || payload.result.length < pageSize;
             }
+            if(pageIndex>1)
+            {
+              action.error = undefined;
+            }
             state[type].loadDataResult = actionToResult(action,null,state[type].list);
         }
     },

@@ -72,8 +72,8 @@ const initialState = {
 export default handleActions<State>( {
     [actionTypes.BLOG_GET_PERSONAL_BLOGLIST]:(state,action)=> {
         const {type, payload, meta} = action;
+        let {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            let {request: {pageIndex, pageSize}} = meta.parData;
             pageSize = state.personalBlogList_pageSize;
             if(!pageSize&&pageIndex===1)
             {
@@ -83,6 +83,10 @@ export default handleActions<State>( {
             state.personalBlogList = state.personalBlogList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.personalBlogList_pageIndex = pageIndex;
             state.personalBlogList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getPersonalBlogListResult = actionToResult(action,null,state.personalBlogList);
     },
@@ -95,11 +99,15 @@ export default handleActions<State>( {
     },
     [actionTypes.BLOG_GET_PICKED_BLOGLIST]:(state,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.pickedBlogLis = state.pickedBlogLis.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.pickedBlogLis_pageIndex = pageIndex;
             state.pickedBlogLis_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getPickedBlogListResult = actionToResult(action,null,state.pickedBlogLis);
     },
@@ -111,11 +119,15 @@ export default handleActions<State>( {
     },
     [actionTypes.BLOG_GET_HOME_BLOGLIST]:(state,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.homeBlogList = state.homeBlogList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.homeBlogList_pageIndex = pageIndex;
             state.homeBlogList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getHomeBlogListResult = actionToResult(action,null,state.homeBlogList);
     },
@@ -127,13 +139,18 @@ export default handleActions<State>( {
     },
     [actionTypes.BLOG_GET_FOLLOWING_BLOGLIST]:(state,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.followingBlogList = state.followingBlogList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.followingBlogList_pageIndex = pageIndex;
             state.followingBlogList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
         }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
+        }
         state.getFollowingBlogListResult = actionToResult(action,null,state.followingBlogList);
+        console.log(state.getFollowingBlogListResult)
     },
     [actionTypes.BLOG_CLEAR_FOLLOWING_BLOGLIST]:(state,action)=> {
         state.followingBlogList = initialState.followingBlogList;
@@ -143,8 +160,8 @@ export default handleActions<State>( {
     },
     [actionTypes.PROFILE_GET_PERSON_BLOG_LIST]:(state,action)=> {
         const {type, payload, meta} = action;
+        let {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            let {request: {pageIndex, pageSize}} = meta.parData;
             pageSize = state.personBlogList_pageSize;
             if(!pageSize&&pageIndex===1)
             {
@@ -154,6 +171,10 @@ export default handleActions<State>( {
             state.personBlogList = state.personBlogList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.personBlogList_pageIndex = pageIndex;
             state.personBlogList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getPersonBlogListResult = actionToResult(action,null,state.personBlogList);
     },

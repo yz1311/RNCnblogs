@@ -85,6 +85,10 @@ export default handleActions( {
             }
             state[type].noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
         }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
+        }
         state[type].loadDataResult = actionToResult(action,null,state[type].list);
     },
     [actionTypes.STATUS_CLEAR_LIST]:(state: State,action)=> {

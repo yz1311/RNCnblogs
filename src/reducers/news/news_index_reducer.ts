@@ -43,10 +43,14 @@ const initialState: State = {
 export default handleActions( {
     [actionTypes.NEWS_GET_LIST]:(state: State,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.newsList = state.newsList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.newsList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getNewsListResult = actionToResult(action,null,state.newsList);
     },
@@ -57,10 +61,14 @@ export default handleActions( {
     },
     [actionTypes.NEWS_GET_HOT_WREEK_LIST]:(state: State,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.hotWeekNewsList = state.hotWeekNewsList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.hotWeekNewsList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getHotWeekNewsListResult = actionToResult(action,null,state.hotWeekNewsList);
     },
@@ -71,10 +79,14 @@ export default handleActions( {
     },
     [actionTypes.NEWS_GET_RECOMMENDED_NEWS_LIST]:(state: State,action)=> {
         const {type, payload, meta} = action;
+        const {request: {pageIndex, pageSize}} = meta.parData;
         if(!action.error) {
-            const {request: {pageIndex, pageSize}} = meta.parData;
             state.recommendedNewsList = state.recommendedNewsList.slice(0,(pageIndex-1)*pageSize).concat(payload.result);
             state.recommendedNewsList_noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
+        }
+        if(pageIndex>1)
+        {
+          action.error = undefined;
         }
         state.getRecommendedNewsListResult = actionToResult(action,null,state.recommendedNewsList);
     },
