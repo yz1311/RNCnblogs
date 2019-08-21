@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import StringUtils from '../../../utils/stringUtils';
 import {deleteQuestionAnswer, modifyQuestionAnswer} from '../../../actions/question/question_detail_actions';
-import {Overlay, Label, Input} from 'teaset';
+import {Overlay, Label, Input} from "@yz1311/teaset";
 
 interface IProps {
     title?: string,

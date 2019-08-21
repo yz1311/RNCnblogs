@@ -22,43 +22,43 @@ const initialState: State = {
     all: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //关注
     following: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //我的
     my: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //我回应的
     mycomment: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //新回应
     recentcomment: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //提到我
     mention: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
     //回复我
     comment: {
         list: [],
         noMore: false,
-        getListResult: createReducerResult()
+        loadDataResult: createReducerResult()
     },
 
     statusDetail: {},
@@ -85,7 +85,11 @@ export default handleActions( {
             }
             state[type].noMore = (payload.result||[]).length === 0 || (payload.result||[]).length < pageSize;
         }
-        state[type].getListResult = actionToResult(action,null,state[type].list);;
+        if(pageIndex>1)
+        {
+          action.error = undefined;
+        }
+        state[type].loadDataResult = actionToResult(action,null,state[type].list);
     },
     [actionTypes.STATUS_CLEAR_LIST]:(state: State,action)=> {
         const {payload} = action;
@@ -125,7 +129,7 @@ export default handleActions( {
             for (let type of statusTypes)
             {
                 state[type].list = state[type].list.filter(x=>x.Id !== statusId);
-                state[type].getListResult = actionToResult(action,null,state[type].list);
+                state[type].loadDataResult = actionToResult(action,null,state[type].list);
             }
         }
     },

@@ -10,7 +10,7 @@ import {
     DeviceEventEmitter, InteractionManager, RefreshControl
 } from 'react-native';
 import Styles from "../../common/styles";
-import {ListRow} from "teaset";
+import {ListRow} from "@yz1311/teaset";
 import {connect} from "react-redux";
 import {getPersonInfo, clearPersonInfo, getPersonSignature, getPersonBlogList, clearPersonBlogList} from "../../actions/profile/profile_index_actions";
 import Entypo from 'react-native-vector-icons/Entypo';

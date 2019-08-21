@@ -12,7 +12,7 @@ import {
 import {connect} from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow,Overlay} from 'teaset';
+import {ListRow,Overlay} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import Styles from '../../common/styles';
 import moment from 'moment';

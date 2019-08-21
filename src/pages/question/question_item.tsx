@@ -12,7 +12,7 @@ import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from 'teaset';
+import {ListRow, Overlay} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import StringUtils from '../../utils/stringUtils';
@@ -20,7 +20,7 @@ import Markdown, {getUniqueID} from 'react-native-markdown-renderer';
 import FitImage from 'react-native-fit-image';
 import {deleteQuestion} from "../../actions/question/question_index_actions";
 import {setSelectedQuestion} from "../../actions/question/question_detail_actions";
-import {BorderShadow} from 'react-native-shadow'
+import {BorderShadow} from '@yz1311/react-native-shadow'
 import {showToast} from "../../actions/app_actions";
 import {ReduxState} from "../../reducers";
 import {NavigationScreenProp, NavigationState} from "react-navigation";

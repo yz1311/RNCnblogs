@@ -106,8 +106,8 @@ android {
         applicationId "com.zhaoyang.cnblogstest"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 4
+        versionName "1.0.4"
         ndk {
             abiFilters "armeabi-v7a"
         }
@@ -138,10 +138,15 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             signingConfig signingConfigs.release
+            buildConfigField "String", "CODEPUSH_KEY", '"0WemM9hBiLA6opmUO2Iy67X8TcMI4ksvOXqog"'
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
         debug {
         //  applicationIdSuffix '.debug'
+            ndk {
+                abiFilters "armeabi-v7a","x86"
+            }
+            buildConfigField "String", "CODEPUSH_KEY", '"KLaJrUPOHEBHSUrFdEXkmcpCSSCC4ksvOXqog"'
             signingConfig signingConfigs.debug
         }
     }
@@ -161,6 +166,7 @@ android {
 }
 
 dependencies {
+    implementation project(':rn-bugly')
     implementation project(':react-native-intent-launcher')
     implementation project(':@react-native-community_netinfo')
     implementation project(':@react-native-community_async-storage')

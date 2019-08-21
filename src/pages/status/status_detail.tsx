@@ -19,7 +19,7 @@ import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import Styles from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {getStatusDetail, clearStatusDetail, clearStatusCommentList, commentStatus, deleteStatusComment} from "../../actions/status/status_index_actions";

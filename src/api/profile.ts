@@ -9,7 +9,7 @@ export type getUserAliasByUserNameRequest = RequestModel<{
 }>;
 
 export const getPersonInfo = (data)=>{
-    const URL = `https://www.cnblogs.com/mvc/blog/news.aspx?blogApp=${data.request.userAlias}`;
+    const URL = `https://www.cnblogs.com/${data.request.userAlias}/ajax/news.aspx`;
     const options = createOptions(data, 'GET');
     return requestWithTimeout({
         URL,

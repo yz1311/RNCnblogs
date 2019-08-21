@@ -19,7 +19,7 @@ import YZCommentInput from '../../../components/YZCommentInput';
 import YZCommonActionMenu from '../../../components/YZCommonActionMenu';
 import Styles from '../../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {getAnswerCommentList,clearAnswerCommentList, clearQuestionAnswerList, commentAswer, deleteAnswerComment, modifyAnswerComment} from "../../../actions/question/question_detail_actions";

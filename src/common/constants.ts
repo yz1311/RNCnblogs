@@ -11,7 +11,7 @@ global.gUserData = {
 global.gBaseConfig = {
     PushToken: '',
     UniqueId: '',
-    BuildVersion: '1.0.3',
+    BuildVersion: '1.0.4',
     iOSCameraPermissionPrompt: '',
     clientId: '',
     clientSecret: ''

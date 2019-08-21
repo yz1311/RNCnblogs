@@ -13,11 +13,12 @@ import {
 } from 'react-native';
 import Styles from "../../common/styles";
 import YZHeader from "./profile_index";
-import {ListRow} from "teaset";
+import {ListRow} from "@yz1311/teaset";
 import {connect} from "react-redux";
 import {logout} from "../../actions/login/login_index_actions";
 import Entypo from 'react-native-vector-icons/Entypo';
 import {ReduxState} from '../../reducers';
+import Bugly, {logLevel} from 'rn-bugly';
 
 interface IProps {
     dispatch: any,
@@ -65,8 +66,14 @@ export default class profile_about extends Component<IProps,IState> {
                             <ListRow
                                 activeOpacity={activeOpacity}
                                 title="检查更新"
-                                onPress={()=>{
+                                onPress={async ()=>{
                                     this.showUpdateInfoDialog();
+                                    // alert(JSON.stringify(await Bugly.getUpgradeInfo()))
+                                    // Bugly.checkUpgrade({
+                                    //     isManual: true,
+                                    //     isSilence: false
+                                    // });
+                                    // Bugly.log(logLevel.i,'yesy','dsdsdsdsdsd')
                                 }}
                             />
                         </View>

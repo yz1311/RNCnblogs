@@ -11,7 +11,7 @@ interface IProps extends IBaseStatusProps{
 
 @connect((state:ReduxState)=>({
     dataList: state.statusIndex.all.list,
-    loadDataResult: state.statusIndex.all.getListResult,
+    loadDataResult: state.statusIndex.all.loadDataResult,
     noMore: state.statusIndex.all.noMore,
 }),dispatch=>({
     dispatch,

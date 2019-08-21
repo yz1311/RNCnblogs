@@ -10,7 +10,7 @@ interface IProps extends IBaseQuestionProps{
 
 @connect((state:ReduxState)=>({
     dataList: state.questionIndex.myunsolved.list,
-    loadDataResult: state.questionIndex.myunsolved.getListResult,
+    loadDataResult: state.questionIndex.myunsolved.loadDataResult,
     noMore: state.questionIndex.myunsolved.noMore,
 }),dispatch=>({
     dispatch,

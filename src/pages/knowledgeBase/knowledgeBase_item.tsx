@@ -11,10 +11,10 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from 'teaset';
+import {ListRow} from "@yz1311/teaset";
 import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
-import {BorderShadow} from "react-native-shadow";
+import {BorderShadow} from "@yz1311/react-native-shadow";
 import {NavigationScreenProp, NavigationState} from "react-navigation";
 
 interface IProps {

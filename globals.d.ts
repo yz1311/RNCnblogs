@@ -153,6 +153,7 @@ declare var NavigationHelper: {
     navRouters: any,
     isTopScreen: (key:string) => boolean,
     goBack: () => void,
+    push: (routeName:string, params?) => void,
     navigate: (routeName:string, params?) => void,
     resetTo: (routeName:string,params?:any) => void,
     replace: (routeName:string, params?) => void,

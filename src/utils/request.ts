@@ -24,7 +24,7 @@ const TimeoutPromiseWrapper = (promise, timeout = 20) => {
  * @param timeout 超时时间，单位s
  * @param successAction 调用接口成功，并返回正确值进行的回调函数
  */
-const requestWithTimeout = ({URL,options,data,timeout = 20,errorMessage,successAction = undefined,failedAction = undefined,errorAction = undefined,actionType}: apiRequest)=>{
+const requestWithTimeout = ({URL,options,data,timeout = 20,errorMessage,successAction = undefined,failedAction = undefined,errorAction = undefined,actionType,resolveResult = undefined}: apiRequest)=>{
     //自动加上host
     if(URL.indexOf('http')!==0)
     {
@@ -164,6 +164,12 @@ const requestWithTimeout = ({URL,options,data,timeout = 20,errorMessage,successA
             responseData = {
                 result: responseData
             };
+            if (resolveResult) {
+                responseData = {
+                    ...responseData,
+                    result: resolveResult(responseData)
+                };
+            }
             resolve(responseData);
         }).catch(error => {
             console.log(error);
@@ -234,6 +240,7 @@ export interface apiRequest {
     data: any,
     timeout?: number,
     errorMessage: string,
+    resolveResult?: (response: any) => { [key: string]: any } | string | Array<any>;
     successAction?: any,
     failedAction?: any,
     errorAction?: any,
