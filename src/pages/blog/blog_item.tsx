@@ -46,7 +46,6 @@ export default class blog_item extends PureComponent<IProps,IState> {
 
     render() {
         const {item} = this.props;
-        console.log(gScreen.width)
         return (
             <BorderShadow setting={{width:gScreen.width,border:3,color:gColors.color999}}>
                 <TouchableOpacity
