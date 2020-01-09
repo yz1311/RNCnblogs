@@ -175,6 +175,10 @@ export default class RequestUtils {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
             //如果是字符串，尝试转换成js对象
+            if(typeof response.data == 'string'
+                && response.data.indexOf('<html')!=0
+                && response.data.indexOf('<div')!=0
+                && response.data.indexOf('<body')!=0)
             await new Promise(resolve=>{
                 parseString(response.data, function (err, result) {
                     if(!err) {

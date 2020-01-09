@@ -22,6 +22,7 @@ interface IState {
 export enum BlogTypes {
   首页,
   精华,
+  候选,
   关注,
   知识库
 }
@@ -38,7 +39,7 @@ export default class home_index extends Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      tabNames: ['首页', '精华', '关注', '知识库'],
+      tabNames: ['首页', '精华','候选', '关注', '知识库'],
     };
   }
 
@@ -89,6 +90,11 @@ export default class home_index extends Component<IProps, IState> {
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
             blogType={BlogTypes.精华}
+          />
+          <BaseBlogList
+              navigation={this.props.navigation}
+              tabIndex={this.props.tabIndex}
+              blogType={BlogTypes.候选}
           />
           <BaseBlogList
             navigation={this.props.navigation}

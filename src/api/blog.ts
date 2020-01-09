@@ -33,8 +33,10 @@ export type blogCommentModel = {
 
 export type getBlogListRequest = RequestModel<{
   blogApp?: string;
-  pageIndex: number;
-  pageSize?: number;
+  CategoryType?: string
+  ParentCategoryId?: number,
+  CategoryId?: number,
+  PageIndex: number;
 }>;
 
 export type getBlogDetailRequest = RequestModel<{
@@ -63,35 +65,24 @@ export const getPersonalBlogList = (data: getBlogListRequest) => {
 };
 
 export const getPickedBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blogposts/@picked?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取精华区博客列表失败!',
-    actionType: types.BLOG_GET_PICKED_BLOGLIST,
+  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  return RequestUtils.post(URL,data.request, {
+    resolveResult: resolveBlogHtml
   });
 };
 
-export const getHomeBlogList = (data: getBlogListRequest) => {
+export const getHomeBlogList = (data: RequestModel<{pageIndex:number, pageSize: number}>) => {
   const URL = `${gServerPath}/blog//sitehome/paged/${data.request.pageIndex}/${data.request.pageSize}`;
   return RequestUtils.get(URL);
 };
 
 export const getFollowingBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blogposts/@following?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取关注博客列表失败!',
-    actionType: types.BLOG_GET_FOLLOWING_BLOGLIST,
+  data.request.ParentCategoryId = 0;
+  data.request.CategoryId = 108697;
+  data.request.CategoryType = '"HomeCandidate"';
+  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  return RequestUtils.post(URL,data.request, {
+    resolveResult: resolveBlogHtml
   });
 };
 
@@ -138,3 +129,27 @@ export const commentBlog = data => {
     actionType: types.BLOG_COMMENT_BLOG,
   });
 };
+
+
+const resolveBlogHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g);
+  for (let match of matches) {
+    let item:Partial<blogModel> = {};
+    //解析digg
+    item.diggs = parseInt(((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/))||[])[0]?.replace(/[\s\S]+>/,''));
+    item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    item.title = match.match((/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.summary = (match.match((/post_item_summary\"[\s\S]+?(?=\<\/p)/))||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.author = {
+      avatar: (match.match((/class=\"pfs\" src=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: match.match(((/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/))||[])[0]?.replace(/[\s\S]+\>/,''),
+      uri: match.match(((/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+(?=\")/,''),
+    };
+    item.published = match.match(((/发布于 [\s\S]+?(?=\s{3,})/))||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
+    item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=)/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt(((match.match(/阅读\([\s\S]+?(?=)/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    items.push(item);
+  }
+  return items;
+}

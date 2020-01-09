@@ -1,10 +1,5 @@
-import React, {Component, PureComponent} from 'react';
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {PureComponent} from 'react';
+import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-native';
 import Styles from '../../../common/styles';
 import BlogItem from '../blog_item';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
@@ -92,7 +87,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
               pageSize: 10
             }
           })
-        }
+        };
         break;
       case BlogTypes.关注:
         params = {
@@ -106,11 +101,27 @@ class base_blog_list extends PureComponent<IProps,IState> {
 
         break;
       case BlogTypes.精华:
-        params = {
-          request: {
-            pageIndex: this.pageIndex,
-            pageSize: 10,
-          },
+        action = ()=>{
+          return Api.blog.getPickedBlogList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: -2,
+              CategoryType: 'Picked',
+              PageIndex: this.pageIndex,
+            }
+          })
+        };
+        break;
+      case BlogTypes.候选:
+        action = ()=>{
+          return Api.blog.getPickedBlogList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: 108697,
+              CategoryType: 'HomeCandidate',
+              PageIndex: this.pageIndex,
+            }
+          })
         };
         break;
     }
