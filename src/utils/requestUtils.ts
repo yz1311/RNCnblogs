@@ -3,6 +3,8 @@ import YZStateView from "../components/YZStateView";
 import axios, {AxiosProxyConfig, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {NavigationHelper} from "@yz1311/teaset";
 import ToastUtils from "./toastUtils";
+import {parseString} from 'react-native-xml2js';
+
 
 //拓展config，添加自定义参数
 export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
@@ -11,7 +13,8 @@ export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
     //调用接口报错时，是否显示toast，默认为true
     showErrorToast?: boolean,
     //调用接口报错时，显示的toast信息(优先显示reject的error对象的message),默认为空
-    errorMessage?: string
+    errorMessage?: string,
+    resolveResult?: (str:string)=>any
 }
 
 export interface ReducerResult {
@@ -168,10 +171,30 @@ export default class RequestUtils {
         }));
 
         //格式化接口返回数据
-        axios.interceptors.response.use(function (response) {
+        axios.interceptors.response.use(async (response) => {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
+            //如果是字符串，尝试转换成js对象
+            await new Promise(resolve=>{
+                parseString(response.data, function (err, result) {
+                    if(!err) {
+                        if(result.feed && result.feed.entry && Array.isArray(result.feed.entry)) {
+                            result = result.feed.entry.map(x=>{
+                                //遍历所有属性，将数组拆分成属性
+                                x = resolveXmlObject(x);
+                                return x;
+                            })
+                        }
+                        response.data = result;
+                    }
+                    resolve(true);
+                });
+            })
             console.log(response.data)
+            //格式化数据
+            if((response.config as AxiosRequestConfigPatch).resolveResult!=null) {
+                response.data =  (response.config as AxiosRequestConfigPatch).resolveResult(response.data);
+            }
             //部分接口没有result字段，直接返回data
             if(response.data.status=='OK'||(response.data.status===undefined&&response.data!=undefined)) {
                 if(response.data.result===undefined&&response.data) {
@@ -262,4 +285,39 @@ export default class RequestUtils {
     static put = <T=any>(url:string,data?:any,config?:AxiosRequestConfigPatch)=>{
         return axios.put<T>(url,data,config);
     }
+}
+
+
+
+const resolveXmlObject = (x)=>{
+    //遍历所有属性，将数组拆分成属性
+    for (let key in x) {
+        if(Array.isArray(x[key])&&x[key].length==1) {
+            let type = typeof x[key][0];
+            switch (type) {
+                //就是普通的属性
+                case "string":
+                    x[key] = x[key].join(',');
+                    break;
+                case "object":
+                    //是$:{rel:'alternate',href:'http://www.cnblogs.com/chenzhuantou/p/12171532.html'}
+                    //这种链接对象
+                    if(Array.isArray(x[key])&&x[key].length==1) {
+                        //分为两种，一种,两个属性_和$,$是一个对象{type: "text"},_对应的值就是具体的值
+                        if(x[key][0].hasOwnProperty('_')&&x[key][0].hasOwnProperty('$')) {
+                            x[key] = x[key][0]['_'];
+                        } else if(Object.keys(x[key][0]).length==1&&x[key][0].hasOwnProperty('$')) {
+                            x[key] = x[key][0]['$']['href'];
+                        } else {
+                            x[key] = resolveXmlObject(x[key][0]);
+                        }
+                    } else {
+                        Object.keys(x[key]).map(y => {
+                            x[key][y] = resolveXmlObject(x[key][y]);
+                        });
+                    }
+            }
+        }
+    }
+    return x;
 }

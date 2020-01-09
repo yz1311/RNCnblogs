@@ -16,6 +16,7 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {blogModel} from '../../api/blog';
+import moment from "moment";
 
 interface IProps {
   item: blogModel;
@@ -29,7 +30,6 @@ interface IState {}
 
 @(connect(
   (state: ReduxState) => ({
-    isLandscape: state.app.isLandscape,
   }),
   dispatch => ({
     dispatch,
@@ -64,8 +64,8 @@ export default class blog_item extends PureComponent<IProps, IState> {
               onPress={() => {
                 if (this.props.canViewProfile) {
                   NavigationHelper.navigate('ProfilePerson', {
-                    userAlias: item.BlogApp,
-                    avatorUrl: item.Avatar,
+                    userAlias: item.blogapp,
+                    avatorUrl: item.author?.uri,
                   });
                 }
               }}
@@ -78,9 +78,10 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 style={[Styles.avator]}
                 resizeMode="contain"
                 defaultSource={require('../../resources/ico/simple_avatar.gif')}
-                source={{uri: item.Avatar}}
+                //avator可能为空
+                source={item.author?.avatar?{uri: item.author.avatar}:require('../../resources/ico/simple_avatar.gif')}
               />
-              <Text style={[Styles.userName]}>{item.Author}</Text>
+              <Text style={[Styles.userName]}>{item.author?.name}</Text>
             </TouchableOpacity>
             <Text
               style={[
@@ -92,7 +93,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 },
                 Styles.text4Pie,
               ]}>
-              {item.Title}
+              {item.title}
             </Text>
             <Text
               style={[
@@ -104,7 +105,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 Styles.text4Pie,
               ]}
               numberOfLines={4}>
-              {item.Description}
+              {item.summary}
             </Text>
             <View
               style={{
@@ -113,17 +114,17 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 marginTop: 5,
               }}>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.DiggCount + ' 推荐 · '}
+                {item.diggs + ' 推荐 · '}
               </Text>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.CommentCount + ' 评论 · '}
+                {item.comments + ' 评论 · '}
               </Text>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.ViewCount + ' 阅读'}
+                {item.views + ' 阅读'}
               </Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {item.postDateDesc}
+                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
                 </Text>
               </View>
             </View>

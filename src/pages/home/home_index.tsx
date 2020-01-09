@@ -83,18 +83,22 @@ export default class home_index extends Component<IProps, IState> {
           <BaseBlogList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            blogType={BlogTypes.首页}
           />
           <BaseBlogList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            blogType={BlogTypes.精华}
           />
           <BaseBlogList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            blogType={BlogTypes.关注}
           />
           <BaseBlogList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            blogType={BlogTypes.知识库}
           />
         </ScrollableTabView>
       </View>

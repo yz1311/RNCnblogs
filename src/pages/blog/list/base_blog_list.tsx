@@ -7,10 +7,13 @@ import {
 } from 'react-native';
 import Styles from '../../../common/styles';
 import BlogItem from '../blog_item';
-import {createReducerResult, ReducerResult} from "../../../utils/requestUtils";
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
 import {BlogTypes} from "../../home/home_index";
 import {connect} from "react-redux";
 import {ReduxState} from "../../../models";
+import YZStateView from "../../../components/YZStateCommonView";
+import YZFlatList from "../../../components/YZFlatList";
+import {Api} from "../../../api";
 
 export interface IProps {
   navigation: any,
@@ -60,7 +63,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   }
 
   componentDidMount(): void {
-
+    this.loadData();
   }
 
 
@@ -77,14 +80,19 @@ class base_blog_list extends PureComponent<IProps,IState> {
         pageSize: 10,
       },
     };
+    let action:any = ()=>{
+      return ;
+    };
     switch (this.props.blogType) {
       case BlogTypes.首页:
-        params = {
-          request: {
-            pageIndex: this.pageIndex,
-            pageSize: 10,
-          },
-        };
+        action = ()=>{
+          return Api.blog.getHomeBlogList({
+            request: {
+              pageIndex: this.pageIndex,
+              pageSize: 10
+            }
+          })
+        }
         break;
       case BlogTypes.关注:
         params = {
@@ -106,6 +114,18 @@ class base_blog_list extends PureComponent<IProps,IState> {
         };
         break;
     }
+    try {
+      let response = await action();
+      console.log(response)
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,10);
+      this.setState({
+          ...pagingResult
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    }
   }
 
   _renderItem = ({item, index}) => {
@@ -113,30 +133,29 @@ class base_blog_list extends PureComponent<IProps,IState> {
   };
 
   render() {
-    console.log(this.state.loadDataResult)
     return (
       <View style={[Styles.container]}>
-        {/*<YZStateView*/}
-        {/*  loadDataResult={this.state.loadDataResult}*/}
-        {/*  placeholderTitle="暂无数据"*/}
-        {/*  mustLogin={this.mustLogin || false}*/}
-        {/*  errorButtonAction={this.loadData}>*/}
-        {/*  <YZFlatList*/}
-        {/*    ref={ref => (this._flatList = ref)}*/}
-        {/*    renderItem={this._renderItem}*/}
-        {/*    data={this.state.dataList}*/}
-        {/*    loadDataResult={this.state.loadDataResult}*/}
-        {/*    noMore={this.state.noMore}*/}
-        {/*    initialNumToRender={20}*/}
-        {/*    loadData={this.loadData}*/}
-        {/*    onPageIndexChange={pageIndex => {*/}
-        {/*      this.pageIndex = pageIndex;*/}
-        {/*    }}*/}
-        {/*    ItemSeparatorComponent={() => (*/}
-        {/*      <View style={{height: 10, backgroundColor: 'transparent'}} />*/}
-        {/*    )}*/}
-        {/*  />*/}
-        {/*</YZStateView>*/}
+        <YZStateView
+          loadDataResult={this.state.loadDataResult}
+          placeholderTitle="暂无数据"
+          mustLogin={this.mustLogin || false}
+          errorButtonAction={this.loadData}>
+          <YZFlatList
+            ref={ref => (this._flatList = ref)}
+            renderItem={this._renderItem}
+            data={this.state.dataList}
+            loadDataResult={this.state.loadDataResult}
+            noMore={this.state.noMore}
+            initialNumToRender={20}
+            loadData={this.loadData}
+            onPageIndexChange={pageIndex => {
+              this.pageIndex = pageIndex;
+            }}
+            ItemSeparatorComponent={() => (
+              <View style={{height: 10, backgroundColor: 'transparent'}} />
+            )}
+          />
+        </YZStateView>
       </View>
     );
   }

@@ -8,7 +8,7 @@ import * as knowledge from './knowledge';
 import * as home from './home';
 import * as profile from './profile';
 
-export default {
+export const Api =  {
   login,
   blog,
   news,
@@ -19,3 +19,16 @@ export default {
   home,
   profile,
 };
+
+//兼容以前的写法
+export default {
+  login,
+  blog,
+  news,
+  status,
+  bookmark,
+  question,
+  knowledge,
+  home,
+  profile,
+}

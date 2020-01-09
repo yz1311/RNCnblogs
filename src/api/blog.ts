@@ -3,18 +3,20 @@ import * as types from '../actions/actionTypes';
 import RequestUtils from "../utils/requestUtils";
 
 export type blogModel = {
-  Id: number;
-  Title: string;
-  Url: string;
-  Description: string;
-  Author: string;
-  BlogApp: string;
-  Avatar: string;
-  PostDate: string;
-  ViewCount: number;
-  CommentCount: number;
-  DiggCount: number;
-  [key: string]: any;
+  id: number;
+  title: string;
+  link: string;
+  summary: string;
+  author: {
+    name: string,
+    uri: string,
+    avatar: string
+  };
+  blogapp: string;
+  published: string;
+  views: number;
+  comments: number;
+  diggs: number;
 };
 
 export type blogCommentModel = {
@@ -75,7 +77,7 @@ export const getPickedBlogList = (data: getBlogListRequest) => {
 };
 
 export const getHomeBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blog//sitehome/paged/${data.request.pageIndex}&${data.request.pageSize}`;
+  const URL = `${gServerPath}/blog//sitehome/paged/${data.request.pageIndex}/${data.request.pageSize}`;
   return RequestUtils.get(URL);
 };
 
