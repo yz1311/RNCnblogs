@@ -44,8 +44,9 @@ import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
-import {getBlogDetailRequest} from '../../api/blog';
-import {createReducerResult} from '../../utils/reduxUtils';
+import {blogModel, getBlogDetailRequest} from '../../api/blog';
+import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {Api} from "../../api";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -62,28 +63,29 @@ const injectedJsCode = `var headArr = document.getElementsByTagName('head');
 // meta.setAttribute(‘name’, ‘viewport’);
 // document.getElementsByTagName(‘head’)[0].appendChild(meta); `
 
-export interface IProps extends IBaseDataPageProps {
+export interface IProps {
   // data?: any,
   // loadDataResult?: any,
-  blogDetails: any;
-  commentList?: any;
-  commentList_noMore?: any;
-  getCommentListResult?: any;
-  item?: any;
+  item?: blogModel;
   clearBlogIsFavFn?: any;
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
+  navigation: any;
+}
+
+interface IState {
+  blogDetails: any,
+  loadDataResult: ReducerResult,
+  commentList: Array<any>,
+  commentList_noMore: boolean,
+  getCommentListResult: ReducerResult
 }
 
 @(connect(
   (state: ReduxState) => ({
     // data: state.blogIndex.blogDetail,
     // loadDataResult: state.blogIndex.getBlogDetailResult,
-    blogDetails: state.blogIndex.blogDetails,
-    commentList: state.blogIndex.blogCommentList,
-    commentList_noMore: state.blogIndex.blogCommentList_noMore,
-    getCommentListResult: state.blogIndex.getBlogCommentListResult,
   }),
   dispatch => ({
     dispatch,
@@ -100,7 +102,7 @@ export interface IProps extends IBaseDataPageProps {
 //@ts-ignore
 // @ts-ignore
 @YZBackHandler
-export default class blog_detail extends YZBaseDataPage<IProps, any> {
+export default class blog_detail extends PureComponent<IProps, IState> {
   scrollPosition = 0;
   static propTypes = {
     item: PropTypes.object,
@@ -125,12 +127,16 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
   constructor(props) {
     super(props);
     this.state = {
-      comment: '',
+      blogDetails: {},
+      loadDataResult: createReducerResult(),
+      commentList: [],
+      commentList_noMore: false,
+      getCommentListResult: createReducerResult()
     };
   }
 
   componentDidMount() {
-    super.componentDidMount();
+    this.loadData();
     this.props.navigation.setParams({
       headerRight: (
         <TouchableOpacity
@@ -148,15 +154,13 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
 
   componentWillUnmount() {
     //需要传递id过去清空指定数据
-    this.props.clearDataFn(this.getParams());
     //清空isFav属性
     this.props.clearBlogIsFavFn();
-    this.props.clearBlogCommentListFn(this.getParams());
     //设置滚动位置
     const {item} = this.props;
     if (this.scrollPosition > 0) {
       this.props.setBlogScrollPositionFn({
-        id: item.Id,
+        id: item.id,
         value: this.scrollPosition,
       });
     }
@@ -232,24 +236,35 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
     });
   };
 
-  getParams = () => {
+  loadData = async ()=>{
     const {item} = this.props;
-    const params = {
-      request: {
-        id: item.Id,
-      },
-      url: item.Url,
-      item: item,
-    };
-    return params;
-  };
+    console.log(item)
+    try {
+      let response = await Api.blog.getBlogDetail({
+        request: {
+          id: item.id+''
+        }
+      });
+      this.setState({
+        blogDetails: response.data.string,
+        loadDataResult: dataToReducerResult(response.data.string)
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
 
   _onMessage = event => {
     let postedMessage = event.nativeEvent.data;
     try {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
-    const {item, blogDetails} = this.props;
+    const {item} = this.props;
+    const {blogDetails} = this.state;
     let data: any = {};
     if (blogDetails.hasOwnProperty(item.Id + '')) {
       data = blogDetails[item.Id + ''].data;
@@ -312,16 +327,11 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
   };
 
   render() {
-    const {item, blogDetails, commentList} = this.props;
-    let data: any = {};
-    let loadDataResult = createReducerResult();
-    if (blogDetails.hasOwnProperty(item.Id + '')) {
-      data = blogDetails[item.Id + ''].data;
-      loadDataResult = blogDetails[item.Id + ''].loadDataResult;
-    }
-    console.log(item.Id);
-    console.log('data', data);
-    console.log('loadDataResult', loadDataResult);
+    const {item} = this.props;
+    const {blogDetails, commentList, loadDataResult, getCommentListResult} = this.state;
+    let data: any = {
+      body: blogDetails
+    };
     //截取前10条记录进行显示
     let visibleCommentList = commentList.slice(0, 10);
     let showMoreButton = visibleCommentList.length === 10;
@@ -335,7 +345,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
       for (let comment of visibleCommentList) {
         commentHtml += `
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
-                        <img 
+                        <img
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
                         src="${comment.FaceUrl ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
@@ -359,7 +369,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
       }
       commentHtml += `</div>`;
       if (showMoreButton) {
-        commentHtml += `<div 
+        commentHtml += `<div
                                 onclick="window['ReactNativeWebView'].postMessage(JSON.stringify({
                                     type: 'loadMore'
                                 }))"
@@ -375,7 +385,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
                 <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
                 <style type="text/css">
                     img {
-                        height: auto; 
+                        height: auto;
                         width: auto;
                         max-width: 100%;
                     }
@@ -396,7 +406,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
                     /*}*/
                 </style>
                 <script>
-                    window.onload = function(){  
+                    window.onload = function(){
                         var imgs = document.getElementsByTagName("img");
                         for (let i=0;i<imgs.length;i++) {
                             imgs[i].onclick = function(){
@@ -425,7 +435,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
                                 value: scrollPos
                                 }));
                             } catch (error) {
-                                
+
                             }
                         }
                         if(${data.scrollPosition} > 0)
@@ -436,11 +446,11 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
                 </script>
                 </head>
                 <body style="padding: 0px;margin: 8px;"><div><div><h3>${
-                  item.Title
+                  item.title
                 }</h3>
                 <span style="color:#666666;font-size: small">${
-                  item.Author
-                }&nbsp;&nbsp;&nbsp;发布于&nbsp;${item.postDateDesc}</span>
+                  item.author?.name
+                }&nbsp;&nbsp;&nbsp;发布于&nbsp;${moment(item.published).format('YYYY-MM-DD HH:mm')}</span>
                 </div>${data.body}</div>
                 <div style="background-color: #f2f2f2;padding: 10px;color: #666;font-size: medium;margin: 10px -8px 10px -8px;">评论列表</div>
                 ${commentHtml}
@@ -457,7 +467,6 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
               source={{html: html}}
               // automaticallyAdjustContentInsets
               // scalesPageToFit={false}
-              useWebKit={true}
               javaScriptEnabled={true}
               onMessage={this._onMessage}
               // injectedJavaScript={injectedJsCode}
