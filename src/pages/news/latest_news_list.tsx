@@ -1,34 +1,36 @@
-import React,{Component} from 'react';
-import {connect} from "react-redux";
-import {getNewsList, clearNewsList} from "../../actions/news/news_index_actions";
-import BaseNewsList, {IBaseNewsProps} from "./base_news_list";
-import {ReduxState} from "../../reducers";
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {
+  getNewsList,
+  clearNewsList,
+} from '../../actions/news/news_index_actions';
+import BaseNewsList, {IBaseNewsProps} from './base_news_list';
+import {ReduxState} from '../../reducers';
 
-interface IProps extends IBaseNewsProps{
+interface IProps extends IBaseNewsProps {}
 
-}
+interface IState {}
 
-interface IState {
-
-}
-
-@connect((state: ReduxState)=>({
+@(connect(
+  (state: ReduxState) => ({
     dataList: state.newsIndex.newsList,
     loadDataResult: state.newsIndex.getNewsListResult,
     noMore: state.newsIndex.newsList_noMore,
-}),dispatch=>({
+  }),
+  dispatch => ({
     dispatch,
-    loadDataFn:(data)=>dispatch(getNewsList(data)),
-    clearDataFn:(data)=>dispatch(clearNewsList(data)),
-}))
-export default class latest_news_list extends BaseNewsList<IProps,IState>{
-    getParams = ()=>{
-        const params = {
-            request:{
-                pageIndex:this.pageIndex,
-                pageSize: 10
-            }
-        };
-        return params;
-    }
+    loadDataFn: data => dispatch(getNewsList(data)),
+    clearDataFn: data => dispatch(clearNewsList(data)),
+  }),
+) as any)
+export default class latest_news_list extends BaseNewsList<IProps, IState> {
+  getParams = () => {
+    const params = {
+      request: {
+        pageIndex: this.pageIndex,
+        pageSize: 10,
+      },
+    };
+    return params;
+  };
 }

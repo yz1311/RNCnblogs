@@ -1,10 +1,6 @@
-import { createModel } from '@rematch/core'
+import Model from 'dva-core';
 
-export const test = createModel({
-    state: {
-        tttt:  1234
-    },
-    reducers: {
 
-    }
-});
+export default {
+  namespace: 'test'
+} as Model;

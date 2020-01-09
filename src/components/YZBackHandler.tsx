@@ -9,72 +9,67 @@
  * 这部分参考react-navigation-backhandler实现
  * 使用方法:搜索引用该组件的代码查看
  */
-import React, { Component } from 'react'
-import {
-    TouchableWithoutFeedback,
-    View,
-    BackHandler
-} from 'react-native';
+import React, {Component} from 'react';
+import {TouchableWithoutFeedback, View, BackHandler} from 'react-native';
 //该组件需要react-navigation结合，该句代码作用为确保存在该库
-import {withNavigation} from 'react-navigation';    //eslint-disable-line
+import {withNavigation} from 'react-navigation'; //eslint-disable-line
 
 //反向继承
-const decorator = WrappedComponent => class extends WrappedComponent {
-  private _didFocusSubscription: any;
-  private _willBlurSubscription: any;
+const decorator = WrappedComponent =>
+  class extends WrappedComponent {
+    private _didFocusSubscription: any;
+    private _willBlurSubscription: any;
 
-  constructor(props)
-    {
-        super(props);
-        this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
-            BackHandler.addEventListener('hardwareBackPress', this.onBackPressed)
-        );
+    constructor(props) {
+      super(props);
+      this._didFocusSubscription = props.navigation.addListener(
+        'didFocus',
+        payload =>
+          BackHandler.addEventListener('hardwareBackPress', this.onBackPressed),
+      );
     }
     componentDidMount() {
-        super.componentDidMount&&super.componentDidMount();
-        this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
-            BackHandler.removeEventListener('hardwareBackPress', this.onBackPressed)
-        );
+      super.componentDidMount && super.componentDidMount();
+      this._willBlurSubscription = this.props.navigation.addListener(
+        'willBlur',
+        payload =>
+          BackHandler.removeEventListener(
+            'hardwareBackPress',
+            this.onBackPressed,
+          ),
+      );
     }
 
     componentWillUnmount() {
-        super.componentWillUnmount&&super.componentWillUnmount();
-        this._didFocusSubscription && this._didFocusSubscription.remove();
-        this._willBlurSubscription && this._willBlurSubscription.remove();
-        BackHandler.removeEventListener('hardwareBackPress', this.onBackPressed);
+      super.componentWillUnmount && super.componentWillUnmount();
+      this._didFocusSubscription && this._didFocusSubscription.remove();
+      this._willBlurSubscription && this._willBlurSubscription.remove();
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackPressed);
     }
 
-    onBackPressed=()=> {
-        if(this.onBack)
-        {
-            //必须要有返回值，否则默认事件继续向上传递
-            return this.onBack();
+    onBackPressed = () => {
+      if (this.onBack) {
+        //必须要有返回值，否则默认事件继续向上传递
+        return this.onBack();
+      } else if (this._onBack) {
+        //必须要有返回值，否则默认事件继续向上传递
+        return this._onBack();
+      }
+      //默认返回上一级
+      else {
+        if (this.props.navigation) {
+          this.props.navigation.goBack();
+          return true;
+        } else {
+          console.warn('YZBackHanddler 组件,navigation为空');
         }
-        else if(this._onBack)
-        {
-            //必须要有返回值，否则默认事件继续向上传递
-            return this._onBack();
-        }
-        //默认返回上一级
-        else
-        {
-            if(this.props.navigation)
-            {
-                this.props.navigation.goBack();
-                return true;
-            }
-            else
-            {
-                console.warn('YZBackHanddler 组件,navigation为空');
-            }
-        }
-    }
-
+      }
+    };
 
     render() {
-        // return withNavigation(<WrappedComponent {...this.props} />);
-        return super.render();
+      // return withNavigation(<WrappedComponent {...this.props} />);
+      return super.render();
     }
-}
+  };
 
 export default decorator;

@@ -1,6 +1,8 @@
-import {test} from './test';
+import test from './test';
+import loginIndex, {IState as loginIndexState} from './loginIndex'
 
-export {
-    test
+export type ReduxState = {
+    loginIndex: loginIndexState
 };
 
+export default [test, loginIndex];

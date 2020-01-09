@@ -1,7 +1,14 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import hoistNonReactStatic from 'hoist-non-react-statics';
-import { Alert, AppState, Dimensions, Modal, TouchableOpacity, View } from 'react-native';
-import codePush, { LocalPackage, RemotePackage } from 'react-native-code-push';
+import {
+  Alert,
+  AppState,
+  Dimensions,
+  Modal,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import codePush, {LocalPackage, RemotePackage} from 'react-native-code-push';
 import UpdateView from './YZUpdateView';
 import NetInfo from '@react-native-community/netinfo';
 
@@ -20,30 +27,30 @@ enum CheckFrequency {
   ON_APP_RESUME,
 }
 
-type myRemotePackage = RemotePackage & { desc: string, isSilent: boolean };
+type myRemotePackage = RemotePackage & {desc: string; isSilent: boolean};
 
 interface IProps {
   //仅在wifi环境下自动更新，默认false，静默更新不判断网络
-  onlyDownloadWhenWifi: boolean,
-  checkFrequency: CheckFrequency
+  onlyDownloadWhenWifi: boolean;
+  checkFrequency: CheckFrequency;
 }
 
 interface IState {
   //是否显示更新modal
-  modalVisible: boolean,
+  modalVisible: boolean;
   //是否强制更新
-  isMandatory: boolean,
-  updateInfo: myRemotePackage | { [key: string]: never },
-  progress: number,
+  isMandatory: boolean;
+  updateInfo: myRemotePackage | {[key: string]: never};
+  progress: number;
   //自定义进度问题，默认百分比
-  progressDesc: string
+  progressDesc: string;
 }
 
-const decorator = (WrappedComponent) => {
+const decorator = WrappedComponent => {
   class HOC extends Component<IProps, IState> {
     static defaultProps = {
       onlyDownloadWhenWifi: false,
-      checkFrequency: CheckFrequency.ON_APP_RESUME
+      checkFrequency: CheckFrequency.ON_APP_RESUME,
     };
 
     private isChecking: boolean = false;
@@ -53,7 +60,7 @@ const decorator = (WrappedComponent) => {
       isMandatory: false,
       updateInfo: {},
       progress: 0,
-      progressDesc: ''
+      progressDesc: '',
     };
 
     componentDidMount(): void {
@@ -70,7 +77,7 @@ const decorator = (WrappedComponent) => {
       }
     }
 
-    _handleAppStateChange = async (appState) => {
+    _handleAppStateChange = async appState => {
       console.log('appstate change ' + appState);
       if (appState === 'active') {
         this.checkForUpdate();
@@ -85,7 +92,7 @@ const decorator = (WrappedComponent) => {
       this.isChecking = true;
       let remotePackage: myRemotePackage;
       try {
-        remotePackage = await codePush.checkForUpdate() as myRemotePackage;
+        remotePackage = (await codePush.checkForUpdate()) as myRemotePackage;
       } catch (e) {
         console.log('检查热更新失败\n', e.message);
         if (process.env.NODE_ENV === 'development') {
@@ -117,11 +124,13 @@ const decorator = (WrappedComponent) => {
         }
         try {
           uuid = JSON.parse(remotePackage.description).uuid;
-        } catch (e) {
-
-        }
+        } catch (e) {}
         let version;
-        version = gBaseConfig.BuildVersion + '_V' + uuid + (remotePackage.isPending ? '(未生效)' : '');
+        version =
+          gBaseConfig.BuildVersion +
+          '_V' +
+          uuid +
+          (remotePackage.isPending ? '(未生效)' : '');
         remotePackage.desc = desc;
         //默认是不弹出对话框
         remotePackage.isSilent = true;
@@ -144,15 +153,18 @@ const decorator = (WrappedComponent) => {
               return;
             }
           }
-          this.setState({
-            updateInfo: remotePackage
-          }, () => {
-            this.downloadAndInstall();
-          });
+          this.setState(
+            {
+              updateInfo: remotePackage,
+            },
+            () => {
+              this.downloadAndInstall();
+            },
+          );
         } else {
           this.setState({
             modalVisible: true,
-            updateInfo: remotePackage
+            updateInfo: remotePackage,
           });
         }
         console.log(remotePackage);
@@ -166,24 +178,24 @@ const decorator = (WrappedComponent) => {
 
     downloadAndInstall = async () => {
       this.setState({
-        isMandatory: true
+        isMandatory: true,
       });
-      const { updateInfo } = this.state;
+      const {updateInfo} = this.state;
       let localPackage: LocalPackage;
       try {
-        localPackage = await updateInfo.download((progress) => {
+        localPackage = await updateInfo.download(progress => {
           console.log('codePushHandler:', progress);
           this.setState({
-            progress: progress.receivedBytes / progress.totalBytes
+            progress: progress.receivedBytes / progress.totalBytes,
           });
         });
       } catch (e) {
         this.setState({
           modalVisible: false,
-          progress: 0
+          progress: 0,
         });
         if (!updateInfo.isSilent) {
-          Alert.alert('', '下载失败!' + e.message, [{ text: '知道了' }]);
+          Alert.alert('', '下载失败!' + e.message, [{text: '知道了'}]);
         }
       }
       if (localPackage) {
@@ -191,38 +203,49 @@ const decorator = (WrappedComponent) => {
         //只能这里关闭，后面因为app会自动重启，会失效,导致modal关闭不了
         try {
           //暂停半分钟之后应用
-          await localPackage.install(updateInfo.isSilent ? codePush.InstallMode.ON_NEXT_SUSPEND : codePush.InstallMode.ON_NEXT_RESTART, 30);
+          await localPackage.install(
+            updateInfo.isSilent
+              ? codePush.InstallMode.ON_NEXT_SUSPEND
+              : codePush.InstallMode.ON_NEXT_RESTART,
+            30,
+          );
           console.log('安装成功！');
           await codePush.notifyAppReady();
           this.setState({
-            modalVisible: false
+            modalVisible: false,
           });
           if (!updateInfo.isSilent) {
-            Alert.alert('提示', '安装成功，点击[确定]后App将自动重启，重启后即更新成功！', [{
-              text: '确定',
-              onPress: () => {
-                codePush.restartApp();
-              }
-            }], { cancelable: false });
+            Alert.alert(
+              '提示',
+              '安装成功，点击[确定]后App将自动重启，重启后即更新成功！',
+              [
+                {
+                  text: '确定',
+                  onPress: () => {
+                    codePush.restartApp();
+                  },
+                },
+              ],
+              {cancelable: false},
+            );
           }
           // this.setState({modalVisible: false},()=>{
           //   codePush.restartApp();
           // });
         } catch (e) {
           if (!updateInfo.isSilent) {
-            Alert.alert('', '安装失败!' + e.message, [{ text: '知道了' }]);
+            Alert.alert('', '安装失败!' + e.message, [{text: '知道了'}]);
           }
         }
       }
     };
 
-
     render() {
-      const { height: D_HEIGHT, width: D_WIDTH } = Dimensions.get('window');
-      const { updateInfo } = this.state;
+      const {height: D_HEIGHT, width: D_WIDTH} = Dimensions.get('window');
+      const {updateInfo} = this.state;
       return (
-        <View style={{ flex: 1 }}>
-          <WrappedComponent {...this.props}/>
+        <View style={{flex: 1}}>
+          <WrappedComponent {...this.props} />
           <Modal
             animationType="slide"
             transparent={true}
@@ -232,21 +255,25 @@ const decorator = (WrappedComponent) => {
                 return;
               }
               this.setState({
-                modalVisible: false
+                modalVisible: false,
               });
-            }}
-          >
+            }}>
             <TouchableOpacity
               activeOpacity={1}
-              style={{ backgroundColor: 'rgba(1,1,1,0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}
-            >
-
+              style={{
+                backgroundColor: 'rgba(1,1,1,0.5)',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <UpdateView
                 width={D_WIDTH * 0.9}
                 message={updateInfo.desc}
                 versionName={updateInfo.label}
                 progress={this.state.progress}
-                packageSizeDesc={(updateInfo.packageSize / 1024 / 1024).toFixed(1) + 'MB'}
+                packageSizeDesc={
+                  (updateInfo.packageSize / 1024 / 1024).toFixed(1) + 'MB'
+                }
                 isMandatory={updateInfo.isMandatory || this.state.isMandatory}
                 progressDesc={this.state.progressDesc}
                 onDownload={async () => {
@@ -255,7 +282,7 @@ const decorator = (WrappedComponent) => {
                 onIgnore={() => {
                   this.setState({
                     modalVisible: false,
-                    progress: 0
+                    progress: 0,
                   });
                 }}
               />

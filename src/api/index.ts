@@ -8,7 +8,6 @@ import * as knowledge from './knowledge';
 import * as home from './home';
 import * as profile from './profile';
 
-
 export default {
   login,
   blog,
@@ -18,5 +17,5 @@ export default {
   question,
   knowledge,
   home,
-  profile
+  profile,
 };
