@@ -87,15 +87,8 @@ export const getFollowingBlogList = (data: getBlogListRequest) => {
 };
 
 export const getBlogDetail = (data: getBlogDetailRequest) => {
-  const URL = `${gServerPath}/blogposts/${data.request.id}/body`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取首页博客详情失败!',
-    actionType: types.BLOG_GET_DETAIL,
-  });
+  const URL = `http://wcf.open.cnblogs.com/blog/post/body/${data.request.id}`;
+  return RequestUtils.get(URL);
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {

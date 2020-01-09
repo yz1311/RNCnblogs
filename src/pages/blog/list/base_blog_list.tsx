@@ -81,10 +81,12 @@ class base_blog_list extends PureComponent<IProps,IState> {
     switch (this.props.blogType) {
       case BlogTypes.首页:
         action = ()=>{
-          return Api.blog.getHomeBlogList({
+          return Api.blog.getPickedBlogList({
             request: {
-              pageIndex: this.pageIndex,
-              pageSize: 10
+              ParentCategoryId: 0,
+              CategoryId: 808,
+              CategoryType: 'SiteHome',
+              PageIndex: this.pageIndex,
             }
           })
         };
