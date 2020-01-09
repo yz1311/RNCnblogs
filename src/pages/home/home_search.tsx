@@ -26,7 +26,7 @@ import {
 import {connect} from 'react-redux';
 import HomeTabBar from './home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
-import SearchBlogList from './search_list/search_blog_list';
+import SearchBlogList from '../blog/list/base_blog_list';
 import SearchNewsList from './search_list/search_news_list';
 import SearchQuestionList from './search_list/search_question_list';
 import SearchKbList from './search_list/search_kb_list';
@@ -82,7 +82,7 @@ interface IState {
 export default class home_search extends Component<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {
-      header: null,
+      headerShown: false,
     };
   };
 

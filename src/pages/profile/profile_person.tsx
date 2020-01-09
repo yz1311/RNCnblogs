@@ -133,7 +133,7 @@ export default class profile_person extends YZBaseDataPage<IProps, IState> {
     const {personInfo, avatorUrl} = this.props;
     return (
       <YZStateView
-        getResult={this.props.getPersonInfoResult}
+        loadDataResult={this.props.getPersonInfoResult}
         placeholderTitle="暂无数据"
         errorButtonAction={this.getPersonInfo}>
         <View
@@ -273,7 +273,7 @@ export default class profile_person extends YZBaseDataPage<IProps, IState> {
           </ScrollView>
         ) : (
           <YZStateView
-            getResult={this.props.loadDataResult}
+            loadDataResult={this.props.loadDataResult}
             placeholderTitle="暂无数据"
             errorButtonAction={this.loadData}>
             <YZFlatList

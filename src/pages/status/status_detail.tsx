@@ -227,7 +227,7 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          getResult={this.props.loadDataResult}
+          loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           {this.props.getStatusCommentListResult.success &&
@@ -255,7 +255,7 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
             </ScrollView>
           ) : (
             <YZStateView
-              getResult={this.props.getStatusCommentListResult}
+              loadDataResult={this.props.getStatusCommentListResult}
               placeholderTitle="-- 暂无评论 --"
               errorButtonAction={this.loadData}>
               <YZFlatList

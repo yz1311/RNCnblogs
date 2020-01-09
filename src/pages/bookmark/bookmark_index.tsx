@@ -66,7 +66,7 @@ export default class bookmark_index extends YZBaseDataPage<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          getResult={this.props.loadDataResult}
+          loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <YZFlatList

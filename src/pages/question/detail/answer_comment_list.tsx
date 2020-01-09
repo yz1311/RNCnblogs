@@ -292,7 +292,7 @@ export default class answer_comment_list extends YZBaseDataPage<
           </ScrollView>
         ) : (
           <YZStateView
-            getResult={this.props.loadDataResult}
+            loadDataResult={this.props.loadDataResult}
             placeholderTitle="-- 暂无评论 --"
             errorButtonAction={this.loadData}>
             <YZFlatList

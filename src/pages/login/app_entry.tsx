@@ -22,7 +22,7 @@ interface IProps {
 export default class app_entry extends Component<IProps, {}> {
   static navigationOptions = ({navigation}) => {
     return {
-      header: null,
+      headerShown: false,
     };
   };
 

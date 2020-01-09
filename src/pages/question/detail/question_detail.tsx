@@ -224,7 +224,7 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          getResult={this.props.loadDataResult}
+          loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           {this.props.getAnswerListResult.success &&
@@ -252,7 +252,7 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
             </ScrollView>
           ) : (
             <YZStateView
-              getResult={this.props.getAnswerListResult}
+              loadDataResult={this.props.getAnswerListResult}
               placeholderTitle="-- 暂无回答 --"
               errorButtonAction={this.loadData}>
               <YZFlatList

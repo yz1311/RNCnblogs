@@ -17,7 +17,8 @@ global.gBaseConfig = {
 
 global.appName = '博客园';
 
-global.gServerPath = 'https://api.cnblogs.com/api';
+//http://wcf.open.cnblogs.com/blog/help
+global.gServerPath = 'http://wcf.open.cnblogs.com/';
 
 global.gColors = {
   backgroundColor: '#f2f2f2',
@@ -85,7 +86,7 @@ global.gScreen = {
 };
 
 global.fontSizeScaler = PixelRatio.get() / PixelRatio.getFontScale();
-fontSizeScaler = 1.0;
+let fontSizeScaler = 1.0;
 global.gFont = {
   size85: 85 * fontSizeScaler,
   size64: 64 * fontSizeScaler,

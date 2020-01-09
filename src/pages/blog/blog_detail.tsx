@@ -448,7 +448,7 @@ export default class blog_detail extends YZBaseDataPage<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          getResult={loadDataResult}
+          loadDataResult={loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <View style={{flex: 1, overflow: 'hidden'}}>

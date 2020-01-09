@@ -63,7 +63,7 @@ let lastClickTime = 0;
 export default class YZTabBarView extends Component<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {
-      header: null,
+      headerShown: false,
     };
   };
 

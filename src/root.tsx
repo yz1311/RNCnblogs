@@ -1,6 +1,5 @@
 import * as YZConstants from './common/constants';
 import * as YZStorage from './utils/globalStorage';
-/* eslint-enable */
 import codePush from 'react-native-code-push';
 import React, {Component} from 'react';
 import {
@@ -20,7 +19,6 @@ import useImmer from 'dva-immer';
 import YZHeader from './components/YZHeader';
 import YZManagementProfile from './components/YZManagementProfile';
 import YZStateView from './components/YZStateCommonView';
-// import YZLottieView from './components/YZLottieView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
 import {NavigationHelper} from '@yz1311/teaset';
@@ -30,6 +28,7 @@ import models from './models';
 import {ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Styles from './common/styles';
 import {createAppContainer} from 'react-navigation';
+import RequestUtils from "./utils/requestUtils";
 //防止ts编译掉
 let a = YZConstants;
 let b = YZStorage;
@@ -49,6 +48,7 @@ const store = dvaApp._store;
 global.gStore = store;
 
 NavigationHelper.init(NavigationHelper);
+RequestUtils.init();
 
 const markdownStyles = StyleSheet.create({
   text: {
@@ -170,20 +170,6 @@ class Root extends Component {
     };
     // @ts-ignore
     TextInput.defaultProps.underlineColorAndroid = 'transparent';
-    // TextInput.defaultProps.textAlignVertical = false;
-    YZHeader.defaultProps.statusBarBackgroundColor = gColors.themeColor;
-    // @ts-ignore
-    YZHeader.defaultProps.style = {backgroundColor: gColors.themeColor};
-    // @ts-ignore
-    YZHeader.defaultProps.titleStyle = {
-      color: gColors.bgColorF,
-      fontWeight: null,
-    };
-    // @ts-ignore
-    YZHeader.defaultProps.statusBarStyle = 'light-content';
-    YZHeader.defaultProps.type = 'light-content';
-    // @ts-ignore
-    YZManagementProfile.defaultProps.titleColor = gColors.color7;
     // @ts-ignore
     // YZStateView.defaultProps.loadingView = (
     //   <YZLottieView
@@ -200,18 +186,18 @@ class Root extends Component {
       color: gColors.color4c,
       ...Styles.text4Pie,
     };
-    ScrollableTabBar.defaultProps = {
-      ...(ScrollableTabBar.defaultProps || {}),
-      activeTextColor: gColors.bgColorF,
-      inactiveTextColor: '#DBDBDB',
-      underlineStyle: {
-        backgroundColor: gColors.bgColorF,
-        height: 3,
-      },
-      style: {
-        backgroundColor: gColors.themeColor,
-      },
-    };
+    // ScrollableTabBar.defaultProps = {
+    //   ...(ScrollableTabBar.defaultProps || {}),
+    //   activeTextColor: gColors.bgColorF,
+    //   inactiveTextColor: '#DBDBDB',
+    //   underlineStyle: {
+    //     backgroundColor: gColors.bgColorF,
+    //     height: 3,
+    //   },
+    //   style: {
+    //     backgroundColor: gColors.themeColor,
+    //   },
+    // };
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 

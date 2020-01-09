@@ -1,5 +1,6 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from "../utils/requestUtils";
 
 export type blogModel = {
   Id: number;
@@ -74,17 +75,8 @@ export const getPickedBlogList = (data: getBlogListRequest) => {
 };
 
 export const getHomeBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blogposts/@sitehome?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取首页博客列表失败!',
-    actionType: types.BLOG_GET_HOME_BLOGLIST,
-  });
+  const URL = `${gServerPath}/blog//sitehome/paged/${data.request.pageIndex}&${data.request.pageSize}`;
+  return RequestUtils.get(URL);
 };
 
 export const getFollowingBlogList = (data: getBlogListRequest) => {

@@ -25,14 +25,14 @@ import {
   orientationInfoChanged,
 } from '../actions/app_actions';
 import YZLoading from '../components/YZLoading';
-import YZCodePushHandler from '../components/YZCodePushHandler';
+import {CodePushHandler} from '@yz1311/teaset-code-push';
 import {NavigationActions} from 'react-navigation';
 import * as navActions from '../actions/nav_actions';
 import codePush from 'react-native-code-push';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import UpdateLogModal from '../components/update_logModal';
-import moment from 'moment';
+import moment, {unitOfTime} from 'moment';
 import Permissions from 'react-native-permissions';
 import {ReduxState} from '../reducers';
 import ToastUtils from "../utils/toastUtils";
@@ -86,8 +86,7 @@ interface IProps extends IReduxProps {
 interface IState {
   showUpdateInfo: boolean;
 }
-//@ts-ignore
-@YZCodePushHandler
+@CodePushHandler({isDebugMode: false})
 export default class App extends Component<IProps, IState> {
   private reloadThemeListener: EmitterSubscription;
   private updateLogModal: any;
@@ -110,10 +109,10 @@ export default class App extends Component<IProps, IState> {
         this.forceUpdate();
       },
     );
-    NetInfo.addEventListener(
-      'connectionChange',
-      this._handleConnectivityChange,
-    );
+    // NetInfo.addEventListener(
+    //   'connectionChange',
+    //   this._handleConnectivityChange,
+    // );
     Dimensions.removeEventListener('change', this.handleOrientationChange);
     __ANDROID__ &&
       BackHandler.addEventListener('hardwareBackPress', this._onBackAndroid);
@@ -136,10 +135,10 @@ export default class App extends Component<IProps, IState> {
   };
 
   componentWillUnmount() {
-    NetInfo.removeEventListener(
-      'connectionChange',
-      this._handleConnectivityChange,
-    );
+    // NetInfo.removeEventListener(
+    //   'connectionChange',
+    //   this._handleConnectivityChange,
+    // );
     Dimensions.removeEventListener('change', this.handleOrientationChange);
     __ANDROID__ &&
       BackHandler.removeEventListener('hardwareBackPress', this._onBackAndroid);

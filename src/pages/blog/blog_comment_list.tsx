@@ -30,10 +30,10 @@ import CommonUtils from '../../utils/commonUtils';
 import CommentItem from './comment_item';
 import {ReduxState} from '../../reducers';
 import {blogCommentModel, getBlogCommentListRequest} from '../../api/blog';
-import {createReducerResult, reducerModel} from '../../utils/reduxUtils';
+import {createReducerResult} from "../../utils/requestUtils";
 
 interface IProps extends IBaseDataPageProps {
-  blogCommentLists?: {[key: string]: reducerModel<blogCommentModel>};
+  blogCommentLists?: {[key: string]: any};
   userInfo?: any;
   item: any;
   commentBlogFn?: any;
@@ -235,7 +235,7 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          getResult={loadDataResult}
+          loadDataResult={loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <YZFlatList

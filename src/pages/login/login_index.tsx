@@ -43,12 +43,16 @@ export default class login_index extends Component<IProps, IState> {
   }
 
   _onNavigationStateChange = async (event) => {
+    if(this.hasInvoked) {
+      return ;
+    }
     try {
       //后一个参数表示使用UIWebkit，否则ios获取的为空
       let res = await CookieManager.get('https://account.cnblogs.com/signin', true);
       if(res) {
         gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
         NavigationHelper.resetTo('YZTabBarView');
+        this.hasInvoked = true;
       }
     } catch (e) {
 

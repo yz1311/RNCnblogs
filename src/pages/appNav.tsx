@@ -13,7 +13,6 @@ import Login from './login/login_index';
 import AppEntry from './login/app_entry';
 import HomeSearch from '../pages/home/home_search';
 import BlogDetail from '../pages/blog/blog_detail';
-import MyBlogList from '../pages/blog/list/personal_blog_list';
 import BlogCommentList from '../pages/blog/blog_comment_list';
 import NewsDetail from '../pages/news/news_detail';
 import NewsCommentList from '../pages/news/news_comment_list';
@@ -47,7 +46,6 @@ const AppNavigation = createStackNavigator(
       },
     },
     BlogDetail: {screen: withMappedNavigationProps(BlogDetail)},
-    MyBlogList: {screen: withMappedNavigationProps(MyBlogList)},
     BlogCommentList: {screen: withMappedNavigationProps(BlogCommentList)},
     NewsDetail: {screen: withMappedNavigationProps(NewsDetail)},
     NewsCommentList: {screen: withMappedNavigationProps(NewsCommentList)},
