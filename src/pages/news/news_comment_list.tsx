@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -30,29 +30,30 @@ import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
+import {blogCommentModel, getBlogCommentListRequest} from "../../api/blog";
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {Api} from "../../api";
+import {newsCommentModel, newsModel} from "../../api/news";
+import {userInfoModel} from "../../api/login";
 
 interface IProps extends IBaseDataPageProps {
-  item: any;
-  pageIndex: number;
   commentNewsFn?: any;
   modifyNewsCommentFn?: any;
   deleteNewsCommentFn?: any;
-  userInfo?: any;
-  dataList?: Array<any>;
-  noMore?: boolean;
+  userInfo?: userInfoModel;
+  item: newsModel
 }
 
 interface IState {
   headerTitle: string;
   headerSubmit: string;
+  dataList: Array<blogCommentModel>,
+  noMore: boolean,
+  loadDataResult: ReducerResult
 }
 
 @(connect(
   (state: ReduxState) => ({
-    dataList: state.newsIndex.newsCommentList,
-    noMore: state.newsIndex.newsCommentList_noMore,
-    loadDataResult: state.newsIndex.getNewsCommentListResult,
-    item: state.newsIndex.selectedNews,
     userInfo: state.loginIndex.userInfo,
   }),
   dispatch => ({
@@ -65,7 +66,7 @@ interface IState {
     deleteNewsCommentFn: data => dispatch(deleteNewsComment(data)),
   }),
 ) as any)
-export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
+export default class news_comment_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
 
   static propTypes = {
@@ -102,6 +103,9 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
       ...this.state,
       headerTitle: '',
       headerSubmit: '',
+      dataList: [],
+      noMore: false,
+      loadDataResult: createReducerResult()
     };
   }
 
@@ -112,10 +116,7 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
   }
 
   componentDidMount() {
-    //说明前面已经加载过一次了
-    if (this.pageIndex === 1) {
-      super.componentDidMount();
-    }
+    this.loadData();
     this.setTitle();
   }
 
@@ -131,17 +132,28 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
     });
   };
 
-  getParams = () => {
+  loadData = async ()=>{
     const {item} = this.props;
-    const params = {
-      request: {
-        newsId: item.Id,
-        pageIndex: this.pageIndex,
-        pageSize: 10,
-      },
-    };
-    return params;
-  };
+    try {
+      let response = await Api.news.getNewsCommentList({
+        request: {
+          postId: parseInt(item.id),
+          pageIndex: this.pageIndex,
+          pageSize: 10,
+        }
+      });
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      this.setState({
+        ...pagingResult
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
 
   renderNode = (node, index, siblings, parent, defaultRenderer) => {
     if (node.name === 'fieldset') {
@@ -186,18 +198,18 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
     }
   };
 
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}:{item:newsCommentModel,index:number}) => {
     const {userInfo} = this.props;
     return (
       <CommentItem
         item={item}
-        iconName={item.FaceUrl}
+        iconName={item.author?.uri}
         userId={item.UserId}
-        userName={item.UserName}
+        userName={item.author?.name}
         floor={item.Floor}
-        content={item.CommentContent}
-        postDate={item.DateAdded}
-        canDelete={item.UserId === userInfo.SpaceUserID}
+        content={item.content}
+        postDate={item.published}
+        canDelete={item.UserId === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -214,8 +226,8 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
           const {deleteNewsCommentFn} = this.props;
           deleteNewsCommentFn({
             request: {
-              id: item.CommentID,
-              newsId: this.props.item.Id,
+              id: item.id,
+              newsId: this.props.item.id,
             },
           });
         }}
@@ -223,9 +235,9 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
           const {modifyNewsCommentFn} = this.props;
           modifyNewsCommentFn({
             request: {
-              id: item.CommentID,
+              id: item.id,
               Content: content,
-              newsId: this.props.item.Id,
+              newsId: this.props.item.id,
             },
             successAction: () => {
               //成功后关闭对话框
@@ -242,7 +254,7 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
     commentNewsFn({
       request: {
         ParentId: 1,
-        newsId: item.Id,
+        newsId: item.id,
         Content: this.state.headerSubmit + '\n\n' + text,
       },
       successAction: () => {
@@ -262,15 +274,15 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={this.props.loadDataResult}
+          loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <YZFlatList
             ref={ref => (this._flatList = ref)}
             renderItem={this._renderItem}
-            data={this.props.dataList}
-            loadDataResult={this.props.loadDataResult}
-            noMore={this.props.noMore}
+            data={this.state.dataList}
+            loadDataResult={this.state.loadDataResult}
+            noMore={this.state.noMore}
             initialNumToRender={20}
             loadData={this.loadData}
             onPageIndexChange={pageIndex => {
@@ -297,7 +309,7 @@ export default class news_comment_list extends YZBaseDataPage<IProps, IState> {
                     index: 0,
                   });
               }}
-              commentCount={this.props.item.CommentCount}
+              commentCount={this.props.item.comments}
               showCommentButton={false}
               showShareButton={false}
               showFavButton={false}

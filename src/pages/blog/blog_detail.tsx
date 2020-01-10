@@ -44,9 +44,9 @@ import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
-import {blogModel, getBlogDetailRequest} from '../../api/blog';
-import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog';
 import {Api} from "../../api";
+import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -71,21 +71,21 @@ export interface IProps {
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
-  navigation: any;
+  navigation?: any;
 }
 
+
 interface IState {
-  blogDetails: any,
-  loadDataResult: ReducerResult,
-  commentList: Array<any>,
-  commentList_noMore: boolean,
-  getCommentListResult: ReducerResult
+  blogDetails: string;
+  getDetailResult: ReducerResult,
+  commentList?: Array<blogCommentModel>;
+  commentList_noMore?: boolean;
+  getCommentListResult?: ReducerResult;
 }
 
 @(connect(
   (state: ReduxState) => ({
-    // data: state.blogIndex.blogDetail,
-    // loadDataResult: state.blogIndex.getBlogDetailResult,
+
   }),
   dispatch => ({
     dispatch,
@@ -127,8 +127,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      blogDetails: {},
-      loadDataResult: createReducerResult(),
+      blogDetails: '',
+      getDetailResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
       getCommentListResult: createReducerResult()
@@ -153,17 +153,17 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    //需要传递id过去清空指定数据
     //清空isFav属性
-    this.props.clearBlogIsFavFn();
+    // this.props.clearBlogIsFavFn();
+    // this.props.clearBlogCommentListFn();
     //设置滚动位置
-    const {item} = this.props;
-    if (this.scrollPosition > 0) {
-      this.props.setBlogScrollPositionFn({
-        id: item.id,
-        value: this.scrollPosition,
-      });
-    }
+    // const {item} = this.props;
+    // if (this.scrollPosition > 0) {
+    //   this.props.setBlogScrollPositionFn({
+    //     id: item.id,
+    //     value: this.scrollPosition,
+    //   });
+    // }
   }
 
   _onBack = () => {
@@ -206,7 +206,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.copyText(this.props.item.Url);
+              CommonUtils.copyText(this.props.item.link);
             }}
           />
           <ListRow
@@ -216,7 +216,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.openUrl(this.props.item.Url);
+              CommonUtils.openUrl(this.props.item.link);
             }}
           />
           <ListRow
@@ -227,7 +227,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.share('', this.props.item.Url);
+              CommonUtils.share('', this.props.item.link);
             }}
           />
         </Overlay.PopoverView>
@@ -236,28 +236,67 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     });
   };
 
-  loadData = async ()=>{
-    const {item} = this.props;
-    console.log(item)
-    try {
-      let response = await Api.blog.getBlogDetail({
-        request: {
-          id: item.id+''
+  loadData = ()=>{
+    Promise.all([
+      //博客详情
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogDetail({
+            request: {
+              id: this.props.item.id+''
+            }
+          });
+          this.setState({
+            blogDetails: response.data.string,
+            getDetailResult: dataToReducerResult(response.data.string)
+          });
+        } catch (e) {
+          this.setState({
+            getDetailResult: dataToReducerResult(e)
+          });
+        } finally {
+
         }
-      });
-      this.setState({
-        blogDetails: response.data.string,
-        loadDataResult: dataToReducerResult(response.data.string)
-      });
-    } catch (e) {
-      this.setState({
-        loadDataResult: dataToReducerResult(e)
-      });
-    } finally {
+      })(),
+      //部分评论(第一页)
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogCommentList({
+            request: {
+              pageIndex: 1,
+              pageSize: 10,
+              postId: parseInt(this.props.item.id)
+            }
+          });
+          this.setState({
+            commentList: response.data,
+            getCommentListResult: dataToReducerResult(response.data)
+          });
+        } catch (e) {
+          this.setState({
+            getCommentListResult: dataToReducerResult(e)
+          });
+        } finally {
 
-    }
+        }
+      })(),
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogCategoryAndTags({
+            request: {
+              blogId: this.props.item.blogapp,
+              postId: this.props.item.id
+            }
+          });
+
+        } catch (e) {
+
+        } finally {
+
+        }
+      })()
+    ])
   }
-
   _onMessage = event => {
     let postedMessage = event.nativeEvent.data;
     try {
@@ -266,8 +305,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     const {item} = this.props;
     const {blogDetails} = this.state;
     let data: any = {};
-    if (blogDetails.hasOwnProperty(item.Id + '')) {
-      data = blogDetails[item.Id + ''].data;
+    if (blogDetails.hasOwnProperty(item.id + '')) {
+      data = blogDetails[item.id + ''].data;
     }
     switch (postedMessage.type) {
       case 'loadMore':
@@ -301,9 +340,9 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       case 'scroll_position':
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.navigation.state.params.title;
-        if (curTitle !== (postedMessage.value >= 50 ? item.Title : '博文')) {
+        if (curTitle !== (postedMessage.value >= 50 ? item.title : '博文')) {
           this.props.navigation.setParams({
-            title: postedMessage.value >= 50 ? item.Title : '博文',
+            title: postedMessage.value >= 50 ? item.title : '博文',
           });
         }
         break;
@@ -314,8 +353,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     const {commentBlogFn, item} = this.props;
     commentBlogFn({
       request: {
-        blogApp: item.BlogApp,
-        postId: item.Id,
+        blogApp: item.blogapp,
+        postId: item.id,
         comment: text,
       },
       successAction: () => {
@@ -328,7 +367,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   render() {
     const {item} = this.props;
-    const {blogDetails, commentList, loadDataResult, getCommentListResult} = this.state;
+    const {getDetailResult, blogDetails, commentList} = this.state;
     let data: any = {
       body: blogDetails
     };
@@ -347,20 +386,20 @@ export default class blog_detail extends PureComponent<IProps, IState> {
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
                         <img
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.FaceUrl ||
+                        src="${comment.author?.uri ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
                         <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
                             <span style="font-weight: bold;">
                                 <span style="color: salmon;">#${
                                   comment.Floor
                                 }楼</span>&nbsp;&nbsp;
-                                <span>${comment.Author}</span>
+                                <span>${comment.author?.name}</span>
                             </span>
                             <span style="font-size: 15px;color: #666666;margin-top: 8px;">${
-                              comment.Body
+                              comment.content
                             }</span>
                             <span style="font-size: 15px;color: #999999;margin-top: 8px;">${StringUtils.formatDate(
-                              comment.DateAdded,
+                              moment(comment.published).format('YYYY-MM-DD HH:mm'),
                             )}</span>
                             <div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>
                         </div>
@@ -458,7 +497,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={loadDataResult}
+          loadDataResult={getDetailResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <View style={{flex: 1, overflow: 'hidden'}}>
@@ -479,7 +518,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={item.CommentCount}
+              commentCount={item.comments}
               onClickCommentList={() => {
                 NavigationHelper.push('BlogCommentList', {
                   pageIndex: 1,

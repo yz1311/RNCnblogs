@@ -4,9 +4,7 @@ import {connect} from 'react-redux';
 import Styles from '../../common/styles';
 import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
-import LatestNewsList from './latest_news_list';
-import HotWeekNewsList from './hotWeek_news_list';
-import RecommendedNewsList from './recommended_news_list';
+import BaseNewsList from './base_news_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 
 interface IProps {
@@ -17,6 +15,12 @@ interface IProps {
 
 interface IState {
   tabNames: Array<string>;
+}
+
+export enum NewsTypes {
+  最新,
+  推荐,
+  热门
 }
 
 @(connect(
@@ -71,17 +75,20 @@ export default class news_index extends Component<IProps, IState> {
           scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
-          <LatestNewsList
+          <BaseNewsList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            newsType={NewsTypes.最新}
           />
-          <RecommendedNewsList
+          <BaseNewsList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            newsType={NewsTypes.推荐}
           />
-          <HotWeekNewsList
+          <BaseNewsList
             navigation={this.props.navigation}
             tabIndex={this.props.tabIndex}
+            newsType={NewsTypes.热门}
           />
         </ScrollableTabView>
       </View>

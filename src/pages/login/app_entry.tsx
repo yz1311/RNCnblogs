@@ -11,6 +11,7 @@ import * as actionTypes from '../../actions/actionTypes';
 import {getToken} from '../../actions/login/login_index_actions';
 import ThemeUtils from '../../utils/themeUtils';
 import {ReduxState} from '../../reducers';
+import CookieManager from 'react-native-cookie-store';
 
 interface IProps {
   dispatch: any;
@@ -27,7 +28,23 @@ export default class app_entry extends Component<IProps, {}> {
   };
 
   async componentDidMount() {
-    NavigationHelper.navigate('Login', {});
+    let res = await gStorage.load('token');
+    if(res&&res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
+      gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+      gStore.dispatch({
+        type: 'loginIndex/setUserLogin',
+        payload: {
+          cookieValue: res['.Cnblogs.AspNetCore.Cookies']
+        }
+      });
+      NavigationHelper.resetTo('YZTabBarView');
+      gStore.dispatch({
+        type: 'loginIndex/getUserInfo',
+        payload: {}
+      });
+      return ;
+    }
+    NavigationHelper.push('Login');
     // ThemeUtils.reloadTheme();
     // const loginInfo = await gStorage.load('loginInfo');
     // //已登录

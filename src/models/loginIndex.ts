@@ -2,12 +2,15 @@
 import {DrawerActions} from "react-navigation";
 import ToastUtils from "../utils/toastUtils";
 
-import {put} from "redux-saga/effects";
+import {put, select, spawn} from "redux-saga/effects";
 import {Action} from "redux-actions";
 import _buffer from 'buffer';
 import {Api} from "../api";
-import {userInfoModel, userLoginRequest} from "../api/login";
+import {userInfoModel} from "../api/login";
 import Model from 'dva-core';
+import CookieManager from 'react-native-cookie-store';
+import state from "@react-native-community/netinfo/lib/typescript/src/internal/state";
+import {ReduxState} from "./index";
 
 export interface IState {
     isLogin: boolean;
@@ -16,7 +19,8 @@ export interface IState {
     expiresIn: number;
     tokenType: string;
     refreshToken: string;
-    userInfo: any;
+    userInfo: Partial<userInfoModel>;
+    cookieValue: string
 }
 
 const initialState:IState = {
@@ -27,6 +31,7 @@ const initialState:IState = {
     tokenType: '',
     refreshToken: '',
     userInfo: {},
+    cookieValue: ''
 };
 
 export default {
@@ -37,19 +42,19 @@ export default {
             const {type, payload} = action;
             if (!action.error) {
                 state.isLogin = true;
-                state.token = payload.result.access_token;
-                state.expiresIn = payload.result.expires_in;
-                state.tokenType = payload.result.token_type;
-                state.refreshToken = payload.result.refresh_token;
-                gUserData.token = state.token;
+                // state.token = payload.result.access_token;
+                // state.expiresIn = payload.result.expires_in;
+                // state.tokenType = payload.result.token_type;
+                // state.refreshToken = payload.result.refresh_token;
+                state.cookieValue = payload.cookieValue;
             }
         },
         setLogout: (state:IState, action) => {
             state = initialState;
         },
         setUserInfo: (state:IState, action) => {
-            const {account} = action.payload;
-            state.userInfo = account;
+            const {userInfo} = action.payload;
+            state.userInfo = userInfo;
         },
     },
     effects: {
@@ -57,7 +62,7 @@ export default {
             ToastUtils.showLoading();
             try {
                 let response = yield Api.login.userLogin(action.payload);
-                const parData:userLoginRequest = action.payload;
+                const parData = action.payload;
                 gStorage.save(gStorageKeys.ServerPath,parData.request.serverPath);
                 yield effects.put({
                     type: 'setUserLogin',
@@ -79,30 +84,96 @@ export default {
             }
         },
         * getUserInfo(action, effects) {
+            console.log('getUserInfo ----------')
+            let userInfo:Partial<userInfoModel> = {};
+            //首先获取userId
             try {
-                let response = yield Api.login.getUserInfo(action.payload);
+                let response = yield Api.login.getUserAlias({
+                    request: {}
+                });
+                let userId = response.data;
+                userInfo.id = userId as any;
+                //继续获取用户详情
+                let userInfoResponse = yield Api.profile.getPersonInfo({
+                    request: {
+                        userAlias: userId
+                    }
+                });
+                userInfo = {
+                    ...userInfo,
+                    ...userInfoResponse.data
+                };
+                console.log(userInfo)
+                yield Promise.all([
+                    (
+                         async ()=>{
+                            let signature = '';
+                            try {
+                                //继续获取签名
+                                let signature = await Api.profile.getPersonSignature({
+                                    request: {
+                                        userAlias: userId
+                                    }
+                                });
+                                //@ts-ignore
+                                userInfo.signature = signature.data;
+                            } catch (e) {
+
+                            }
+                        }
+                    )(),
+                    (
+                        async ()=> {
+                            try {
+                                let aliasResponse = await Api.profile.getUserAliasByUserName({
+                                    request: {
+                                        userName: userInfo.nickName,
+                                        fuzzy: false,
+                                    }
+                                });
+                                if(aliasResponse.data.length>0) {
+                                    userInfo = {
+                                        ...userInfo,
+                                        ...userInfoResponse.data[0]
+                                    };
+                                }
+                            } catch (e) {
+
+                            }
+                        }
+                    )(),
+                ])
+
+                gStorage.save(gStorageKeys.CurrentUser,userInfo);
                 yield effects.put({
                     type: 'setUserInfo',
                     payload: {
-                        account: response.data.account
+                        userInfo: userInfo
                     }
                 });
-                gStorage.save(gStorageKeys.CurrentUser,response.data.account);
             } catch (e) {
 
             } finally {
+
             }
         },
         * logout(action, effects) {
+            NavigationHelper.resetTo('Login', {
+                deprecatedCookie: yield select((state:ReduxState)=>state.loginIndex.cookieValue)
+            });
             yield effects.put({
                 type: 'setLogout',
                 payload: {
 
                 }
             });
+            //清除浏览器缓存
+            CookieManager.clearAll()
+                .then((res) => {
+                    console.log('CookieManager.clearAll =>', res);
+                });
             yield gStorage.remove('token');
             ToastUtils.showToast('退出成功!');
-            NavigationHelper.resetTo('LoginIndex');
         },
     }
 } as Model;

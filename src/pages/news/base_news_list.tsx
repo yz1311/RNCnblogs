@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   DeviceEventEmitter,
   EmitterSubscription,
@@ -16,24 +16,34 @@ import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import NewsItem from './news_item';
+import {NewsTypes} from "./news_index";
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {BlogTypes} from "../home/home_index";
+import {Api} from "../../api";
 
-export interface IBaseNewsProps extends IBaseDataPageProps {
-  dataList?: Array<any>;
-  loadDataResult?: any;
-  noMore?: boolean;
+export interface IProps {
   tabIndex?: number;
+  navigation?: any;
+  newsType: NewsTypes;
 }
 
-interface IState {}
+interface IState {
+  dataList: Array<any>;
+  loadDataResult: ReducerResult;
+  noMore: boolean;
+}
 
-export default class base_news_list<
-  T extends IBaseNewsProps,
-  IState
-> extends YZBaseDataPage<T, IState> {
+export default class base_news_list extends PureComponent<IProps, IState> {
   protected pageIndex: number = 1;
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
   private _flatList: any;
+
+  readonly state:IState = {
+    dataList: [],
+    loadDataResult: createReducerResult(),
+    noMore: false
+  };
 
   constructor(props) {
     super(props);
@@ -55,10 +65,52 @@ export default class base_news_list<
     );
   }
 
+  componentDidMount(): void {
+    this.loadData();
+  }
+
   componentWillUnmount() {
     super.componentWillUnmount();
     this.scrollListener.remove();
     this.refreshListener.remove();
+  }
+
+  loadData = async ()=>{
+    let action:any = ()=>{
+      return ;
+    };
+    switch (this.props.newsType) {
+      case NewsTypes.最新:
+        action = ()=>{
+          return Api.news.getNewsList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: -1,
+              CategoryType: 'News',
+              PageIndex: this.pageIndex,
+            }
+          })
+        };
+        break;
+      case NewsTypes.热门:
+
+        break;
+      case NewsTypes.推荐:
+
+        break;
+    }
+    try {
+      let response = await action();
+      console.log(response)
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,15);
+      this.setState({
+        ...pagingResult
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    }
   }
 
   // pageIndex = 1;
@@ -68,18 +120,19 @@ export default class base_news_list<
   };
 
   render() {
+    console.log(this.state.dataList)
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={this.props.loadDataResult}
+          loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <YZFlatList
             ref={ref => (this._flatList = ref)}
             renderItem={this._renderItem}
-            data={this.props.dataList}
-            loadDataResult={this.props.loadDataResult}
-            noMore={this.props.noMore}
+            data={this.state.dataList}
+            loadDataResult={this.state.loadDataResult}
+            noMore={this.state.noMore}
             initialNumToRender={20}
             loadData={this.loadData}
             onPageIndexChange={pageIndex => {

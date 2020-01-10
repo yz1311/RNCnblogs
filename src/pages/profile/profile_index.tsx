@@ -11,14 +11,15 @@ import {connect} from 'react-redux';
 import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, NavigationBar} from '@yz1311/teaset';
 import {logout} from '../../actions/login/login_index_actions';
-import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {ReduxState} from "../../models";
+import {userInfoModel} from "../../api/login";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
-  userInfo?: any;
+  userInfo?: userInfoModel;
   logoutFn?: any;
   navigation: NavigationScreenProp<NavigationState>;
   tabIndex: number;
@@ -41,16 +42,10 @@ export default class profile_index extends Component<IProps, IState> {
     const {userInfo} = this.props;
     return (
       <View style={[Styles.container]}>
-        <YZHeader
-          title="我"
-          style={{
-            backgroundColor: gColors.themeColor,
-            marginTop: __ANDROID__ ? -gScreen.statusBarHeight : 0,
-          }}
-          statusBarBackgroundColor={gColors.themeColor}
-          // style={{marginTop:__ANDROID__?-gScreen.statusBarHeight:0}}
-          showGoBack={false}
-        />
+        <NavigationBar
+            style={{position:"relative"}}
+            title={'我'}
+            />
         <ScrollView style={{flex: 1}}>
           {this.props.isLogin ? (
             <TouchableOpacity
@@ -64,22 +59,18 @@ export default class profile_index extends Component<IProps, IState> {
                   paddingHorizontal: 13,
                   paddingVertical: 10,
                 }}>
-                {userInfo.Avatar ? (
                   <Image
-                    style={[styles.avator]}
-                    resizeMode={'contain'}
-                    source={{uri: userInfo.Avatar}}
+                      style={[styles.avator]}
+                      resizeMode={'contain'}
+                      source={{uri: userInfo.avatar || 'https://pic.cnblogs.com/avatar/simple_avatar.gif'}}
                   />
-                ) : (
-                  <View style={[styles.avator]} />
-                )}
                 <View style={{marginLeft: 10, flex: 1}}>
                   <Text
                     style={{
                       fontSize: gFont.size17,
                       color: gColors.color0,
                     }}>
-                    {userInfo.DisplayName}
+                    {userInfo.nickName}
                   </Text>
                   <Text
                     style={{
@@ -87,7 +78,7 @@ export default class profile_index extends Component<IProps, IState> {
                       color: gColors.color666,
                       marginTop: 6,
                     }}>
-                    {userInfo.Seniority}
+                    {userInfo.seniority}
                   </Text>
                 </View>
                 {/*<Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>*/}

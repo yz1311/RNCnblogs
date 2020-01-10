@@ -1,5 +1,5 @@
-import * as YZConstants from './common/constants';
-import * as YZStorage from './utils/globalStorage';
+import './common/constants';
+import './utils/globalStorage';
 import codePush from 'react-native-code-push';
 import React, {Component} from 'react';
 import {
@@ -16,8 +16,6 @@ import {
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
 import useImmer from 'dva-immer';
-import YZHeader from './components/YZHeader';
-import YZManagementProfile from './components/YZManagementProfile';
 import YZStateView from './components/YZStateCommonView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
@@ -29,9 +27,6 @@ import {ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Styles from './common/styles';
 import {createAppContainer} from 'react-navigation';
 import RequestUtils from "./utils/requestUtils";
-//防止ts编译掉
-let a = YZConstants;
-let b = YZStorage;
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -165,6 +160,7 @@ class Root extends Component {
     TouchableOpacity.defaultProps.activeOpacity = activeOpacity;
     // @ts-ignore
     TextInput.defaultProps = {
+      // @ts-ignore
       ...(TextInput.defaultProps || {}),
       allowFontScaling: false,
     };

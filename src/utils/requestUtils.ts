@@ -4,6 +4,7 @@ import axios, {AxiosProxyConfig, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {NavigationHelper} from "@yz1311/teaset";
 import ToastUtils from "./toastUtils";
 import {parseString} from 'react-native-xml2js';
+import {err} from "react-native-svg/lib/typescript/xml";
 
 
 //拓展config，添加自定义参数
@@ -14,7 +15,7 @@ export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
     showErrorToast?: boolean,
     //调用接口报错时，显示的toast信息(优先显示reject的error对象的message),默认为空
     errorMessage?: string,
-    resolveResult?: (str:string)=>any
+    resolveResult?: (str:any)=>any
 }
 
 export interface ReducerResult {
@@ -176,41 +177,55 @@ export default class RequestUtils {
             console.log(response.config.data)
             //如果是字符串，尝试转换成js对象
             if(typeof response.data == 'string'
-                && response.data.indexOf('<html')!=0
-                && response.data.indexOf('<div')!=0
-                && response.data.indexOf('<body')!=0)
-            await new Promise(resolve=>{
-                parseString(response.data, function (err, result) {
-                    if(!err) {
-                        if(result.feed && result.feed.entry && Array.isArray(result.feed.entry)) {
-                            result = result.feed.entry.map(x=>{
-                                //遍历所有属性，将数组拆分成属性
-                                x = resolveXmlObject(x);
-                                return x;
-                            })
+                && response.config.url.indexOf(gServerPath)>=0) {
+                await new Promise(resolve => {
+                    parseString(response.data, function (err, result) {
+                        if (!err) {
+                            if (result.feed && result.feed.entry && Array.isArray(result.feed.entry)) {
+                                result = result.feed.entry.map(x => {
+                                    //遍历所有属性，将数组拆分成属性
+                                    x = resolveXmlObject(x);
+                                    return x;
+                                })
+                            }
+                            response.data = result;
+                            console.log(result)
                         }
-                        response.data = result;
-                    }
-                    resolve(true);
-                });
-            })
-            console.log(response.data)
+                        resolve(true);
+                    });
+                })
+            } else {
+                console.log(response.data)
+            }
+            //如果是未登录
+            if(typeof response.data == 'string' && response.data.indexOf(`<a href="javascript:void(0);" onclick="return login();">登录`)>=0) {
+                let error = new Error("");
+                //@ts-ignore
+                error.response = response;
+                //@ts-ignore
+                error.response.status = 401;
+                //这里抛异常并不会进入到下面的
+                // throw error;
+                gStore.dispatch({
+                    type: 'loginIndex/logout'
+                })
+                return Promise.reject(error);
+            }
             //格式化数据
             if((response.config as AxiosRequestConfigPatch).resolveResult!=null) {
                 response.data =  (response.config as AxiosRequestConfigPatch).resolveResult(response.data);
+                console.log('解析后:',response.data);
             }
             //部分接口没有result字段，直接返回data
             if(response.data.status=='OK'||(response.data.status===undefined&&response.data!=undefined)) {
                 if(response.data.result===undefined&&response.data) {
-                    if(Array.isArray(response.data)){
+                    if(Array.isArray(response.data) || typeof response.data == 'string'){
                         return response;
                     }
                     return {
                         ...response,
                         data: {
                             ...response.data,
-                            ...response.data.responseInfo,
-                            result: response.data.responseInfos
                         }
                     };
                 } else {
@@ -218,7 +233,6 @@ export default class RequestUtils {
                         ...response,
                         data: {
                             ...response.data,
-                            ...response.data.responseInfo,
                         }
                     };
                 }
@@ -232,7 +246,15 @@ export default class RequestUtils {
                     ToastUtils.showToast( errorMessage ||
                         '调用接口失败');
                 }
-                return Promise.reject(new Error(errorMessage))
+                let error = new Error(errorMessage);
+                //@ts-ignore
+                error.response = response;
+                //如果是未登录
+                if(response.data.indexOf(`<a href="javascript:void(0);" onclick="return login();">登录`)>=0) {
+                    //@ts-ignore
+                    error.response.status = 401;
+                }
+                return Promise.reject(error)
             }
         },function (error) {
             if(error.response) {

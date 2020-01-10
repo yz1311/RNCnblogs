@@ -1,17 +1,27 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from "../utils/requestUtils";
+import {blogCommentModel, blogModel, getBlogCommentListRequest, getBlogDetailRequest, resolveBlogHtml} from "./blog";
 
-export const getNewsList = data => {
-  const URL = `${gServerPath}/NewsItems?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取新闻列表失败!',
-    actionType: types.NEWS_GET_LIST,
+export type newsModel = {
+
+} & blogModel;
+
+export type newsCommentModel = {
+
+} & blogCommentModel;
+
+export type getNewsListRequest = RequestModel<{
+  CategoryType: string
+  ParentCategoryId: number
+  CategoryId: number
+  PageIndex: number
+}>;
+
+export const getNewsList = (data: getNewsListRequest) => {
+  const URL = `https://www.cnblogs.com/AggSite/AggSiteNewsList`;
+  return RequestUtils.post<Array<newsModel>>(URL,data.request, {
+    resolveResult: resolveBlogHtml
   });
 };
 
@@ -43,16 +53,18 @@ export const getRecommendedNewsList = data => {
   });
 };
 
-export const getNewsDetail = data => {
-  const URL = `${gServerPath}/newsitems/${data.request.id}/body`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取新闻详情失败!',
-    actionType: types.NEWS_GET_DETAIL,
-  });
+export const getNewsDetail = (data: getBlogDetailRequest) => {
+  const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.id}`;
+  return RequestUtils.get<{NewsBody:{
+      Title: string,
+      SourceName: string,
+      SubmitDate: string,
+      Content: string,
+      ImageUrl: string,
+      PrevNews: string,
+      NextNews: string,
+      CommentCount: string,
+    }}>(URL);
 };
 
 export const commentNews = data => {
@@ -67,17 +79,21 @@ export const commentNews = data => {
   });
 };
 
-export const getNewsCommentList = data => {
-  const URL = `${gServerPath}/news/${data.request.newsId}/comments?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取新闻评论列表失败!',
-    actionType: types.NEWS_GET_COMMENT_LIST,
+
+export const getNewsCommentList = (data: RequestModel<{
+  postId: number,
+  pageIndex: number,
+  pageSize: number,
+}>) => {
+  const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
+  return RequestUtils.get<Array<blogCommentModel>>(URL, {
+    resolveResult: (result)=>{
+      //要重新计算楼层，返回的数据的Floor都只是本页的序号
+      result = (result || []).map((x, xIndex) => ({
+        ...x,
+        Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
+      return result;
+    }
   });
 };
 

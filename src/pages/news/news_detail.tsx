@@ -42,28 +42,36 @@ import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
+import {Api} from "../../api";
+import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {newsCommentModel, newsModel} from "../../api/news";
+import {blogCommentModel} from "../../api/blog";
 
-export interface IProps extends IBaseDataPageProps {
-  data?: any;
-  loadDataResult?: any;
-  commentList?: any;
-  commentList_noMore?: any;
-  getCommentListResult?: any;
-  item?: any;
+export interface IProps {
+  item?: newsModel;
   clearBlogIsFavFn?: any;
   commentNewsFn?: any;
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
+  navigation: any
+}
+
+interface IState {
+  data: any;
+  loadDataResult: ReducerResult,
+  commentList: Array<newsCommentModel>;
+  commentList_noMore: boolean;
+  getCommentListResult: ReducerResult;
+}
+
+
+interface IState {
+
 }
 
 @(connect(
   (state: ReduxState) => ({
-    data: state.newsIndex.newsDetail,
-    item: state.newsIndex.selectedNews,
-    loadDataResult: state.newsIndex.getNewsDetailResult,
-    commentList: state.newsIndex.newsCommentList,
-    commentList_noMore: state.newsIndex.newsCommentList_noMore,
-    getCommentListResult: state.newsIndex.getNewsCommentListResult,
+
   }),
   dispatch => ({
     dispatch,
@@ -78,7 +86,7 @@ export interface IProps extends IBaseDataPageProps {
 ) as any)
 //@ts-ignore
 @YZBackHandler
-export default class news_detail extends YZBaseDataPage<IProps, any> {
+export default class news_detail extends PureComponent<IProps, IState> {
   scrollPosition = 0;
   static propTypes = {
     item: PropTypes.object,
@@ -103,12 +111,16 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
   constructor(props) {
     super(props);
     this.state = {
-      comment: '',
+      data: {},
+      loadDataResult: createReducerResult(),
+      commentList: [],
+      commentList_noMore: false,
+      getCommentListResult: createReducerResult()
     };
   }
 
   componentDidMount() {
-    super.componentDidMount();
+    this.loadData();
     this.props.navigation.setParams({
       headerRight: (
         <TouchableOpacity
@@ -125,18 +137,17 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     //清空isFav属性
-    this.props.clearBlogIsFavFn();
-    this.props.clearNewsCommentListFn();
+    // this.props.clearBlogIsFavFn();
+    // this.props.clearNewsCommentListFn();
     //设置滚动位置
-    const {item} = this.props;
-    if (this.scrollPosition > 0) {
-      this.props.setNewsScrollPositionFn({
-        id: item.Id,
-        value: this.scrollPosition,
-      });
-    }
+    // const {item} = this.props;
+    // if (this.scrollPosition > 0) {
+    //   this.props.setNewsScrollPositionFn({
+    //     id: item.Id,
+    //     value: this.scrollPosition,
+    //   });
+    // }
   }
 
   _onBack = () => {
@@ -179,7 +190,7 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.copyText(this.props.item.Url);
+              CommonUtils.copyText(this.props.item.link);
             }}
           />
           <ListRow
@@ -189,7 +200,7 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.openUrl(this.props.item.Url);
+              CommonUtils.openUrl(this.props.item.link);
             }}
           />
           <ListRow
@@ -200,7 +211,7 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
             onPress={() => {
               Overlay.hide(this.overlayKey);
               this.overlayKey = null;
-              CommonUtils.share('', this.props.item.Url);
+              CommonUtils.share('', this.props.item.link);
             }}
           />
         </Overlay.PopoverView>
@@ -209,17 +220,54 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
     });
   };
 
-  getParams = () => {
-    const {item} = this.props;
-    const params = {
-      request: {
-        id: item.Id,
-      },
-      url: item.Url,
-      item: item,
-    };
-    return params;
-  };
+  loadData = async ()=>{
+    Promise.all([
+      //新闻详情
+      (async ()=>{
+        try {
+          let response = await Api.news.getNewsDetail({
+            request: {
+              id: this.props.item.id+''
+            }
+          });
+          this.setState({
+            data: {
+              body: response.data.NewsBody.Content
+            },
+            loadDataResult: dataToReducerResult(response.data.NewsBody.Content)
+          });
+        } catch (e) {
+          this.setState({
+            loadDataResult: dataToReducerResult(e)
+          });
+        } finally {
+
+        }
+      })(),
+      //部分评论(第一页)
+      (async ()=>{
+        try {
+          let response = await Api.news.getNewsCommentList({
+            request: {
+              pageIndex: 1,
+              pageSize: 10,
+              postId: parseInt(this.props.item.id)
+            }
+          });
+          this.setState({
+            commentList: response.data,
+            getCommentListResult: dataToReducerResult(response.data)
+          });
+        } catch (e) {
+          this.setState({
+            getCommentListResult: dataToReducerResult(e)
+          });
+        } finally {
+
+        }
+      })()
+    ])
+  }
 
   _onMessage = event => {
     console.log(event.nativeEvent.data);
@@ -227,12 +275,13 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
     try {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
-    const {item, data} = this.props;
+    const {item} = this.props;
+    const {data} = this.state;
     switch (postedMessage.type) {
       case 'loadMore':
         this.props.navigation.navigate('NewsCommentList', {
           pageIndex: 1,
-          // item: item
+          item: item
         });
         break;
       case 'img_click':
@@ -260,9 +309,9 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
       case 'scroll_position':
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.navigation.state.params.title;
-        if (curTitle !== (postedMessage.value >= 50 ? item.Title : '新闻')) {
+        if (curTitle !== (postedMessage.value >= 50 ? item.title : '新闻')) {
           this.props.navigation.setParams({
-            title: postedMessage.value >= 50 ? item.Title : '新闻',
+            title: postedMessage.value >= 50 ? item.title : '新闻',
           });
         }
         break;
@@ -274,7 +323,7 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
     commentNewsFn({
       request: {
         ParentId: 1,
-        newsId: item.Id,
+        newsId: item.id,
         Content: text,
       },
       successAction: () => {
@@ -286,7 +335,8 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
   };
 
   render() {
-    const {item, data, commentList} = this.props;
+    const {item} = this.props;
+    const {data, commentList} = this.state;
     //截取前10条记录进行显示
     let visibleCommentList = commentList.slice(0, 10);
     let showMoreButton = visibleCommentList.length === 10;
@@ -302,20 +352,20 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
                         <img 
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.FaceUrl ||
+                        src="${comment.author?.uri ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
                         <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
                             <span style="font-weight: bold;">
                                 <span style="color: salmon;">#${
                                   comment.Floor
                                 }楼</span>&nbsp;&nbsp;
-                                <span>${comment.UserName}</span>
+                                <span>${comment.author?.name}</span>
                             </span>
                             <span style="font-size: 15px;color: #666666;margin-top: 8px;">${
-                              comment.CommentContent
+                              comment.content
                             }</span>
                             <span style="font-size: 15px;color: #999999;margin-top: 8px;">${StringUtils.formatDate(
-                              comment.DateAdded,
+                              moment(comment.published).format('YYYY-MM-DD HH:mm'),
                             )}</span>
                             <div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>
                         </div>
@@ -396,10 +446,10 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
                 </script>
                 </head>
                 <body style="padding: 0px;margin: 8px;"><div><div><h3>${
-                  item.Title
+                  item.title
                 }</h3>
                 <span style="color:#666666;font-size: small">发布于&nbsp;${
-                  item.postDateDesc
+                  moment(item.published).format('YYYY-MM-DD HH:mm')
                 }</span>
                 </div>${data.body}</div>
                 <div style="background-color: #f2f2f2;padding: 10px;color: #666;font-size: medium;margin: 10px -8px 10px -8px;">评论列表</div>
@@ -409,7 +459,7 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={this.props.loadDataResult}
+          loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           <View style={{flex: 1, overflow: 'hidden'}}>
@@ -418,7 +468,6 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
               source={{html: html}}
               automaticallyAdjustContentInsets
               scalesPageToFit
-              useWebKit={true}
               // injectedJavaScript={injectedJsCode}
               onMessage={this._onMessage}
               style={{flex: 1}}
@@ -431,11 +480,11 @@ export default class news_detail extends YZBaseDataPage<IProps, any> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={this.props.item.CommentCount}
+              commentCount={this.props.item.comments}
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {
                   pageIndex: 1,
-                  // item: item
+                  item: item
                 });
               }}
             />

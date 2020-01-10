@@ -1,5 +1,21 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from "../utils/requestUtils";
+
+
+export type userInfoModel = {
+  id: string,
+  seniority: string,
+  follows: string,
+  stars: string,
+  nickName: string,
+  signature: string,
+  updated: string,
+  link: string,
+  blogapp: string,
+  avatar: string,
+  postcount: string,
+};
 
 export const getToken = data => {
   data.request = {
@@ -63,6 +79,15 @@ export const refreshToken = data => {
     actionType: types.LOGIN_USERLOGIN,
   });
 };
+
+export const getUserAlias = (data:RequestModel<{}>)=>{
+  return RequestUtils.get<string>('https://home.cnblogs.com/user/CurrentUserInfo',{
+    resolveResult: (result)=>{
+      let userId = (result.match(/\/u\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/\/u\//,'');
+      return userId;
+    }
+  });
+}
 
 export const getUserInfo = data => {
   const URL = `${gServerPath}/users`;
