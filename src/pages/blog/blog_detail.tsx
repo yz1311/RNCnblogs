@@ -258,6 +258,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
         }
       })(),
+      //部分评论(第一页)
       (async ()=>{
         try {
           let response = await Api.blog.getBlogCommentList({

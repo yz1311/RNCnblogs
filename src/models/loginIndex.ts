@@ -6,7 +6,7 @@ import {put} from "redux-saga/effects";
 import {Action} from "redux-actions";
 import _buffer from 'buffer';
 import {Api} from "../api";
-import {userInfoModel, userLoginRequest} from "../api/login";
+import {userInfoModel} from "../api/login";
 import Model from 'dva-core';
 
 export interface IState {
@@ -16,7 +16,7 @@ export interface IState {
     expiresIn: number;
     tokenType: string;
     refreshToken: string;
-    userInfo: any;
+    userInfo: Partial<userInfoModel>;
 }
 
 const initialState:IState = {
@@ -48,8 +48,8 @@ export default {
             state = initialState;
         },
         setUserInfo: (state:IState, action) => {
-            const {account} = action.payload;
-            state.userInfo = account;
+            const {userInfo} = action.payload;
+            state.userInfo = userInfo;
         },
     },
     effects: {
@@ -57,7 +57,7 @@ export default {
             ToastUtils.showLoading();
             try {
                 let response = yield Api.login.userLogin(action.payload);
-                const parData:userLoginRequest = action.payload;
+                const parData = action.payload;
                 gStorage.save(gStorageKeys.ServerPath,parData.request.serverPath);
                 yield effects.put({
                     type: 'setUserLogin',
@@ -79,18 +79,48 @@ export default {
             }
         },
         * getUserInfo(action, effects) {
+            console.log('getUserInfo ----------')
+            let userInfo:Partial<userInfoModel> = {};
+            //首先获取userId
             try {
-                let response = yield Api.login.getUserInfo(action.payload);
+                let response = yield Api.login.getUserAlias({
+                    request: {}
+                });
+                let userId = response.data;
+                userInfo.id = userId as any;
+                //继续获取用户详情
+                let userInfoResponse = yield Api.profile.getPersonInfo({
+                    request: {
+                        userAlias: userId
+                    }
+                });
+                userInfo = {
+                    ...userInfo,
+                    ...userInfoResponse.data
+                };
+                let signature = '';
+                try {
+                    //继续获取签名
+                    let signature = yield Api.profile.getPersonSignature({
+                        request: {
+                            userAlias: userId
+                        }
+                    });
+                    userInfo.signature = signature.data;
+                } catch (e) {
+
+                }
+                gStorage.save(gStorageKeys.CurrentUser,userInfo);
                 yield effects.put({
                     type: 'setUserInfo',
                     payload: {
-                        account: response.data.account
+                        userInfo: userInfo
                     }
                 });
-                gStorage.save(gStorageKeys.CurrentUser,response.data.account);
             } catch (e) {
 
             } finally {
+
             }
         },
         * logout(action, effects) {

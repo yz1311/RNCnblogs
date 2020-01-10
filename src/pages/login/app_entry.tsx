@@ -11,6 +11,7 @@ import * as actionTypes from '../../actions/actionTypes';
 import {getToken} from '../../actions/login/login_index_actions';
 import ThemeUtils from '../../utils/themeUtils';
 import {ReduxState} from '../../reducers';
+import CookieManager from 'react-native-cookie-store';
 
 interface IProps {
   dispatch: any;
@@ -27,7 +28,24 @@ export default class app_entry extends Component<IProps, {}> {
   };
 
   async componentDidMount() {
-    NavigationHelper.navigate('Login', {});
+    try {
+      //后一个参数表示使用UIWebkit，否则ios获取的为空
+      let res = await CookieManager.get('https://account.cnblogs.com/signin', true);
+      if(res) {
+        gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+        NavigationHelper.resetTo('YZTabBarView');
+        gStore.dispatch({
+          type: 'loginIndex/getUserInfo',
+          payload: {
+
+          }
+        });
+      }
+      return ;
+    } catch (e) {
+
+    }
+    NavigationHelper.push('Login');
     // ThemeUtils.reloadTheme();
     // const loginInfo = await gStorage.load('loginInfo');
     // //已登录

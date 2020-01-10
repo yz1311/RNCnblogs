@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   StyleSheet,
   View,
@@ -28,21 +28,31 @@ import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import CommentItem from './comment_item';
-import {ReduxState} from '../../reducers';
-import {blogCommentModel, getBlogCommentListRequest} from '../../api/blog';
-import {createReducerResult} from "../../utils/requestUtils";
+import {blogCommentModel, blogModel, getBlogCommentListRequest} from '../../api/blog';
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {APP_CHANGE_NET_INFO} from "../../actions/actionTypes";
+import {Api} from "../../api";
+import {userInfoModel} from "../../api/login";
+import {ReduxState} from "../../models";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
-  userInfo?: any;
-  item: any;
+  userInfo?: userInfoModel;
+  item: blogModel;
   commentBlogFn?: any;
+}
+
+interface IState {
+  headerTitle: string,
+  headerSubmit: string,
+  dataList: Array<blogCommentModel>,
+  noMore: boolean,
+  loadDataResult: ReducerResult
 }
 
 @(connect(
   (state: ReduxState) => ({
-    blogCommentLists: state.blogIndex.blogCommentLists,
-    userInfo: state.loginIndex.userInfo,
+    userInfo: state.loginIndex.userInfo
   }),
   dispatch => ({
     dispatch,
@@ -51,7 +61,7 @@ interface IProps extends IBaseDataPageProps {
     commentBlogFn: data => dispatch(commentBlog(data)),
   }),
 ) as any)
-export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
+export default class blog_comment_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
 
   static navigationOptions = ({navigation}) => {
@@ -70,6 +80,9 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
     this.state = {
       headerTitle: '',
       headerSubmit: '',
+      dataList: [],
+      noMore: false,
+      loadDataResult: createReducerResult()
     };
   }
 
@@ -80,10 +93,7 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
   }
 
   componentDidMount() {
-    //说明前面已经加载过一次了
-    if (this.pageIndex === 1) {
-      super.componentDidMount();
-    }
+    this.loadData();
     this.setTitle();
   }
 
@@ -91,25 +101,36 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
     //退出不用清空列表
   }
 
-  setTitle = (nextProps = null) => {
+  setTitle = (nextProps:IProps = null) => {
     nextProps = nextProps || this.props;
     nextProps.navigation.setParams({
-      title: nextProps.item.CommentCount,
+      title: nextProps.item.comments,
     });
   };
 
-  getParams = () => {
+  loadData = async ()=>{
     const {item} = this.props;
-    const params: getBlogCommentListRequest = {
-      request: {
-        blogApp: item.BlogApp,
-        postId: item.Id,
-        pageIndex: this.pageIndex,
-        pageSize: 10,
-      },
-    };
-    return params;
-  };
+    try {
+      const params: getBlogCommentListRequest = {
+        request: {
+          postId: parseInt(item.id),
+          pageIndex: this.pageIndex,
+          pageSize: 10,
+        },
+      };
+      let response = await Api.blog.getBlogCommentList(params);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      this.setState({
+          ...pagingResult
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
 
   renderNode = (node, index, siblings, parent, defaultRenderer) => {
     if (node.name === 'fieldset') {
@@ -159,15 +180,15 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
     return (
       <CommentItem
         item={item}
-        iconName={item.FaceUrl}
+        iconName={item.author?.uri}
         authorUserId={this.props.item.UserId}
         userId={item.UserId}
-        userName={item.Author}
+        userName={item.author?.name}
         floor={item.Floor}
-        content={item.Body}
-        postDate={item.DateAdded}
+        content={item.content}
+        postDate={item.published}
         canModify={false}
-        canDelete={item.UserId === userInfo.SpaceUserID}
+        canDelete={item.UserId === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -191,7 +212,7 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
               {
                 text: '继续',
                 onPress: () => {
-                  CommonUtils.openUrl(this.props.item.Url);
+                  CommonUtils.openUrl(this.props.item.link);
                 },
               },
             ],
@@ -205,8 +226,8 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
     const {commentBlogFn, item} = this.props;
     commentBlogFn({
       request: {
-        blogApp: item.BlogApp,
-        postId: item.Id,
+        blogApp: item.blogapp,
+        postId: item.id,
         comment: this.state.headerSubmit + '\n\n' + text,
       },
       successAction: () => {
@@ -223,15 +244,8 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
   };
 
   render() {
-    const {item, blogCommentLists} = this.props;
-    let noMore = false;
-    let loadDataResult = createReducerResult();
-    let dataList = [];
-    if (blogCommentLists[item.Id + '']) {
-      noMore = blogCommentLists[item.Id + ''].noMore;
-      loadDataResult = blogCommentLists[item.Id + ''].loadDataResult;
-      dataList = blogCommentLists[item.Id + ''].list;
-    }
+    const {item} = this.props;
+    const {dataList, loadDataResult, noMore} = this.state;
     return (
       <View style={[Styles.container]}>
         <YZStateView
@@ -269,7 +283,7 @@ export default class blog_comment_list extends YZBaseDataPage<IProps, any> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={this.props.item.CommentCount}
+              commentCount={this.props.item.comments}
               showCommentButton={false}
               showShareButton={false}
               showFavButton={false}

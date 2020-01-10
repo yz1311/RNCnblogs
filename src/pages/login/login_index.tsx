@@ -51,6 +51,7 @@ export default class login_index extends Component<IProps, IState> {
       let res = await CookieManager.get('https://account.cnblogs.com/signin', true);
       if(res) {
         gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+        console.log(gUserData.token)
         NavigationHelper.resetTo('YZTabBarView');
         this.hasInvoked = true;
       }

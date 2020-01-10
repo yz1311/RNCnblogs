@@ -15,6 +15,6 @@ if (Platform.OS !== 'android') {
 }
 
 YellowBox.ignoreWarnings([]);
-console.disableYellowBox = false;
+console.disableYellowBox = true;
 
 AppRegistry.registerComponent(appName, () => Root);
