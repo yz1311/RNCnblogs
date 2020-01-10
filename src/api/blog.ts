@@ -143,8 +143,8 @@ const resolveBlogHtml = (result)=>{
       uri: match.match(((/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+(?=\")/,''),
     };
     item.published = match.match(((/发布于 [\s\S]+?(?=\s{3,})/))||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
-    item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=)/))||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.views = parseInt(((match.match(/阅读\([\s\S]+?(?=)/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt(((match.match(/阅读\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
   }
   return items;

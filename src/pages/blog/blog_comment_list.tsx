@@ -181,7 +181,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
       <CommentItem
         item={item}
         iconName={item.author?.uri}
-        authorUserId={this.props.item.UserId}
+        authorUserId={this.props.item.author?.name}
         userId={item.UserId}
         userName={item.author?.name}
         floor={item.Floor}
