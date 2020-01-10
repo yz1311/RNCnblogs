@@ -216,7 +216,9 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
         }
       }
       this.props.setSelectedDetailFn(selectedItem);
-      this.props.navigation.navigate('NewsDetail', {});
+      this.props.navigation.navigate('NewsDetail', {
+        item: selectedItem
+      });
     } else {
       let id = '0',
         blogApp = '';

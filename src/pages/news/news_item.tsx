@@ -40,7 +40,9 @@ export default class news_item extends PureComponent<IProps, IState> {
           activeOpacity={activeOpacity}
           onPress={() => {
             this.props.setSelectedDetailFn(item);
-            this.props.navigation.navigate('NewsDetail', {});
+            this.props.navigation.navigate('NewsDetail', {
+                item: item
+            });
           }}>
           <View
             style={{
