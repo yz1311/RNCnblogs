@@ -1,17 +1,23 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from "../utils/requestUtils";
+import {blogModel, resolveBlogHtml} from "./blog";
 
-export const getNewsList = data => {
-  const URL = `${gServerPath}/NewsItems?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取新闻列表失败!',
-    actionType: types.NEWS_GET_LIST,
+export type newsModel = {
+
+} & blogModel;
+
+export type getNewsListRequest = RequestModel<{
+  CategoryType: string
+  ParentCategoryId: number
+  CategoryId: number
+  PageIndex: number
+}>;
+
+export const getNewsList = (data: getNewsListRequest) => {
+  const URL = `https://www.cnblogs.com/AggSite/AggSiteNewsList`;
+  return RequestUtils.post<Array<newsModel>>(URL,data.request, {
+    resolveResult: resolveBlogHtml
   });
 };
 

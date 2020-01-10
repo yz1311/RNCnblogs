@@ -92,11 +92,15 @@ class base_blog_list extends PureComponent<IProps,IState> {
         };
         break;
       case BlogTypes.关注:
-        params = {
-          request: {
-            pageIndex: this.pageIndex,
-            pageSize: 10,
-          },
+        action = ()=>{
+          return Api.blog.getFollowingBlogList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: -4,
+              CategoryType: 'MyFollowing',
+              PageIndex: this.pageIndex,
+            }
+          })
         };
         break;
       case BlogTypes.知识库:

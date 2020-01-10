@@ -80,12 +80,11 @@ export const getHomeBlogList = (data: RequestModel<{pageIndex:number, pageSize: 
 };
 
 export const getFollowingBlogList = (data: getBlogListRequest) => {
-  data.request.ParentCategoryId = 0;
-  data.request.CategoryId = 108697;
-  data.request.CategoryType = '"HomeCandidate"';
-  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  const URL = `https://www.cnblogs.com/aggsite/postlistbygroup`;
   return RequestUtils.post(URL,data.request, {
-    resolveResult: resolveBlogHtml
+    resolveResult: (result)=>{
+      return resolveBlogHtml(result.postList);
+    }
   });
 };
 
@@ -124,7 +123,7 @@ export const commentBlog = data => {
 };
 
 
-const resolveBlogHtml = (result)=>{
+export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
   let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g);
   for (let match of matches) {

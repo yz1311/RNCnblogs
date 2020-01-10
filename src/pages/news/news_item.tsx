@@ -10,25 +10,17 @@ import PropTypes from 'prop-types';
 import {setSelectedDetail} from '../../actions/news/news_index_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {newsModel} from "../../api/news";
+import moment from "moment";
 
 interface IProps {
   navigation: NavigationScreenProp<NavigationState>;
   setSelectedDetailFn?: any;
-  item: news;
+  item: newsModel;
 }
 
 interface IState {
   tabNames: Array<string>;
-}
-
-export interface news {
-  Title: string;
-  TopicIcon: string | undefined;
-  Summary: string | undefined;
-  DiggCount: number | undefined;
-  CommentCount: number | undefined;
-  ViewCount: number | undefined;
-  postDateDesc: string | undefined;
 }
 
 @(connect(
@@ -66,14 +58,14 @@ export default class news_item extends PureComponent<IProps, IState> {
                 },
                 Styles.text4Pie,
               ]}>
-              {item.Title}
+              {item.title}
             </Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              {item.TopicIcon ? (
+              {item.author?.avatar ? (
                 <Image
                   style={[styles.icon]}
                   resizeMode="contain"
-                  source={{uri: item.TopicIcon}}
+                  source={{uri: item.author?.avatar}}
                 />
               ) : (
                 <View style={[styles.icon]} />
@@ -90,7 +82,7 @@ export default class news_item extends PureComponent<IProps, IState> {
                   Styles.text4Pie,
                 ]}
                 numberOfLines={4}>
-                {item.Summary}
+                {item.summary}
               </Text>
             </View>
             <View
@@ -100,17 +92,17 @@ export default class news_item extends PureComponent<IProps, IState> {
                 marginTop: 5,
               }}>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.DiggCount + ' 推荐 · '}
+                {item.diggs + ' 推荐 · '}
               </Text>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.CommentCount + ' 评论 · '}
+                {item.comments + ' 评论 · '}
               </Text>
               <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.ViewCount + ' 阅读'}
+                {item.views + ' 阅读'}
               </Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {item.postDateDesc}
+                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
                 </Text>
               </View>
             </View>
