@@ -54,9 +54,9 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-    isFav: state.bookmarkIndex.isFav,
+    // isFav: state.bookmarkIndex.isFav,
     isLogin: state.loginIndex.isLogin,
-    getIsFavResult: state.bookmarkIndex.getIsFavResult,
+    // getIsFavResult: state.bookmarkIndex.getIsFavResult,
   }),
   dispatch => ({
     dispatch,
