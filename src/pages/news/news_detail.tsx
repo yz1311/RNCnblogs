@@ -281,7 +281,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
       case 'loadMore':
         this.props.navigation.navigate('NewsCommentList', {
           pageIndex: 1,
-          // item: item
+          item: item
         });
         break;
       case 'img_click':
@@ -484,7 +484,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {
                   pageIndex: 1,
-                  // item: item
+                  item: item
                 });
               }}
             />
