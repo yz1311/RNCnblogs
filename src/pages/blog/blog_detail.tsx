@@ -44,7 +44,7 @@ import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
-import {blogModel, getBlogDetailRequest} from '../../api/blog';
+import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog';
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 
@@ -78,7 +78,7 @@ export interface IProps {
 interface IState {
   blogDetails: string;
   getDetailResult: ReducerResult,
-  commentList?: Array<any>;
+  commentList?: Array<blogCommentModel>;
   commentList_noMore?: boolean;
   getCommentListResult?: ReducerResult;
 }
@@ -238,6 +238,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   loadData = ()=>{
     Promise.all([
+      //博客详情
       (async ()=>{
         try {
           let response = await Api.blog.getBlogDetail({
@@ -252,6 +253,27 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         } catch (e) {
           this.setState({
             getDetailResult: dataToReducerResult(e)
+          });
+        } finally {
+
+        }
+      })(),
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogCommentList({
+            request: {
+              pageIndex: 1,
+              pageSize: 10,
+              postId: parseInt(this.props.item.id)
+            }
+          });
+          this.setState({
+            commentList: response.data,
+            getCommentListResult: dataToReducerResult(response.data)
+          });
+        } catch (e) {
+          this.setState({
+            getCommentListResult: dataToReducerResult(e)
           });
         } finally {
 
@@ -348,20 +370,20 @@ export default class blog_detail extends PureComponent<IProps, IState> {
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
                         <img 
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.FaceUrl ||
+                        src="${comment.author?.uri ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
                         <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
                             <span style="font-weight: bold;">
                                 <span style="color: salmon;">#${
                                   comment.Floor
                                 }楼</span>&nbsp;&nbsp;
-                                <span>${comment.Author}</span>
+                                <span>${comment.author?.name}</span>
                             </span>
                             <span style="font-size: 15px;color: #666666;margin-top: 8px;">${
-                              comment.Body
+                              comment.content
                             }</span>
                             <span style="font-size: 15px;color: #999999;margin-top: 8px;">${StringUtils.formatDate(
-                              comment.DateAdded,
+                              moment(comment.published).format('YYYY-MM-DD HH:mm'),
                             )}</span>
                             <div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>
                         </div>

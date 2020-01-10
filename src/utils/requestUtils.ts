@@ -14,7 +14,7 @@ export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
     showErrorToast?: boolean,
     //调用接口报错时，显示的toast信息(优先显示reject的error对象的message),默认为空
     errorMessage?: string,
-    resolveResult?: (str:string)=>any
+    resolveResult?: (str:any)=>any
 }
 
 export interface ReducerResult {

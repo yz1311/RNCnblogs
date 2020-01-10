@@ -20,13 +20,16 @@ export type blogModel = {
 };
 
 export type blogCommentModel = {
-  Author: string;
-  AuthorUrl: string;
-  Body: string;
-  DateAdded: string;
-  FaceUrl: string;
+  author: {
+    name: string,
+    uri: string,
+  };
+  title: string;
+  published: string;
+  updated: string;
+  content: string;
   Floor: number;
-  Id: number;
+  id: number;
   //本地新增
   UserId: number | string;
 };
@@ -44,7 +47,7 @@ export type getBlogDetailRequest = RequestModel<{
 }>;
 
 export type getBlogCommentListRequest = RequestModel<{
-  blogApp: string;
+  blogApp?: string;
   postId: number;
   pageIndex: number;
   pageSize: number;
@@ -92,18 +95,15 @@ export const getBlogDetail = (data: getBlogDetailRequest) => {
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {
-  const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts/${
-    data.request.postId
-  }/comments?pageIndex=${data.request.pageIndex}&pageSize=${
-    data.request.pageSize
-  }`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取博客评论列表失败!',
-    actionType: types.BLOG_GET_BLOG_COMMENT_LIST,
+  const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
+  return RequestUtils.get(URL, {
+    resolveResult: (result)=>{
+      //要重新计算楼层，返回的数据的Floor都只是本页的序号
+      result = (result || []).map((x, xIndex) => ({
+        ...x,
+        Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
+      return result;
+    }
   });
 };
 
