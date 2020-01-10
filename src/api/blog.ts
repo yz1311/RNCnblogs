@@ -132,7 +132,9 @@ const resolveBlogHtml = (result)=>{
     //解析digg
     item.diggs = parseInt(((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/))||[])[0]?.replace(/[\s\S]+>/,''));
     item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
-    item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    //不能根据link来截取，部分link后面并不是id
+    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    item.id = ((match.match(/id=\"digg_count_\d+?(?=\")/))||[])[0]?.replace(/id=\"digg_count_/,'');
     item.title = match.match((/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.summary = (match.match((/post_item_summary\"[\s\S]+?(?=\<\/p)/))||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {

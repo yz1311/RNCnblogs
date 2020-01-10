@@ -154,16 +154,16 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   componentWillUnmount() {
     //清空isFav属性
-    this.props.clearBlogIsFavFn();
-    this.props.clearBlogCommentListFn();
+    // this.props.clearBlogIsFavFn();
+    // this.props.clearBlogCommentListFn();
     //设置滚动位置
-    const {item} = this.props;
-    if (this.scrollPosition > 0) {
-      this.props.setBlogScrollPositionFn({
-        id: item.id,
-        value: this.scrollPosition,
-      });
-    }
+    // const {item} = this.props;
+    // if (this.scrollPosition > 0) {
+    //   this.props.setBlogScrollPositionFn({
+    //     id: item.id,
+    //     value: this.scrollPosition,
+    //   });
+    // }
   }
 
   _onBack = () => {
