@@ -82,27 +82,48 @@ export default class base_news_list extends PureComponent<IProps, IState> {
     switch (this.props.newsType) {
       case NewsTypes.最新:
         action = ()=>{
-          return Api.news.getNewsList({
+          return Api.news.getOtherNewsList({
             request: {
               ParentCategoryId: 0,
               CategoryId: -1,
               CategoryType: 'News',
               PageIndex: this.pageIndex,
-            }
+            },
+            newsType: this.props.newsType
           })
         };
         break;
       case NewsTypes.热门:
-
+        action = ()=>{
+          return Api.news.getOtherNewsList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: -1,
+              CategoryType: 'News',
+              PageIndex: this.pageIndex,
+            },
+            newsType: this.props.newsType
+          })
+        };
         break;
       case NewsTypes.推荐:
-
+        action = ()=>{
+          return Api.news.getOtherNewsList({
+            request: {
+              ParentCategoryId: 0,
+              CategoryId: -1,
+              CategoryType: 'News',
+              PageIndex: this.pageIndex,
+            },
+            newsType: this.props.newsType
+          })
+        };
         break;
     }
     try {
       let response = await action();
       console.log(response)
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,15);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,30);
       this.setState({
         ...pagingResult
       });

@@ -2,6 +2,7 @@ import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from "../utils/requestUtils";
 import {blogCommentModel, blogModel, getBlogCommentListRequest, getBlogDetailRequest, resolveBlogHtml} from "./blog";
+import {NewsTypes} from '../pages/news/news_index';
 
 export type newsModel = {
 
@@ -16,12 +17,33 @@ export type getNewsListRequest = RequestModel<{
   ParentCategoryId: number
   CategoryId: number
   PageIndex: number
-}>;
+}> & {newsType: NewsTypes};
 
 export const getNewsList = (data: getNewsListRequest) => {
   const URL = `https://www.cnblogs.com/AggSite/AggSiteNewsList`;
   return RequestUtils.post<Array<newsModel>>(URL,data.request, {
     resolveResult: resolveBlogHtml
+  });
+};
+
+export const getOtherNewsList = (data: getNewsListRequest) => {
+  //页数是30页
+  let url = '';
+  switch (data.newsType) {
+    case NewsTypes.最新:
+      url = `https://news.cnblogs.com/n/page/${data.request.PageIndex}`;
+      break;
+    case NewsTypes.推荐:
+      url = `https://news.cnblogs.com/n/recommend?page=${data.request.PageIndex}`;
+      break;
+    case NewsTypes.热门:
+      //type: week today yesterday month
+      url = `https://news.cnblogs.com/n/digg?page=${data.request.PageIndex}`;
+      break;
+  }
+
+  return RequestUtils.get<Array<newsModel>>(url, {
+    resolveResult: resolveNewsHtml
   });
 };
 
@@ -121,3 +143,36 @@ export const modifyNewsComment = data => {
     actionType: types.NEWS_COMMENT_MODIFY,
   });
 };
+
+
+export const resolveNewsHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"news_block\"[\s\S]+?(?=end: content)/g);
+  for (let match of matches) {
+    let item:Partial<blogModel> = {};
+    //解析digg
+    item.diggs = parseInt(((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/))||[])[0]?.replace(/[\s\S]+>/,''));
+    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    //不能根据link来截取，部分link后面并不是id
+    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    item.id = ((match.match(/id=\"digg_num_\d+?(?=\")/))||[])[0]?.replace(/id=\"digg_num_/,'');
+    item.link = `https://news.cnblogs.com/n/${item.id}/`;
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.title = (match.match(/class=\"news_entry\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
+    //可能有图片，也可能没图片
+    item.summary = (match.match((/entry_summary\"[\s\S]+?(?=\<\/div)/))||[])[0]?.replace(/[\s\S]+>/,'').trim();
+    item.author = {
+      avatar: (match.match(/src=\"[\s\S]+?(?=\" class=\"topic_img)/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      uri: (match.match(/class=\"entry_footer\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"entry_footer\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+    };
+    if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
+      item.author.uri = 'https:'+item.author.uri;
+    }
+    item.published = match.match(((/发布于 [\s\S]+?(?=<\/span)/))||[])[0]?.replace(/[\s\S]+?>/,'');
+    item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt(((match.match(/class="view"[\s\S]+(?=人浏览)/))||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
+    items.push(item);
+  }
+  return items;
+}
