@@ -1,6 +1,6 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
-import RequestUtils from "../utils/requestUtils";
+import RequestUtils, {dataToReducerResult} from "../utils/requestUtils";
 
 export type blogModel = {
   id: string;
@@ -106,6 +106,42 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
   });
 };
 
+
+//获取文章的分类和标签
+export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:string}>)=>{
+  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/CategoriesTags.aspx?blogId=${data.request.blogId}&postId=${data.request.postId}`;
+  return RequestUtils.get<{category:string,
+    categoryUrl: string,
+    tags: [
+      {
+        name: string,
+        url: string
+      }
+    ]
+  }>(URL, {
+    resolveResult: (result)=>{
+      let target = {} as any;
+      let category = (result.match(/分类[\s\S]+href=\"[\s\S]+(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+      let categoryUrl = (result.match(/分类[\s\S]+href=\"[\s\S]+(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
+      let tags = [] as Array<{name: string, url:string}>;
+      let tagMatches = (result.match(/标签[\s\S]+/)||[])[0]?.match(/\<a href=[\s\S]+?(?=\<\/a\>)/g);
+      for (let match of (tagMatches||[])) {
+        console.log(match)
+        console.log(match.match(/href=\"[\s\S]+?\<\/"/))
+        tags.push({
+          name: match.replace(/[\s\S]+href=\"[\s\S]+?\>/,''),
+          url: (match.match(/href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/href=\"/,''),
+        })
+      }
+      return {
+        category,
+        categoryUrl,
+        tags
+      };
+    }
+  });
+}
+
 export const commentBlog = data => {
   const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts/${
     data.request.postId
@@ -134,6 +170,8 @@ export const resolveBlogHtml = (result)=>{
     //不能根据link来截取，部分link后面并不是id
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
     item.id = ((match.match(/id=\"digg_count_\d+?(?=\")/))||[])[0]?.replace(/id=\"digg_count_/,'');
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.blogapp = (match.match(/DiggPost\(([\s\S]+,){2}[\s\S]+?(?=,)/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
     item.title = match.match((/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.summary = (match.match((/post_item_summary\"[\s\S]+?(?=\<\/p)/))||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {

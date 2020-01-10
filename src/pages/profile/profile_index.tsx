@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, NavigationBar} from '@yz1311/teaset';
 import {logout} from '../../actions/login/login_index_actions';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from "../../models";
@@ -42,16 +42,10 @@ export default class profile_index extends Component<IProps, IState> {
     const {userInfo} = this.props;
     return (
       <View style={[Styles.container]}>
-        <YZHeader
-          title="我"
-          style={{
-            backgroundColor: gColors.themeColor,
-            marginTop: __ANDROID__ ? -gScreen.statusBarHeight : 0,
-          }}
-          statusBarBackgroundColor={gColors.themeColor}
-          // style={{marginTop:__ANDROID__?-gScreen.statusBarHeight:0}}
-          showGoBack={false}
-        />
+        <NavigationBar
+            style={{position:"relative"}}
+            title={'我'}
+            />
         <ScrollView style={{flex: 1}}>
           {this.props.isLogin ? (
             <TouchableOpacity

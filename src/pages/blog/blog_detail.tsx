@@ -279,6 +279,21 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         } finally {
 
         }
+      })(),
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogCategoryAndTags({
+            request: {
+              blogId: this.props.item.blogapp,
+              postId: this.props.item.id
+            }
+          });
+
+        } catch (e) {
+
+        } finally {
+
+        }
       })()
     ])
   }

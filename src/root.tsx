@@ -16,8 +16,6 @@ import {
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
 import useImmer from 'dva-immer';
-import YZHeader from './components/YZHeader';
-import YZManagementProfile from './components/YZManagementProfile';
 import YZStateView from './components/YZStateCommonView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
