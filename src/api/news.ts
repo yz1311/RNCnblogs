@@ -5,7 +5,10 @@ import {blogCommentModel, blogModel, getBlogCommentListRequest, getBlogDetailReq
 import {NewsTypes} from '../pages/news/news_index';
 
 export type newsModel = {
-
+  tag: {
+    name: string,
+    uri: string
+  }
 } & blogModel;
 
 export type newsCommentModel = {
@@ -149,7 +152,7 @@ export const resolveNewsHtml = (result)=>{
   let items:Array<any> = [];
   let matches = result.match(/class=\"news_block\"[\s\S]+?(?=end: content)/g);
   for (let match of matches) {
-    let item:Partial<blogModel> = {};
+    let item:Partial<newsModel> = {};
     //解析digg
     item.diggs = parseInt(((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/))||[])[0]?.replace(/[\s\S]+>/,''));
     // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
@@ -169,6 +172,10 @@ export const resolveNewsHtml = (result)=>{
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
     }
+    item.tag = {
+      name: (match.match(/class=\"tag\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      uri: 'https://news.cnblogs.com/'+(match.match(/class=\"tag\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+    };
     item.published = match.match(((/发布于 [\s\S]+?(?=<\/span)/))||[])[0]?.replace(/[\s\S]+?>/,'');
     item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt(((match.match(/class="view"[\s\S]+(?=人浏览)/))||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
