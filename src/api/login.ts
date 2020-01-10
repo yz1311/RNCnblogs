@@ -5,11 +5,16 @@ import RequestUtils from "../utils/requestUtils";
 
 export type userInfoModel = {
   id: string,
-  age: string,
+  seniority: string,
   follows: string,
   stars: string,
   nickName: string,
-  signature: string
+  signature: string,
+  updated: string,
+  link: string,
+  blogapp: string,
+  avatar: string,
+  postcount: string,
 };
 
 export const getToken = data => {

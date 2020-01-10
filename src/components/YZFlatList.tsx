@@ -71,7 +71,7 @@ export default class YZFlatList extends Component<IProps,IState>
   };
 
   private uuid: any;
-  private flatList: any;
+  public flatList: any;
 
   componentDidMount()
   {

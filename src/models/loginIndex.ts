@@ -2,12 +2,15 @@
 import {DrawerActions} from "react-navigation";
 import ToastUtils from "../utils/toastUtils";
 
-import {put} from "redux-saga/effects";
+import {put, select, spawn} from "redux-saga/effects";
 import {Action} from "redux-actions";
 import _buffer from 'buffer';
 import {Api} from "../api";
 import {userInfoModel} from "../api/login";
 import Model from 'dva-core';
+import CookieManager from 'react-native-cookie-store';
+import state from "@react-native-community/netinfo/lib/typescript/src/internal/state";
+import {ReduxState} from "./index";
 
 export interface IState {
     isLogin: boolean;
@@ -17,6 +20,7 @@ export interface IState {
     tokenType: string;
     refreshToken: string;
     userInfo: Partial<userInfoModel>;
+    cookieValue: string
 }
 
 const initialState:IState = {
@@ -27,6 +31,7 @@ const initialState:IState = {
     tokenType: '',
     refreshToken: '',
     userInfo: {},
+    cookieValue: ''
 };
 
 export default {
@@ -37,11 +42,11 @@ export default {
             const {type, payload} = action;
             if (!action.error) {
                 state.isLogin = true;
-                state.token = payload.result.access_token;
-                state.expiresIn = payload.result.expires_in;
-                state.tokenType = payload.result.token_type;
-                state.refreshToken = payload.result.refresh_token;
-                gUserData.token = state.token;
+                // state.token = payload.result.access_token;
+                // state.expiresIn = payload.result.expires_in;
+                // state.tokenType = payload.result.token_type;
+                // state.refreshToken = payload.result.refresh_token;
+                state.cookieValue = payload.cookieValue;
             }
         },
         setLogout: (state:IState, action) => {
@@ -98,18 +103,47 @@ export default {
                     ...userInfo,
                     ...userInfoResponse.data
                 };
-                let signature = '';
-                try {
-                    //继续获取签名
-                    let signature = yield Api.profile.getPersonSignature({
-                        request: {
-                            userAlias: userId
-                        }
-                    });
-                    userInfo.signature = signature.data;
-                } catch (e) {
+                console.log(userInfo)
+                yield Promise.all([
+                    (
+                         async ()=>{
+                            let signature = '';
+                            try {
+                                //继续获取签名
+                                let signature = await Api.profile.getPersonSignature({
+                                    request: {
+                                        userAlias: userId
+                                    }
+                                });
+                                //@ts-ignore
+                                userInfo.signature = signature.data;
+                            } catch (e) {
 
-                }
+                            }
+                        }
+                    )(),
+                    (
+                        async ()=> {
+                            try {
+                                let aliasResponse = await Api.profile.getUserAliasByUserName({
+                                    request: {
+                                        userName: userInfo.nickName,
+                                        fuzzy: false,
+                                    }
+                                });
+                                if(aliasResponse.data.length>0) {
+                                    userInfo = {
+                                        ...userInfo,
+                                        ...userInfoResponse.data[0]
+                                    };
+                                }
+                            } catch (e) {
+
+                            }
+                        }
+                    )(),
+                ])
+
                 gStorage.save(gStorageKeys.CurrentUser,userInfo);
                 yield effects.put({
                     type: 'setUserInfo',
@@ -124,15 +158,22 @@ export default {
             }
         },
         * logout(action, effects) {
+            NavigationHelper.resetTo('Login', {
+                deprecatedCookie: yield select((state:ReduxState)=>state.loginIndex.cookieValue)
+            });
             yield effects.put({
                 type: 'setLogout',
                 payload: {
 
                 }
             });
+            //清除浏览器缓存
+            CookieManager.clearAll()
+                .then((res) => {
+                    console.log('CookieManager.clearAll =>', res);
+                });
             yield gStorage.remove('token');
             ToastUtils.showToast('退出成功!');
-            NavigationHelper.resetTo('LoginIndex');
         },
     }
 } as Model;

@@ -28,22 +28,21 @@ export default class app_entry extends Component<IProps, {}> {
   };
 
   async componentDidMount() {
-    try {
-      //后一个参数表示使用UIWebkit，否则ios获取的为空
-      let res = await CookieManager.get('https://account.cnblogs.com/signin', true);
-      if(res) {
-        gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
-        NavigationHelper.resetTo('YZTabBarView');
-        gStore.dispatch({
-          type: 'loginIndex/getUserInfo',
-          payload: {
-
-          }
-        });
-      }
+    let res = await gStorage.load('token');
+    if(res&&res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
+      gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+      gStore.dispatch({
+        type: 'loginIndex/setUserLogin',
+        payload: {
+          cookieValue: res['.Cnblogs.AspNetCore.Cookies']
+        }
+      });
+      NavigationHelper.resetTo('YZTabBarView');
+      gStore.dispatch({
+        type: 'loginIndex/getUserInfo',
+        payload: {}
+      });
       return ;
-    } catch (e) {
-
     }
     NavigationHelper.push('Login');
     // ThemeUtils.reloadTheme();
