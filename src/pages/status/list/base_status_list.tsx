@@ -17,7 +17,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import StatusItem from '../status_item';
 import CommonUtils from '../../../utils/commonUtils';
-import {IBaseQuestionProps} from '../../question/list/base_question_list';
+import {IBaseQuestionProps} from '../../question/base_question_list';
 
 export interface IBaseStatusProps extends IBaseDataPageProps {
   dataList?: Array<any>;

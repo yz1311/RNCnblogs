@@ -4,14 +4,12 @@ import {
   searchData,
   clearSearchData,
 } from '../../../actions/home/home_index_actions';
-import BaseQuestionList, {
-  IBaseQuestionProps,
-} from '../../question/list/base_question_list';
+import BaseQuestionList from '../../question/base_question_list';
 import {DeviceEventEmitter, EmitterSubscription} from 'react-native';
 import {IBaseDataPageProps} from '../../../components/YZBaseDataPage';
 import {ReduxState} from '../../../reducers';
 
-interface IProps extends IBaseQuestionProps {
+interface IProps {
   type: string;
   keyWords: string;
 }
@@ -30,10 +28,7 @@ interface IState {}
     clearDataFn: data => dispatch(clearSearchData(data)),
   }),
 ) as any)
-export default class search_question_list extends BaseQuestionList<
-  IProps,
-  IState
-> {
+export default class search_question_list extends Component<IProps, IState> {
   private reloadListener: EmitterSubscription;
 
   componentDidMount() {

@@ -1,25 +1,12 @@
-import React, {Component, PureComponent} from 'react';
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
+import React, {PureComponent} from 'react';
+import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
 import NewsItem from './news_item';
-import {NewsTypes} from "./news_index";
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {BlogTypes} from "../home/home_index";
-import {Api} from "../../api";
+import {NewsTypes} from './news_index';
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {Api} from '../../api';
 
 export interface IProps {
   tabIndex?: number;
@@ -123,7 +110,7 @@ export default class base_news_list extends PureComponent<IProps, IState> {
     try {
       let response = await action();
       console.log(response)
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,30);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,this.props.newsType==NewsTypes.最新?30:18);
       this.setState({
         ...pagingResult
       });

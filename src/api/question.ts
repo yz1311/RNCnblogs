@@ -1,17 +1,37 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from '../utils/requestUtils';
+import {resolveBlogHtml} from './blog';
+import {newsModel} from './news';
+import {QuestionTypes} from '../pages/question/question_index';
 
-export const getQuestionList = data => {
-  const URL = `${gServerPath}/questions/@${data.request.type}?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取问题列表失败!',
-    actionType: types.QUESTION_GET_LIST,
+export type questionModel = {
+  id: string,
+  link: string,
+  //悬赏的金币
+  gold: number,
+  title: string,
+  summary: string,
+  author: {
+    name: string,
+    uri: string,
+    id: string,
+    avatar: string,
+  },
+  tags: Array<{
+    name: string,
+    uri: string
+  }>,
+  comments: number,
+  views: number,
+  published: string,
+  publishedDesc: string
+};
+
+export const getQuestionList = (data:RequestModel<{questionType:QuestionTypes,pageIndex:number}>) => {
+  const URL = `https://q.cnblogs.com/list/${data.request.questionType}?page=${data.request.pageIndex}`;
+  return RequestUtils.post<Array<questionModel>>(URL,data.request, {
+    resolveResult: resolveQuestionHtml
   });
 };
 
@@ -213,3 +233,48 @@ export const modifyAnswerComment = data => {
     actionType: types.QUESTION_MODIFY_COMMENT_ANSWER,
   });
 };
+
+
+export const resolveQuestionHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"one_entity\"[\s\S]+?class=\"date\"[\s\S]+?(?=class=\"clear\")/g);
+  for (let match of matches) {
+    let item:Partial<questionModel> = {};
+    //解析digg
+    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    //不能根据link来截取，部分link后面并不是id
+    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    item.id = ((match.match(/id=\"news_item_\d+?(?=\")/))||[])[0]?.replace(/id=\"news_item_/,'');
+    item.link = `https://news.cnblogs.com/q/${item.id}/`;
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.title = (match.match(/class=\"news_entry\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
+    //可能有图片，也可能没图片
+    item.summary = (match.match(/news_summary\"[\s\S]+?(?=\<\/div)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
+    item.author = {
+      id: '',
+      avatar: (match.match(/的主页\"[\s\S]+?(?=\"\s{0,2}\/>)/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      uri: (match.match(/class=\"news_footer_user\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"news_contributor\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    };
+    if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
+      item.author.avatar = 'https:'+item.author.avatar;
+    }
+    if(item.author.uri!=undefined&&item.author.uri!='') {
+      item.author.uri = 'https://q.cnblogs.com/'+item.author.uri;
+    }
+    let tagMatches = match.match(/class=\"detail_tag\"[\s\S]+?(?=<\/a>)/g) || [];
+    item.tags = [];
+    for (let tagMatch of tagMatches) {
+      item.tags.push({
+        uri: 'https://q.cnblogs.com'+(tagMatch.match(/href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
+        name: (tagMatch.match(/\">[\s\S]+?$/)||[])[0]?.replace(/[\s\S]+>/,''),
+      });
+    }
+    item.published = (match.match(/title=\"[\s\S]+?(?=class=\"date\")/)||[])[0]?.replace(/[\s\S]+?\"/,'').replace('"','');
+    item.publishedDesc = (match.match(/class=\"date\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    item.comments = parseInt(((match.match(/回答\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt(((match.match(/浏览\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    items.push(item);
+  }
+  return items;
+}

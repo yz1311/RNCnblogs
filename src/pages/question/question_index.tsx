@@ -11,11 +11,7 @@ import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
-import UnsolvedQuestionList from './list/unsolved_question_list';
-import HighscoreQuestionList from './list/highscore_question_list';
-import NoanswerQuestionList from './list/noanswer_question_list';
-import SolvedQuestionList from './list/solved_question_list';
-import MyQuestionList from './list/myquestion_question_list';
+import BaseQuestionList from './base_question_list';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
@@ -30,6 +26,15 @@ interface IProps extends IReduxProps {
 interface IState {
   tabNames: Array<string>;
   isActionButtonVisible: boolean;
+}
+
+export enum QuestionTypes {
+  待解决 = 'unsolved',
+  高分 = 'highscore',
+  新回答 = 'answered',
+  新评论 = 'newcomment',
+  零回答 = 'noanswer',
+  已解决 = 'solved',
 }
 
 @(connect(
@@ -107,25 +112,29 @@ export default class question_index extends Component<IProps, IState> {
           scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
-          <UnsolvedQuestionList
+          <BaseQuestionList
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            questionType={QuestionTypes.待解决}
           />
-          <HighscoreQuestionList
+          <BaseQuestionList
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            questionType={QuestionTypes.高分}
           />
-          <NoanswerQuestionList
+          <BaseQuestionList
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            questionType={QuestionTypes.零回答}
           />
-          <SolvedQuestionList
+          <BaseQuestionList
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            questionType={QuestionTypes.已解决}
           />
-          <MyQuestionList
+          <BaseQuestionList
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            questionType={QuestionTypes.新回答}
+          />
+          <BaseQuestionList
+            navigation={this.props.navigation}
+            questionType={QuestionTypes.新评论}
           />
         </ScrollableTabView>
         {this.state.isActionButtonVisible ? (

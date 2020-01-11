@@ -27,11 +27,12 @@ import {showToast} from '../../actions/app_actions';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ServiceUtils from '../../utils/serviceUtils';
+import {questionModel} from '../../api/question';
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
   deleteQuestionFn?: any;
-  item: any;
+  item: questionModel;
   showAll?: boolean;
   clickable: boolean;
   selectable: boolean;
@@ -48,7 +49,6 @@ interface IProps extends IReduxProps {
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     setSelectedQuestionFn: data => dispatch(setSelectedQuestion(data)),
     deleteQuestionFn: data => dispatch(deleteQuestion(data)),
   }),
@@ -94,7 +94,7 @@ export default class question_item extends PureComponent<IProps, any> {
             deleteQuestionFn &&
               deleteQuestionFn({
                 request: {
-                  questionId: item.Qid,
+                  questionId: item.id,
                 },
                 successAction: () => {
                   //如果是在详情，则返回到列表界面
@@ -161,22 +161,22 @@ export default class question_item extends PureComponent<IProps, any> {
 
   render() {
     const {item, showAll, clickable, userInfo} = this.props;
-    let tags = item.Tags != undefined ? item.Tags.split(',') : [];
+    let tags = item.tags || [];
     let detailProps = {};
     if (!showAll) {
       detailProps = {
         numberOfLines: 4,
       };
     }
-    let faceUrl = 'https://pic.cnblogs.com/face/sample_face.gif';
+    let faceUrl = item.author?.avatar || 'https://pic.cnblogs.com/face/sample_face.gif';
     //那个地址是错误的，无法访问
-    if (
-      item.QuestionUserInfo.Face &&
-      item.QuestionUserInfo.Face !==
-        'https://pic.cnblogs.com/avatar/sample_face.gif'
-    ) {
-      faceUrl = item.QuestionUserInfo.Face;
-    }
+    // if (
+    //   item.author &&
+    //   item.QuestionUserInfo.Face !==
+    //     'https://pic.cnblogs.com/avatar/sample_face.gif'
+    // ) {
+    //   faceUrl = item.QuestionUserInfo.Face;
+    // }
     return (
       <BorderShadow
         setting={{width: gScreen.width, border: 3, color: gColors.color999}}>
@@ -200,7 +200,7 @@ export default class question_item extends PureComponent<IProps, any> {
                 onPress={() => {
                   ServiceUtils.viewProfileDetail(
                     this.props.dispatch,
-                    item.QuestionUserInfo.Alias,
+                    item.author?.id,
                     faceUrl,
                   );
                 }}
@@ -209,7 +209,7 @@ export default class question_item extends PureComponent<IProps, any> {
                   alignSelf: 'stretch',
                   alignItems: 'center',
                 }}>
-                {item.QuestionUserInfo != undefined ? (
+                {item.author != undefined ? (
                   <Image
                     style={[Styles.avator]}
                     resizeMode="contain"
@@ -218,9 +218,9 @@ export default class question_item extends PureComponent<IProps, any> {
                 ) : (
                   <View style={[styles.avator]} />
                 )}
-                {item.QuestionUserInfo != undefined ? (
+                {item.author != undefined ? (
                   <Text style={[Styles.userName]}>
-                    {item.QuestionUserInfo.UserName}
+                    {item.author?.name}
                   </Text>
                 ) : (
                   '--'
@@ -228,7 +228,7 @@ export default class question_item extends PureComponent<IProps, any> {
               </TouchableOpacity>
               <View style={{marginLeft: 10}}>
                 <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                  {item.postDateDesc}
+                  {item.publishedDesc}
                 </Text>
               </View>
             </View>
@@ -242,23 +242,23 @@ export default class question_item extends PureComponent<IProps, any> {
                 },
                 Styles.text4Pie,
               ]}>
-              {item.Award > 0 ? (
+              {item.gold > 0 ? (
                 <MaterialCommunityIcons
                   name="coin"
                   size={20}
                   color={gColors.colorff}
                 />
               ) : null}
-              {item.Award > 0 ? (
+              {item.gold > 0 ? (
                 <Text style={{color: gColors.colorff}}>
-                  {item.Award + '   '}
+                  {item.gold + '   '}
                 </Text>
               ) : null}
-              <Text selectable>{item.Title}</Text>
+              <Text selectable>{item.title}</Text>
             </Text>
             <View style={{flexDirection: 'row'}}>
               {showAll ? (
-                <Markdown>{item.Content}</Markdown>
+                <Markdown>{item.summary}</Markdown>
               ) : (
                 <Text
                   style={[
@@ -271,7 +271,7 @@ export default class question_item extends PureComponent<IProps, any> {
                   ]}
                   {...detailProps}
                   selectable>
-                  {item.Summary}
+                  {item.summary}
                 </Text>
               )}
             </View>
@@ -288,7 +288,8 @@ export default class question_item extends PureComponent<IProps, any> {
                     style={{marginTop: 8}}
                     key={xIndex}
                     index={xIndex}
-                    item={x}
+                    item={x.name}
+                    uri={x.uri}
                   />
                 );
               })}
@@ -299,18 +300,18 @@ export default class question_item extends PureComponent<IProps, any> {
                 alignItems: 'center',
                 marginTop: 5,
               }}>
+              {/*<Text style={{color: gColors.color666, fontSize: gFont.size12}}>*/}
+              {/*  {item.DiggCount + ' 推荐 · '}*/}
+              {/*</Text>*/}
               <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                {item.DiggCount + ' 推荐 · '}
+                {item.comments + ' 回答 · '}
               </Text>
               <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                {item.AnswerCount + ' 回答 · '}
-              </Text>
-              <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                {item.ViewCount + ' 阅读'}
+                {item.views + ' 阅读'}
               </Text>
             </View>
           </View>
-          {item.UserId === userInfo.SpaceUserID ? (
+          {item.author?.id === userInfo.SpaceUserID ? (
             <TouchableOpacity
               ref={ref => (this.fromView = ref)}
               activeOpacity={activeOpacity}
@@ -331,12 +332,17 @@ export default class question_item extends PureComponent<IProps, any> {
   }
 }
 
-const Tag = ({item, index, style}) => {
+const Tag = ({item, index, style,uri}) => {
   let height = 20;
   return (
     <TouchableOpacity
       activeOpacity={activeOpacity}
-      onPress={() => {}}
+      onPress={() => {
+        NavigationHelper.push('YZWebPage', {
+          title: item,
+          uri: uri
+        });
+      }}
       style={[
         {
           height: height,
