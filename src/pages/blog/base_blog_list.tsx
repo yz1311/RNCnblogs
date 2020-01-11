@@ -1,14 +1,14 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-native';
-import Styles from '../../../common/styles';
-import BlogItem from '../blog_item';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
-import {BlogTypes} from "../../home/home_index";
+import Styles from '../../common/styles';
+import BlogItem from './blog_item';
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {BlogTypes} from "../home/home_index";
 import {connect} from "react-redux";
-import {ReduxState} from "../../../models";
-import YZStateView from "../../../components/YZStateCommonView";
-import YZFlatList from "../../../components/YZFlatList";
-import {Api} from "../../../api";
+import {ReduxState} from "../../models";
+import YZStateView from "../../components/YZStateCommonView";
+import YZFlatList from "../../components/YZFlatList";
+import {Api} from "../../api";
 
 export interface IProps {
   navigation: any,

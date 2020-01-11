@@ -30,16 +30,16 @@ import ProfileSetting from './profile/profile_setting';
 import ProfileAbout from './profile/profile_about';
 import ProfileFontSize from './profile/profile_fontSize';
 import ProfilePerson from '../pages/profile/profile_person';
-import {NavigationBar} from "@yz1311/teaset";
+import {NavigationBar, Theme} from '@yz1311/teaset';
 
 const AppNavigation = createStackNavigator(
   {
     YZTabBarView: {
       screen: withMappedNavigationProps(withNavigationFocus(YZTabBarView)),
-      navigationOptions: {
-        cardStyleInterpolator: props =>
-          CardStyleInterpolators.forNoAnimation(),
-      }
+      // navigationOptions: {
+      //   cardStyleInterpolator: props =>
+      //     CardStyleInterpolators.forNoAnimation(),
+      // }
     },
     YZWebPage: {screen: withMappedNavigationProps(YZWebPage)},
     Login: {screen: withMappedNavigationProps(Login)},
@@ -96,29 +96,29 @@ const AppNavigation = createStackNavigator(
         </TouchableOpacity>
       );
       return {
-        header: props => {
-          let options = props.scene.descriptor.options;
-          return (
-            <NavigationBar
-              style={{position: 'relative', paddingLeft: 0}}
-              // type={'ios'}
-              title={
-                options.headerTitle
-                  ? options.headerTitle
-                  : navigation.state.params
-                  ? navigation.state.params.title
-                  : ''
-              }
-              leftView={options.headerLeft || leftView}
-            />
-          );
-        },
-        headerBackTitle: null, // 左上角返回键文字
+        // header: props => {
+        //   let options = props.scene.descriptor.options;
+        //   return (
+        //     <NavigationBar
+        //       style={{position: 'relative', paddingLeft: 0}}
+        //       // type={'ios'}
+        //       title={
+        //         options?.headerTitle
+        //         ||
+        //         navigation.state.params?.title
+        //         ||
+        //         ''
+        //       }
+        //       leftView={options?.headerLeft || leftView}
+        //     />
+        //   );
+        // },
+        headerBackTitle: ' ', // 左上角返回键文字
         headerTitleAlign: 'center',  //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
         // header:null,
         headerTintColor: gColors.bgColorF,
         headerStyle: {
-          backgroundColor: gColors.themeColor,
+          backgroundColor: Theme.navColor,
         },
         //ios默认开启，android默认关闭,现在开启
         gestureEnabled: true,

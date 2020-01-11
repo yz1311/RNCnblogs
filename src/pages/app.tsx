@@ -203,7 +203,7 @@ export default class App extends Component<IProps, IState> {
     return (
       <View style={{flex: 1}}>
         <StatusBar
-          barStyle={'dark-content'}
+          barStyle={'light-content'}
           animated={true}
           translucent={true}
           backgroundColor="transparent"

@@ -67,7 +67,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     let {title} = (navigation.state || {}).params || {title: undefined};
     return {
-      title: `${title ? title + '条' : ''}评论`,
+      headerTitle: `${title ? title + '条' : ''}评论`,
     };
   };
 

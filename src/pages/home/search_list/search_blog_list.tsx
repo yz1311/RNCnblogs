@@ -8,7 +8,7 @@ import {
   searchData,
   clearSearchData,
 } from '../../../actions/home/home_index_actions';
-import BaseBlogList, {IBaseBlogProps} from '../../blog/list/base_blog_list';
+import BaseBlogList, {IBaseBlogProps} from '../../blog/base_blog_list';
 import {DeviceEventEmitter, EmitterSubscription} from 'react-native';
 import {ReduxState} from '../../../reducers';
 

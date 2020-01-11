@@ -6,6 +6,7 @@ import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import BaseNewsList from './base_news_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {Theme} from '@yz1311/teaset';
 
 interface IProps {
   navigation: NavigationScreenProp<NavigationState>;
@@ -54,19 +55,17 @@ export default class news_index extends Component<IProps, IState> {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
-        {__IOS__ ? (
-          <View
-            style={{
-              height: gScreen.statusBarHeight,
-              backgroundColor: gColors.themeColor,
-            }}
-          />
-        ) : null}
+        <View
+          style={{
+            height: Theme.statusBarHeight,
+            backgroundColor: Theme.navColor,
+          }}
+        />
         <ScrollableTabView
           renderTabBar={() => (
             <HomeTabBar
               ref={bar => (this.tabBar = bar)}
-              containerStyle={{backgroundColor: gColors.themeColor}}
+              containerStyle={{backgroundColor: Theme.navColor}}
               tabDatas={tabNames}
             />
           )}
