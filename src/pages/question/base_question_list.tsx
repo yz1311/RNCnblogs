@@ -1,25 +1,15 @@
-import React, {Component, PureComponent} from 'react';
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
+import React, {PureComponent} from 'react';
+import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
 import QuestionItem from './question_item';
+import QuestionReplyItem from './question_reply_item';
 import CommonUtils from '../../utils/commonUtils';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {QuestionTypes} from './question_index';
 import {Api} from '../../api';
+import {questionModel} from '../../api/question';
 
 export interface IProps {
   questionType: QuestionTypes;
@@ -96,7 +86,10 @@ export default class base_question_list extends PureComponent<IProps,IState> {
     }
   }
 
-  _renderItem = ({item, index}) => {
+  _renderItem = ({item, index}:{item:questionModel,index:number}) => {
+    if([QuestionTypes.新评论,QuestionTypes.新回答].indexOf(this.props.questionType)>=0) {
+      return <QuestionReplyItem item={item} navigation={this.props.navigation} clickable={true} selectable={true}/>;
+    }
     return <QuestionItem item={item} navigation={this.props.navigation} />;
   };
 

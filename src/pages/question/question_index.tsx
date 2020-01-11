@@ -15,6 +15,7 @@ import BaseQuestionList from './base_question_list';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {Theme} from '@yz1311/teaset';
 
 interface IProps extends IReduxProps {
   initialPage?: number;
@@ -57,7 +58,7 @@ export default class question_index extends Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      tabNames: ['待解决', '高分', '零回答', '已解决', '我的问题'],
+      tabNames: ['待解决', '高分', '零回答', '已解决', '新回答', '新评论'],
       isActionButtonVisible: true,
     };
     this.toggleActionButtonListener = DeviceEventEmitter.addListener(
@@ -91,19 +92,17 @@ export default class question_index extends Component<IProps, IState> {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
-        {__IOS__ ? (
-          <View
-            style={{
-              height: gScreen.statusBarHeight,
-              backgroundColor: gColors.themeColor,
-            }}
-          />
-        ) : null}
+        <View
+          style={{
+            height: Theme.statusBarHeight,
+            backgroundColor: Theme.navColor,
+          }}
+        />
         <ScrollableTabView
           renderTabBar={() => (
             <HomeTabBar
               ref={bar => (this.tabBar = bar)}
-              containerStyle={{backgroundColor: gColors.themeColor}}
+              containerStyle={{backgroundColor: Theme.navColor}}
               tabDatas={tabNames}
             />
           )}

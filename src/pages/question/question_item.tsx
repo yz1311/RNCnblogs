@@ -309,6 +309,11 @@ export default class question_item extends PureComponent<IProps, any> {
               <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
                 {item.views + ' 阅读'}
               </Text>
+              <View style={{flex: 1, alignItems: 'flex-end'}}>
+                <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
+                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
+                </Text>
+              </View>
             </View>
           </View>
           {item.author?.id === userInfo.SpaceUserID ? (

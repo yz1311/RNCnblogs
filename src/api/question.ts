@@ -1,8 +1,6 @@
-import {requestWithTimeout, createOptions} from '../utils/request';
+import {createOptions, requestWithTimeout} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from '../utils/requestUtils';
-import {resolveBlogHtml} from './blog';
-import {newsModel} from './news';
 import {QuestionTypes} from '../pages/question/question_index';
 
 export type questionModel = {
@@ -25,13 +23,19 @@ export type questionModel = {
   comments: number,
   views: number,
   published: string,
-  publishedDesc: string
+  publishedDesc: string,
+  reply?: {
+    author: string,
+    authorUri: string,
+    summary: string,
+    uri: string
+  }
 };
 
 export const getQuestionList = (data:RequestModel<{questionType:QuestionTypes,pageIndex:number}>) => {
   const URL = `https://q.cnblogs.com/list/${data.request.questionType}?page=${data.request.pageIndex}`;
   return RequestUtils.post<Array<questionModel>>(URL,data.request, {
-    resolveResult: resolveQuestionHtml
+    resolveResult: [QuestionTypes.新回答,QuestionTypes.新评论].indexOf(data.request.questionType)>=0?resolveQuestion1Html:resolveQuestionHtml
   });
 };
 
@@ -274,6 +278,48 @@ export const resolveQuestionHtml = (result)=>{
     item.publishedDesc = (match.match(/class=\"date\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
     item.comments = parseInt(((match.match(/回答\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt(((match.match(/浏览\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+//新回答和新评论的格式不一样
+export const resolveQuestion1Html = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"feed_item\"[\s\S]+?class=\"feed_title_tip\"[\s\S]+?(?=class=\"clear\")/g);
+  for (let match of matches) {
+    let item:Partial<questionModel> = {};
+    //解析digg
+    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    item.id = ((match.match(/id=\"feed_content_\d+?(?=\")/))||[])[0]?.replace(/id=\"feed_content_/,'');
+    item.link = `https://news.cnblogs.com/q/${item.id}/`;
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.title = '';
+    item.summary = (match.match(/class=\"feed_title_tip\"[\s\S]+?(?=<\/div)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim();
+    item.author = {
+      id: '',
+      avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?img src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      uri: (match.match(/class=\"feed_body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"feed_author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    };
+    if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
+      item.author.avatar = 'https:'+item.author.avatar;
+    }
+    if(item.author.uri!=undefined&&item.author.uri!='') {
+      item.author.uri = 'https://q.cnblogs.com/'+item.author.uri;
+    }
+    item.tags = [];
+    item.published = (match.match(/class=\"replyBox_a\"[\s\S]+?class=\"feed_title_tip\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    //Todo:
+    item.publishedDesc = '';
+    item.reply = {
+      author: (match.match(/class=\"replyBox\"[\s\S]+?class=\"feed_author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+      authorUri: (match.match(/class=\"replyBox\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
+      uri: (match.match(/class=\"replyBox_a\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
+      summary: (match.match(/class=\"replyBox_a\"[\s\S]+?href=\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    }
+    item.comments = 0;
+    item.views = 0;
     items.push(item);
   }
   return items;
