@@ -106,6 +106,16 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
   });
 };
 
+export const getBlogCommentCount = (data: RequestModel<{postId: string}>) => {
+  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
+  return RequestUtils.get<number>(URL);
+}
+
+export const getBlogViewCount = (data: RequestModel<{postId: string}>) => {
+  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetViewCount.aspx??postId=${data.request.postId}`;
+  return RequestUtils.get<number>(URL);
+}
+
 
 //获取文章的分类和标签
 export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:string}>)=>{

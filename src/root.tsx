@@ -19,7 +19,7 @@ import useImmer from 'dva-immer';
 import YZStateView from './components/YZStateCommonView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
-import {NavigationHelper} from '@yz1311/teaset';
+import {NavigationHelper, Theme} from '@yz1311/teaset';
 import FitImage from 'react-native-fit-image';
 //@ts-ignore
 import models from './models';
@@ -182,6 +182,11 @@ class Root extends Component {
       color: gColors.color4c,
       ...Styles.text4Pie,
     };
+    Theme.set({
+      primaryColor: '#0d7dfa',
+      navColor: '#0d7dfa',
+      navTitleColor: '#fff',
+    })
     // ScrollableTabBar.defaultProps = {
     //   ...(ScrollableTabBar.defaultProps || {}),
     //   activeTextColor: gColors.bgColorF,

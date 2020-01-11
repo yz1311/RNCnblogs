@@ -1,11 +1,12 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import {withMappedNavigationProps} from 'react-navigation-props-mapper';
 import {withNavigationFocus} from 'react-navigation';
 import {
   CardStyleInterpolators,
   createStackNavigator,
 } from 'react-navigation-stack';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import YZTabBarView from '../pages/YZTabBarView';
 import YZWebPage from '../components/YZWebPage';
@@ -29,11 +30,16 @@ import ProfileSetting from './profile/profile_setting';
 import ProfileAbout from './profile/profile_about';
 import ProfileFontSize from './profile/profile_fontSize';
 import ProfilePerson from '../pages/profile/profile_person';
+import {NavigationBar} from "@yz1311/teaset";
 
 const AppNavigation = createStackNavigator(
   {
     YZTabBarView: {
       screen: withMappedNavigationProps(withNavigationFocus(YZTabBarView)),
+      navigationOptions: {
+        cardStyleInterpolator: props =>
+          CardStyleInterpolators.forNoAnimation(),
+      }
     },
     YZWebPage: {screen: withMappedNavigationProps(YZWebPage)},
     Login: {screen: withMappedNavigationProps(Login)},
@@ -74,7 +80,39 @@ const AppNavigation = createStackNavigator(
       if (params) {
         leftTitle = params.leftTitle;
       }
+      const leftView = (
+        <TouchableOpacity
+          activeOpacity={activeOpacity}
+          style={{
+            paddingLeft: 9,
+            paddingRight: 8,
+            alignSelf: 'stretch',
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF} />
+        </TouchableOpacity>
+      );
       return {
+        header: props => {
+          let options = props.scene.descriptor.options;
+          return (
+            <NavigationBar
+              style={{position: 'relative', paddingLeft: 0}}
+              // type={'ios'}
+              title={
+                options.headerTitle
+                  ? options.headerTitle
+                  : navigation.state.params
+                  ? navigation.state.params.title
+                  : ''
+              }
+              leftView={options.headerLeft || leftView}
+            />
+          );
+        },
         headerBackTitle: null, // 左上角返回键文字
         headerTitleAlign: 'center',  //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
         // header:null,
