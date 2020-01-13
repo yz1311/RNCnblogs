@@ -125,9 +125,9 @@ export default class App extends Component<IProps, IState> {
 
   requestPermission = () => {
     if (__ANDROID__) {
-      Permissions.request('storage').then(response => {
+      Permissions.request(Permissions.PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE).then(response => {
         // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
-        if (response !== 'authorized') {
+        if (response !== 'granted') {
           ToastUtils.showToast('需要存储权限才能进行分享操作');
         }
       });
