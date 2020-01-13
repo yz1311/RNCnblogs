@@ -17,6 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {Theme} from "@yz1311/teaset";
 
 interface IProps extends IReduxProps {
   navigation: NavigationScreenProp<NavigationState>;
@@ -126,14 +127,12 @@ export default class status_index extends Component<IProps, IState> {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
-        {__IOS__ ? (
-          <View
-            style={{
-              height: gScreen.statusBarHeight,
-              backgroundColor: gColors.themeColor,
-            }}
-          />
-        ) : null}
+        <View
+          style={{
+            height: Theme.statusBarHeight,
+            backgroundColor: Theme.primaryColor,
+          }}
+        />
         <ScrollableTabView
           renderTabBar={() => (
             <ScrollableTabBar
@@ -141,7 +140,13 @@ export default class status_index extends Component<IProps, IState> {
               //@ts-ignore
               tabDatas={tabNames}
               style={{
-                backgroundColor: gColors.themeColor,
+                backgroundColor: Theme.primaryColor,
+              }}
+              activeTextColor={gColors.bgColorF}
+              inactiveTextColor={'#DBDBDB'}
+              underlineStyle={{
+                backgroundColor: gColors.bgColorF,
+                height: 3
               }}
             />
           )}
