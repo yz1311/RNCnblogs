@@ -14,8 +14,6 @@ import {
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';

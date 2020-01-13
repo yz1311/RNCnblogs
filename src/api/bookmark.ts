@@ -126,7 +126,7 @@ export const checkIsBookmarkMyId = (data: RequestModel<{id:string}>) => {
   const URL = `https://wz.cnblogs.com/copy/${data.request.id}/`;
   return RequestUtils.get<boolean>(URL,{
     resolveResult:(result)=>{
-      return /该内容已收藏过/.test(result);
+      return !/选择标签/.test(result);
     }
   });
 }

@@ -15,7 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
 import moment from 'moment';
-import {Overlay, Label, ListRow} from '@yz1311/teaset';
+import {Overlay, Label, ListRow, Theme} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {setSelectedDetail} from '../../actions/news/news_index_actions';
@@ -26,6 +26,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
 import {bookmarkModel} from "../../api/bookmark";
 import {Api} from "../../api";
+import ToastUtils from '../../utils/toastUtils';
 
 interface IProps {
   userInfo?: any;
@@ -152,27 +153,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
       );
       this.overlayKey = Overlay.show(overlayView);
     });
-    if(this.props.bookmarkType=='热门') {
-      //需要调用检查接口
-      try {
-        let response = await Api.bookmark.checkIsBookmarkMyId({
-          request: {
-            id: this.props.item.id
-          }
-        });
-        if(response.data) {
-          Alert.alert('','该内容已收藏过！',[{text: '知道了'}]);
-        } else {
-          //Todo:添加收藏
-        }
-      } catch (e) {
-
-      } finally {
-
-      }
-    } else {
-      show();
-    }
+    show();
   };
 
   _onPress = async () => {
@@ -320,71 +301,106 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
               this._onPress();
             }
           }}>
-          <View
-            style={{
-              backgroundColor: gColors.bgColorF,
-              paddingBottom: 10,
-              paddingLeft: 8,
-            }}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text
-                style={{
-                  color: gColors.color0,
-                  fontSize: gFont.size16,
-                  fontWeight: 'bold',
-                  paddingVertical: 17,
-                  flex: 1,
-                }}>
-                {item.title}
-              </Text>
-              <TouchableOpacity
-                ref={ref => (this.fromView = ref)}
-                activeOpacity={activeOpacity}
-                style={{
-                  paddingTop: 17,
-                  paddingHorizontal: 10,
-                  paddingLeft: 17,
-                  alignSelf: 'stretch',
-                }}
-                onPress={this.showMenu}>
-                <Ionicons name="ios-more" size={25} color={gColors.color0} />
-              </TouchableOpacity>
-            </View>
-            {item.summary?
-            <Text
-                style={{
-                  color: gColors.color666,
-                  fontSize: gFont.size16,
-                  paddingBottom: 17,
-                  flex: 1,
-                }}>
-              {item.summary}
-            </Text>:null}
-            <Text
+          <View style={{flexDirection:'row',alignItems:'center',backgroundColor: gColors.bgColorF,}}>
+            <View
               style={{
-                color: gColors.color4c,
-                fontSize: gFont.sizeDetail,
-                marginVertical: 7,
+                paddingBottom: 10,
+                paddingLeft: 8,
+                flex:1
               }}>
-              {item.link}
-            </Text>
-            <View style={{flexDirection:"row",alignItems:'center',justifyContent:"space-between"}}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text
+                  style={{
+                    color: gColors.color0,
+                    fontSize: gFont.size16,
+                    fontWeight: 'bold',
+                    paddingVertical: 17,
+                    flex: 1,
+                  }}>
+                  {item.title}
+                </Text>
+                {this.props.bookmarkType!='热门'?
+                <TouchableOpacity
+                  ref={ref => (this.fromView = ref)}
+                  activeOpacity={activeOpacity}
+                  style={{
+                    paddingTop: 17,
+                    paddingHorizontal: 10,
+                    paddingLeft: 17,
+                    alignSelf: 'stretch',
+                  }}
+                  onPress={this.showMenu}>
+                  <Ionicons name="ios-more" size={25} color={gColors.color0} />
+                </TouchableOpacity>:null}
+              </View>
+              {item.summary?
               <Text
+                  style={{
+                    color: gColors.color666,
+                    fontSize: gFont.size16,
+                    paddingBottom: 17,
+                    flex: 1,
+                  }}>
+                {item.summary}
+              </Text>:null}
+              <Text
+                style={{
+                  color: gColors.color4c,
+                  fontSize: gFont.sizeDetail,
+                  marginVertical: 7,
+                }}>
+                {item.link}
+              </Text>
+              <View style={{flexDirection:"row",alignItems:'center',justifyContent:"space-between"}}>
+                <Text
+                    style={{
+                      color: gColors.color999,
+                      fontSize: gFont.size12,
+                    }}>
+                  {item.collects+'人收藏'}
+                </Text>
+                <Text
                   style={{
                     color: gColors.color999,
                     fontSize: gFont.size12,
+                    marginRight: 10,
                   }}>
-                {item.collects+'人收藏'}
-              </Text>
-              <Text
-                style={{
-                  color: gColors.color999,
-                  fontSize: gFont.size12,
-                  marginRight: 10,
-                }}>
-                {item.publishedDesc}
-              </Text>
+                  {item.publishedDesc}
+                </Text>
+              </View>
             </View>
+            {this.props.bookmarkType == '热门' ?
+              <TouchableOpacity
+                onPress={async ()=>{
+                  //需要调用检查接口
+                  try {
+                    let response = await Api.bookmark.checkIsBookmarkMyId({
+                      request: {
+                        id: this.props.item.id
+                      }
+                    });
+                    console.log(response)
+                    if(response.data) {
+                      Alert.alert('','该内容已收藏过！',[{text: '知道了'}]);
+                    } else {
+                      //Todo:添加收藏
+                      ToastUtils.showToast('敬请期待');
+                    }
+                  } catch (e) {
+
+                  } finally {
+
+                  }
+                }}
+                style={{backgroundColor: Theme.primaryColor, paddingHorizontal: 15,
+                  borderRadius:6,
+                  paddingVertical: 10,marginRight:10}}
+              >
+                <Text style={{color:gColors.bgColorF,fontSize:gFont.size15}}>收藏</Text>
+              </TouchableOpacity>
+              :
+              null
+            }
           </View>
         </TouchableOpacity>
       </BorderShadow>
