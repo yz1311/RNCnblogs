@@ -224,7 +224,7 @@ export default class RequestUtils {
             //部分接口没有result字段，直接返回data
             if(response.data.status=='OK'||(response.data.status===undefined&&response.data!=undefined)) {
                 if(response.data.result===undefined&&response.data) {
-                    if(Array.isArray(response.data) || typeof response.data == 'string'){
+                    if(Array.isArray(response.data) || typeof response.data != 'object'){
                         return response;
                     }
                     return {

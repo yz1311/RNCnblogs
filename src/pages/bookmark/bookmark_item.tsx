@@ -35,6 +35,7 @@ interface IProps {
   navigation: NavigationScreenProp<NavigationState>;
   item: bookmarkModel;
   clickable?: boolean;
+  bookmarkType: string
 }
 
 export interface bookmark {
@@ -111,8 +112,8 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
   }
 
 
-  showMenu = () => {
-    this.fromView.measureInWindow((x, y, width, height) => {
+  showMenu = async () => {
+    const show = ()=>this.fromView.measureInWindow((x, y, width, height) => {
       let popoverStyle = {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         paddingTop: 8,
@@ -151,6 +152,27 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
       );
       this.overlayKey = Overlay.show(overlayView);
     });
+    if(this.props.bookmarkType=='热门') {
+      //需要调用检查接口
+      try {
+        let response = await Api.bookmark.checkIsBookmarkMyId({
+          request: {
+            id: this.props.item.id
+          }
+        });
+        if(response.data) {
+          Alert.alert('','该内容已收藏过！',[{text: '知道了'}]);
+        } else {
+          //Todo:添加收藏
+        }
+      } catch (e) {
+
+      } finally {
+
+      }
+    } else {
+      show();
+    }
   };
 
   _onPress = async () => {
@@ -346,15 +368,23 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
               }}>
               {item.link}
             </Text>
-            <Text
-              style={{
-                color: gColors.color999,
-                fontSize: gFont.size12,
-                marginRight: 10,
-                alignSelf: 'flex-end',
-              }}>
-              {item.publishedDesc}
-            </Text>
+            <View style={{flexDirection:"row",alignItems:'center',justifyContent:"space-between"}}>
+              <Text
+                  style={{
+                    color: gColors.color999,
+                    fontSize: gFont.size12,
+                  }}>
+                {item.collects+'人收藏'}
+              </Text>
+              <Text
+                style={{
+                  color: gColors.color999,
+                  fontSize: gFont.size12,
+                  marginRight: 10,
+                }}>
+                {item.publishedDesc}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
       </BorderShadow>

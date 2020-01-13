@@ -21,7 +21,7 @@ interface IState {
   dataList: Array<any>,
 }
 
-const initialDataList = ['全部'];
+const initialDataList = ['热门','我的'];
 
 export default class bookmark_index extends PureComponent<IProps, IState> {
   static navigationOptions = ({navigation}) => {

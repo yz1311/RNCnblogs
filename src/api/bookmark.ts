@@ -5,6 +5,7 @@ import RequestUtils from "../utils/requestUtils";
 import {questionModel} from "./question";
 import {resolveStatusHtml} from "./status";
 import {blogModel, resolveBlogHtml} from "./blog";
+import Axios from "axios";
 
 export type myTagModel = {
   name: string,
@@ -42,8 +43,19 @@ export const getMyTags = (data:RequestModel<{}>) => {
   });
 }
 
-export const getBookmarkList = (data:RequestModel<{bookmarkType:string,pageIndex: number}>) => {
-  const URL = `https://wz.cnblogs.com/my/${data.request.bookmarkType=='全部'?'':'tag/'+data.request.bookmarkType+'/'}${data.request.pageIndex}.html`;
+export const getBookmarkList = (data:RequestModel<{bookmarkType:string,pageIndex: number,rangeType?: 'oneday'|'oneweek'|'onemonth'|'all'}>) => {
+  let URL = '';
+  switch (data.request.bookmarkType) {
+    case '热门':
+      URL = `https://wz.cnblogs.com/hot/${data.request.rangeType||'oneday'}/${data.request.pageIndex}`;
+      break;
+    case '我的':
+      URL = `https://wz.cnblogs.com/my/${data.request.pageIndex}.html`;
+      break;
+    default:
+      URL = `https://wz.cnblogs.com/my/tag/${data.request.bookmarkType}/${data.request.pageIndex}.html`;
+      break;
+  }
   return RequestUtils.get(URL, {
     resolveResult: resolveBookmarkHtml
   });
@@ -110,10 +122,19 @@ export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
   });
 };
 
+export const checkIsBookmarkMyId = (data: RequestModel<{id:string}>) => {
+  const URL = `https://wz.cnblogs.com/copy/${data.request.id}/`;
+  return RequestUtils.get<boolean>(URL,{
+    resolveResult:(result)=>{
+      return /该内容已收藏过/.test(result);
+    }
+  });
+}
+
 
 export const resolveBookmarkHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"wz_block\"[\s\S]+?(?=list_select\")/g)|| [];
+  let matches = result.match(/class=\"wz_block\"[\s\S]+?(?=clear\")/g)|| [];
   for (let match of matches) {
     match = decode(match);
     let item:Partial<bookmarkModel> = {};

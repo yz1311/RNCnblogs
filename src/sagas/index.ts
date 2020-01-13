@@ -6,7 +6,6 @@ import {watchLoginIndex} from './login/login_index_sagas';
 import {watchBlogIndex} from './blog/blog_index_sagas';
 import {watchNewsIndex} from './news/news_index_sagas';
 import {watchStatusIndex} from './status/status_index_sagas';
-import {watchBookmarkIndex} from './bookmark/bookmark_index_sagas';
 import {watchQuestionIndex} from './question/question_index_sagas';
 import {watchQuestionDetail} from './question/question_detail_sagas';
 import {watchKnowledgeBaseIndex} from './knowledgeBase/knowledgeBase_index_sagas';
@@ -21,7 +20,6 @@ export default function* rootSaga() {
     fork(watchBlogIndex),
     fork(watchNewsIndex),
     fork(watchStatusIndex),
-    fork(watchBookmarkIndex),
     fork(watchQuestionIndex),
     fork(watchQuestionDetail),
     fork(watchKnowledgeBaseIndex),

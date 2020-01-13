@@ -89,7 +89,7 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
     }
 
     _renderItem = ({item, index}) => {
-        return <BookmarkItem item={item} navigation={this.props.navigation} />;
+        return <BookmarkItem item={item} navigation={this.props.navigation} bookmarkType={this.props.bookmarkType} />;
     };
 
     render() {
