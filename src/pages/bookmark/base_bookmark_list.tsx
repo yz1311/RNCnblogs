@@ -23,7 +23,8 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
     protected pageIndex: number = 1;
     private scrollListener: EmitterSubscription;
     private refreshListener: EmitterSubscription;
-    private _flatList: any;
+    private _flatList: YZFlatList;
+    private reloadListener:EmitterSubscription;
 
     readonly state:IState = {
         dataList: [],
@@ -37,6 +38,8 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
             'list_scroll_to_top',
             ({tabIndex}) => {
                 if (tabIndex === this.props.bookmarkType) {
+                    //Todo:
+                    //@ts-ignore
                     this._flatList && this._flatList._scrollToTop();
                 }
             },
@@ -49,6 +52,7 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
                 }
             },
         );
+        this.reloadListener = DeviceEventEmitter.addListener('reload_bookmark_list',this.onRefresh);
     }
 
     componentDidMount(): void {
@@ -56,9 +60,13 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
     }
 
     componentWillUnmount() {
-        super.componentWillUnmount();
         this.scrollListener.remove();
         this.refreshListener.remove();
+        this.reloadListener&&this.reloadListener.remove();
+    }
+
+    onRefresh = ()=>{
+        this._flatList&&this._flatList._onRefresh();
     }
 
     loadData = async ()=>{
@@ -79,8 +87,6 @@ export default class base_bookmark_list extends PureComponent<IProps, IState> {
             });
         }
     }
-
-    // pageIndex = 1;
 
     _renderItem = ({item, index}) => {
         return <BookmarkItem item={item} navigation={this.props.navigation} />;

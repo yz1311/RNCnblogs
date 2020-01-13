@@ -15,6 +15,7 @@ export type bookmarkModel = {
   id: string,
   link: string,
   title: string,
+  summary: string,
   published: string,
   publishedDesc: string,
   collects: number
@@ -44,32 +45,13 @@ export const getMyTags = (data:RequestModel<{}>) => {
 export const getBookmarkList = (data:RequestModel<{bookmarkType:string,pageIndex: number}>) => {
   const URL = `https://wz.cnblogs.com/my/${data.request.bookmarkType=='全部'?'':'tag/'+data.request.bookmarkType+'/'}${data.request.pageIndex}.html`;
   return RequestUtils.get(URL, {
-    headers: {
-      "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
-      "accept-encoding": "gzip, deflate, br",
-      "content-type": "application/json; charset=utf8",
-      "x-requested-with": "XMLHttpRequest"
-    },
     resolveResult: resolveBookmarkHtml
   });
 };
 
-export const deleteBookmark = data => {
-  const URL = `${gServerPath}/bookmarks/${data.request.id}`;
-  const options = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + gUserData.token,
-    },
-  };
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除书签失败!',
-    actionType: types.BOOKMARK_DELETE,
-  });
+export const deleteBookmark = (data:RequestModel<{id: string}>) => {
+  const URL = `https://wz.cnblogs.com/api/wz/${data.request.id}`;
+  return RequestUtils.delete(URL);
 };
 
 //用户文章中直接取消收藏
@@ -140,6 +122,7 @@ export const resolveBookmarkHtml = (result)=>{
     //id="link_5343159"
     item.id = (match.match(/id=\"link_\d+?(?=\")/)||[])[0]?.replace(/id=\"link_/,'');
     item.title = (match.match(/rel="nofollow" href=\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.summary = (match.match(/class='summary'[\s\S]+?(?=<\/di)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.published = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
     item.publishedDesc = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.collects = parseInt((match.match(/wz_item_count\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,''));

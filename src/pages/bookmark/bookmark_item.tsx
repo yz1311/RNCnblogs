@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
-  Alert,
+  Alert, DeviceEventEmitter,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
@@ -15,7 +15,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
 import moment from 'moment';
-import {deleteBookmark} from '../../actions/bookmark/bookmark_index_actions';
 import {Overlay, Label, ListRow} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
@@ -26,13 +25,13 @@ const Realm = {};
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
 import {bookmarkModel} from "../../api/bookmark";
+import {Api} from "../../api";
 
 interface IProps {
   userInfo?: any;
   dispatch?: any;
   setSelectedQuestionFn?: any;
   setSelectedDetailFn?: any;
-  deleteBookmarkFn?: any;
   navigation: NavigationScreenProp<NavigationState>;
   item: bookmarkModel;
   clickable?: boolean;
@@ -58,7 +57,6 @@ export interface bookmark {
     dispatch,
     setSelectedQuestionFn: data => dispatch(setSelectedQuestion(data)),
     setSelectedDetailFn: data => dispatch(setSelectedDetail(data)),
-    deleteBookmarkFn: data => dispatch(deleteBookmark(data)),
   }),
 ) as any)
 export default class bookmark_item extends PureComponent<IProps, {}> {
@@ -73,7 +71,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
   _onModify = () => {
     Overlay.hide(this.overlayKey);
     const {item} = this.props;
-    this.props.navigation.navigate('BookmarkModify', {
+    NavigationHelper.navigate('BookmarkModify', {
       item: item,
       isModify: true,
       title: '修改收藏',
@@ -89,16 +87,29 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
       {
         text: '删除',
         onPress: () => {
-          const {deleteBookmarkFn, item} = this.props;
-          deleteBookmarkFn({
-            request: {
-              id: item.id,
-            },
-          });
+          this.deleteBookmark();
         },
       },
     ]);
   };
+
+  deleteBookmark = async ()=>{
+    try {
+      let result = await Api.bookmark.deleteBookmark({
+        request: {
+          id: this.props.item.id
+        },
+        showLoading: true
+      });
+      //刷新列表
+      DeviceEventEmitter.emit('reload_bookmark_list')
+    } catch (e) {
+
+    } finally {
+
+    }
+  }
+
 
   showMenu = () => {
     this.fromView.measureInWindow((x, y, width, height) => {
@@ -317,6 +328,16 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                 <Ionicons name="ios-more" size={25} color={gColors.color0} />
               </TouchableOpacity>
             </View>
+            {item.summary?
+            <Text
+                style={{
+                  color: gColors.color666,
+                  fontSize: gFont.size16,
+                  paddingBottom: 17,
+                  flex: 1,
+                }}>
+              {item.summary}
+            </Text>:null}
             <Text
               style={{
                 color: gColors.color4c,
