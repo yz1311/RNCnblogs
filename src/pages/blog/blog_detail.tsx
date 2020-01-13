@@ -246,9 +246,10 @@ export default class blog_detail extends PureComponent<IProps, IState> {
               id: this.props.item.id+''
             }
           });
+          console.log(response)
           this.setState({
-            blogDetails: response.data.string,
-            getDetailResult: dataToReducerResult(response.data.string)
+            blogDetails: response.data,
+            getDetailResult: dataToReducerResult(response.data)
           });
         } catch (e) {
           this.setState({

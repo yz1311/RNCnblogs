@@ -90,7 +90,9 @@ export const getFollowingBlogList = (data: getBlogListRequest) => {
 
 export const getBlogDetail = (data: getBlogDetailRequest) => {
   const URL = `http://wcf.open.cnblogs.com/blog/post/body/${data.request.id}`;
-  return RequestUtils.get<{string:string}>(URL);
+  return RequestUtils.get<string>(URL, {
+    autoResolveXML: false
+  });
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {

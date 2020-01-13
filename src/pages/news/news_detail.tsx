@@ -232,9 +232,9 @@ export default class news_detail extends PureComponent<IProps, IState> {
           });
           this.setState({
             data: {
-              body: response.data.NewsBody.Content
+              body: response.data.Content
             },
-            loadDataResult: dataToReducerResult(response.data.NewsBody.Content)
+            loadDataResult: dataToReducerResult(response.data.Content)
           });
         } catch (e) {
           this.setState({

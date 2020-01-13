@@ -80,7 +80,7 @@ export const getRecommendedNewsList = data => {
 
 export const getNewsDetail = (data: getBlogDetailRequest) => {
   const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.id}`;
-  return RequestUtils.get<{NewsBody:{
+  return RequestUtils.get<{
       Title: string,
       SourceName: string,
       SubmitDate: string,
@@ -89,7 +89,7 @@ export const getNewsDetail = (data: getBlogDetailRequest) => {
       PrevNews: string,
       NextNews: string,
       CommentCount: string,
-    }}>(URL);
+    }>(URL);
 };
 
 export const commentNews = data => {

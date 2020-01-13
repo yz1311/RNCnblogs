@@ -15,7 +15,9 @@ export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
     showErrorToast?: boolean,
     //调用接口报错时，显示的toast信息(优先显示reject的error对象的message),默认为空
     errorMessage?: string,
-    resolveResult?: (str:any)=>any
+    resolveResult?: (str:any)=>any,
+    //是否自动解析xml，默认为true
+    autoResolveXML?: boolean
 }
 
 export interface ReducerResult {
@@ -176,8 +178,10 @@ export default class RequestUtils {
         axios.interceptors.response.use(async (response) => {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
+            console.log(response)
             //如果是字符串，尝试转换成js对象
             if(typeof response.data == 'string'
+                && ((response.config as AxiosRequestConfigPatch).autoResolveXML == true || (response.config as AxiosRequestConfigPatch).autoResolveXML == undefined)
                 && response.config.url.indexOf(gServerPath)>=0) {
                 await new Promise(resolve => {
                     parseString(response.data, function (err, result) {
