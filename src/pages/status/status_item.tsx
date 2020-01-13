@@ -24,9 +24,10 @@ import {showToast} from '../../actions/app_actions';
 import {deleteStatus} from '../../actions/status/status_index_actions';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {statusModel} from "../../api/status";
 
 interface IProps extends IReduxProps {
-  item: any;
+  item: statusModel;
   clickable: boolean;
   deleteStatusFn?: any;
   userInfo?: any;
@@ -162,7 +163,7 @@ export default class status_item extends PureComponent<IProps, IState> {
                   ServiceUtils.viewProfileDetail(
                     this.props.dispatch,
                     item.UserAlias,
-                    item.UserIconUrl,
+                    item.author?.avatar,
                   );
                 }}
                 style={{
@@ -173,9 +174,9 @@ export default class status_item extends PureComponent<IProps, IState> {
                 <Image
                   style={[Styles.avator]}
                   resizeMode="contain"
-                  source={{uri: item.UserIconUrl}}
+                  source={{uri: item.author?.avatar}}
                 />
-                <Text style={[Styles.userName]}>{item.UserDisplayName}</Text>
+                <Text style={[Styles.userName]}>{item.author?.name}</Text>
               </TouchableOpacity>
               <Text
                 style={{
@@ -183,15 +184,15 @@ export default class status_item extends PureComponent<IProps, IState> {
                   fontSize: gFont.size12,
                   marginLeft: 10,
                 }}>
-                {item.postDateDesc}
+                {item.published}
               </Text>
             </View>
             <HTMLView
               containerStyle={{marginVertical: 7}}
-              html={item.Content}
+              html={item.summary}
               stylesheet={styles}
             />
-            {item.CommentCount != undefined ? (
+            {item.comments.length > 0 ? (
               <View
                 style={{
                   flexDirection: 'row',
@@ -200,12 +201,12 @@ export default class status_item extends PureComponent<IProps, IState> {
                   marginTop: 5,
                 }}>
                 <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                  {item.CommentCount + ' 评论'}
+                  {item.comments.length + ' 评论'}
                 </Text>
               </View>
             ) : null}
           </View>
-          {item.UserId === userInfo.SpaceUserID ? (
+          {item.author?.id === userInfo.SpaceUserID ? (
             <TouchableOpacity
               ref={ref => (this.fromView = ref)}
               activeOpacity={activeOpacity}

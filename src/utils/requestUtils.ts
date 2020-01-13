@@ -164,6 +164,7 @@ export default class RequestUtils {
 
         axios.interceptors.request.use( function (request:AxiosRequestConfigPatch) {
             request.headers = {
+                ...request.headers,
                 'cookie': gUserData.token
             };
             return request;

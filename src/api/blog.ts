@@ -171,7 +171,7 @@ export const commentBlog = data => {
 
 export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g);
+  let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g)|| [];
   for (let match of matches) {
     let item:Partial<blogModel> = {};
     //解析digg

@@ -150,7 +150,7 @@ export const modifyNewsComment = data => {
 
 export const resolveNewsHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"news_block\"[\s\S]+?(?=end: content)/g);
+  let matches = result.match(/class=\"news_block\"[\s\S]+?(?=end: content)/g)|| [];
   for (let match of matches) {
     let item:Partial<newsModel> = {};
     //解析digg

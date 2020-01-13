@@ -241,7 +241,7 @@ export const modifyAnswerComment = data => {
 
 export const resolveQuestionHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"one_entity\"[\s\S]+?class=\"date\"[\s\S]+?(?=class=\"clear\")/g);
+  let matches = result.match(/class=\"one_entity\"[\s\S]+?class=\"date\"[\s\S]+?(?=class=\"clear\")/g)|| [];
   for (let match of matches) {
     let item:Partial<questionModel> = {};
     //解析digg
@@ -286,7 +286,7 @@ export const resolveQuestionHtml = (result)=>{
 //新回答和新评论的格式不一样
 export const resolveQuestion1Html = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"feed_item\"[\s\S]+?class=\"feed_title_tip\"[\s\S]+?(?=class=\"clear\")/g);
+  let matches = result.match(/class=\"feed_item\"[\s\S]+?class=\"feed_title_tip\"[\s\S]+?(?=class=\"clear\")/g) || [];
   for (let match of matches) {
     let item:Partial<questionModel> = {};
     //解析digg

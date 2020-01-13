@@ -7,19 +7,12 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import ScrollableTabView, {
   ScrollableTabBar,
 } from 'react-native-scrollable-tab-view';
-import FollowStatusList from './list/follow_status_list';
-import MyStatusList from './list/my_status_list';
-import MyCommentStatusList from './list/myComment_status_list';
-import RecentCommentStatusList from './list/recentComment_status_list';
-import MentionStatusList from './list/mention_status_list';
-import CommentStatusList from './list/comment_status_list';
-import AllStatusList from './list/all_status_list';
+import BaseStatusList from './base_status_list';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
@@ -36,6 +29,16 @@ interface IProps extends IReduxProps {
 interface IState {
   tabNames: Array<string>;
   isActionButtonVisible: boolean;
+}
+
+export enum StatusTypes {
+  '全站' = 'all',
+  '我回应' = 'mycomment',
+  '关注' = 'following',
+  '我的' = 'my',
+  '新回应' = 'recentcomment',
+  '提到我' = 'mention',
+  '回复我' = 'comment',
 }
 
 @(connect(
@@ -135,6 +138,7 @@ export default class status_index extends Component<IProps, IState> {
           renderTabBar={() => (
             <ScrollableTabBar
               ref={bar => (this.tabBar = bar)}
+              //@ts-ignore
               tabDatas={tabNames}
               style={{
                 backgroundColor: gColors.themeColor,
@@ -146,40 +150,40 @@ export default class status_index extends Component<IProps, IState> {
           scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
-          <AllStatusList
+          <BaseStatusList
             tabLabel="全站"
             navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+            statusType={StatusTypes.全站}
           />
-          <RecentCommentStatusList
-            tabLabel="新回应"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="新回应"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.新回应}
           />
-          <FollowStatusList
-            tabLabel="关注"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="关注"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.关注}
           />
-          <MyStatusList
-            tabLabel="我的"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="我的"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.我的}
           />
-          <MyCommentStatusList
-            tabLabel="我回应"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="我回应"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.我回应}
           />
-          <MentionStatusList
-            tabLabel="提到我"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="提到我"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.提到我}
           />
-          <CommentStatusList
-            tabLabel="回复我"
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
+          <BaseStatusList
+              tabLabel="回复我"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.回复我}
           />
         </ScrollableTabView>
         {this.state.isActionButtonVisible ? (

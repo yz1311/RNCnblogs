@@ -1,18 +1,37 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import RequestUtils from "../utils/requestUtils";
+import {QuestionTypes} from "../pages/question/question_index";
+import {questionModel, resolveQuestion1Html, resolveQuestionHtml} from "./question";
+import {StatusTypes} from "../pages/status/status_index";
 
-export const getStatusList = data => {
-  //type: all:全部,following:关注,my:我的,mycomment:我回应,recentcomment:新回应,mention:提到我,comment:回复我
-  const URL = `${gServerPath}/statuses/@${data.request.type}?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}&tag=`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取闪存列表失败!',
-    actionType: types.STATUS_GET_LIST,
+export type statusModel = {
+  id: string,
+  author: {
+    name: string,
+    uri: string,
+    avatar: string,
+    id: string
+  },
+  title: string,
+  summary: string,
+  reply: {
+    author: string,
+    authorUri: string,
+  },
+  comments: Array<statusModel>,
+  published: string,
+  publishedDesc: string,
+};
+
+export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/GetIngList?IngListType=${data.request.statusType}&PageIndex=${data.request.pageIndex}&PageSize=${data.request.pageSize}`;
+  return RequestUtils.get<Array<questionModel>>(URL, {
+    headers: {
+      //必须要加这个，否则请求失败
+      "x-requested-with": 'XMLHttpRequest'
+    },
+    resolveResult: resolveStatusHtml
   });
 };
 
@@ -89,3 +108,63 @@ export const addStatus = data => {
     actionType: types.STATUS_ADD_STATUS,
   });
 };
+
+export const resolveStatusHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"entry_(a|b)\"[\s\S]+?(?=<\/li>)/g) || [];
+  for (let match of matches) {
+    let item:Partial<statusModel> = {};
+    //解析digg
+    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    item.id = (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,'');
+    // item.link = `https://news.cnblogs.com/q/${item.id}/`;
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.title = '';
+    //有一部分的内容里面是链接，所以不能按照贪婪匹配来replace
+    item.summary = (match.match(/class=\"ing_body\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+?>/,'')?.trim();
+    item.author = {
+      id: '',
+      avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"ing-author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    };
+    if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
+      item.author.avatar = 'https:'+item.author.avatar;
+    }
+    if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
+      item.author.uri = 'https:'+item.author.uri;
+    }
+    item.published = (match.match(/class=\"ing_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    //Todo:
+    item.publishedDesc = '';
+    item.reply = {
+      author: (match.match(/class=\"replyBox\"[\s\S]+?class=\"feed_author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+      authorUri: (match.match(/class=\"replyBox\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
+    }
+    item.comments = [];
+    let commentMatches = (match.match(/class=\"feed_ing_comment_block\"[\s\S]+/)||[])[0]?.match(/<li id=\"comment_[\s\S]+?(?=<\/li>)/) || [];
+    for (let commentMatch of commentMatches) {
+      item.comments.push({
+        id: (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,''),
+        title: '',
+        summary: (match.match(/class=\"ing_body\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+        //ing_comment_time
+        published: (match.match(/class=\"ing_comment_time\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"',''),
+        publishedDesc: '',
+        author: {
+          id: '',
+          avatar: '',
+          uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+          name: (match.match(/id=\"comment_author_[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+        },
+        reply: {
+          authorUri: (match.match(/class=\"ing_comment\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+          author: (match.match(/class=\"ing_comment\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+        },
+        comments:[]
+      })
+    }
+    items.push(item);
+  }
+  return items;
+}

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   DeviceEventEmitter,
   EmitterSubscription,
@@ -6,33 +6,36 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZHeader from '../../../components/YZHeader';
+import YZHeader from '../../components/YZHeader';
 import YZBaseDataPage, {
   IBaseDataPageProps,
-} from '../../../components/YZBaseDataPage';
-import YZStateView from '../../../components/YZStateCommonView';
-import YZFlatList from '../../../components/YZFlatList';
-import Styles from '../../../common/styles';
+} from '../../components/YZBaseDataPage';
+import YZStateView from '../../components/YZStateCommonView';
+import YZFlatList from '../../components/YZFlatList';
+import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
-import StatusItem from '../status_item';
-import CommonUtils from '../../../utils/commonUtils';
-import {IBaseQuestionProps} from '../../question/base_question_list';
+import StatusItem from './status_item';
+import CommonUtils from '../../utils/commonUtils';
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {StatusTypes} from "./status_index";
+import {Api} from "../../api";
 
-export interface IBaseStatusProps extends IBaseDataPageProps {
-  dataList?: Array<any>;
-  noMore?: boolean;
-  tabIndex: number;
+export interface IProps {
   tabLabel: string;
+  navigation: any;
+  statusType: StatusTypes
 }
 
-interface IState {}
+interface IState {
+  dataList: Array<any>;
+  noMore: boolean;
+  loadDataResult: ReducerResult;
+}
 
-export default class base_status_list<
-  P extends IBaseStatusProps,
-  S
-> extends YZBaseDataPage<P, S> {
+export default class base_status_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
+  pageSize = 30;
   scrollY = 0;
   lastScrollY = 0;
   protected type: string;
@@ -41,12 +44,18 @@ export default class base_status_list<
   private refreshListener: EmitterSubscription;
   private _flatList: any;
 
+  readonly state:IState = {
+    dataList: [],
+    noMore: false,
+    loadDataResult: createReducerResult()
+  };
+
   constructor(props) {
     super(props);
     this.scrollListener = DeviceEventEmitter.addListener(
       'list_scroll_to_top',
       ({tabIndex}) => {
-        if (tabIndex === this.props.tabIndex) {
+        if (tabIndex === this.props.statusType) {
           this._flatList && this._flatList._scrollToTop();
         }
       },
@@ -54,25 +63,42 @@ export default class base_status_list<
     this.refreshListener = DeviceEventEmitter.addListener(
       'list_refresh',
       ({tabIndex}) => {
-        if (tabIndex === this.props.tabIndex) {
+        if (tabIndex === this.props.statusType) {
           this._flatList && this._flatList._onRefresh();
         }
       },
     );
   }
 
+  componentDidMount(): void {
+    this.loadData();
+  }
+
   componentWillUnmount() {
-    super.componentWillUnmount();
-    const {clearDataFn} = this.props;
-    if (clearDataFn) {
-      clearDataFn({
-        type: this.type,
-      });
-    } else {
-      console.info('clearDataFn is undefined');
-    }
     this.scrollListener.remove();
     this.refreshListener.remove();
+  }
+
+  loadData = async ()=>{
+    try {
+      let response = await Api.status.getStatusList({
+        request: {
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize,
+          statusType: this.props.statusType
+        }
+      });
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,this.pageSize);
+      this.setState({
+        ...pagingResult
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
   }
 
   _renderItem = ({item, index}) => {
@@ -98,7 +124,7 @@ export default class base_status_list<
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={this.props.loadDataResult}
+          loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           mustLogin={this.mustLogin || false}
           errorButtonAction={this.loadData}>
@@ -106,9 +132,9 @@ export default class base_status_list<
             ref={ref => (this._flatList = ref)}
             onScroll={CommonUtils.throttle(this._handleScroll, 500)}
             renderItem={this._renderItem}
-            data={this.props.dataList}
-            loadDataResult={this.props.loadDataResult}
-            noMore={this.props.noMore}
+            data={this.state.dataList}
+            loadDataResult={this.state.loadDataResult}
+            noMore={this.state.noMore}
             initialNumToRender={20}
             loadData={this.loadData}
             onPageIndexChange={pageIndex => {
