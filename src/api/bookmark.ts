@@ -1,21 +1,56 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
+import {StatusTypes} from "../pages/status/status_index";
+import RequestUtils from "../utils/requestUtils";
+import {questionModel} from "./question";
+import {resolveStatusHtml} from "./status";
+import {blogModel, resolveBlogHtml} from "./blog";
+
+export type myTagModel = {
+  name: string,
+  uri: string
+};
+
+export type bookmarkModel = {
+  id: string,
+  link: string,
+  title: string,
+  published: string,
+  publishedDesc: string,
+  collects: number
+}
 
 export type checkIsBookmarkRequest = RequestModel<{
   url: string;
 }>;
 
-export const getBookmarkList = data => {
-  const URL = `${gServerPath}/Bookmarks?pageIndex=${
-    data.request.pageIndex
-  }&pageSize=${data.request.pageSize}&tag=`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取书签列表失败!',
-    actionType: types.BOOKMARK_GET_LIST,
+export const getMyTags = (data:RequestModel<{}>) => {
+  console.log(global.unescape)
+  const URL = `https://wz.cnblogs.com/mytag/`;
+  return RequestUtils.get<Array<myTagModel>>(URL, {
+    resolveResult: (result)=>{
+      let matches = result.match(/data-tagname=\"[\s\S]+?(?=\")/g)|| [];
+      return matches.map(x=>{
+        let name = x.replace(/[\s\S]+\"/,'');
+        return {
+          name,
+          uri: `https://wz.cnblogs.com/my/tag/${name}`
+        } as myTagModel
+      })
+    }
+  });
+}
+
+export const getBookmarkList = (data:RequestModel<{bookmarkType:string,pageIndex: number}>) => {
+  const URL = `https://wz.cnblogs.com/my/${data.request.bookmarkType=='全部'?'':'tag/'+data.request.bookmarkType+'/'}${data.request.pageIndex}.html`;
+  return RequestUtils.get(URL, {
+    headers: {
+      "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "accept-encoding": "gzip, deflate, br",
+      "content-type": "application/json; charset=utf8",
+      "x-requested-with": "XMLHttpRequest"
+    },
+    resolveResult: resolveBookmarkHtml
   });
 };
 
@@ -92,3 +127,36 @@ export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
     actionType: types.BOOKMARK_CHECK_IS,
   });
 };
+
+
+export const resolveBookmarkHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"wz_block\"[\s\S]+?(?=list_select\")/g)|| [];
+  for (let match of matches) {
+    match = decode(match);
+    let item:Partial<bookmarkModel> = {};
+    item.link = (match.match(/rel="nofollow" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+    //不能根据link来截取，部分link后面并不是id
+    //id="link_5343159"
+    item.id = (match.match(/id=\"link_\d+?(?=\")/)||[])[0]?.replace(/id=\"link_/,'');
+    item.title = (match.match(/rel="nofollow" href=\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.published = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+    item.publishedDesc = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.collects = parseInt((match.match(/wz_item_count\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+//返回的是unicode字符串，需要解码才能操作
+const decode = (str) => {
+  // 一般可以先转换为标准 unicode 格式（有需要就添加：当返回的数据呈现太多\\\u 之类的时）
+  str = unescape(str.replace(/\\u/g, "%u"));
+  // 再对实体符进行转义
+  // 有 x 则表示是16进制，$1 就是匹配是否有 x，$2 就是匹配出的第二个括号捕获到的内容，将 $2 以对应进制表示转换
+  str = str.replace(/&#(x)?(\w+);/g, function($, $1, $2) {
+    return String.fromCharCode(parseInt($2, $1? 16: 10));
+  });
+
+  return str;
+}

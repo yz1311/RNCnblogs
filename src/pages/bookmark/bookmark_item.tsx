@@ -21,11 +21,11 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {setSelectedDetail} from '../../actions/news/news_index_actions';
 import {blogSchema, newsSchema, tables} from '../../common/database';
-import {sagaActionToAction} from '../../utils/reduxUtils';
 // import Realm from 'realm';
 const Realm = {};
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
+import {bookmarkModel} from "../../api/bookmark";
 
 interface IProps {
   userInfo?: any;
@@ -34,7 +34,7 @@ interface IProps {
   setSelectedDetailFn?: any;
   deleteBookmarkFn?: any;
   navigation: NavigationScreenProp<NavigationState>;
-  item: bookmark;
+  item: bookmarkModel;
   clickable?: boolean;
 }
 
@@ -92,7 +92,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
           const {deleteBookmarkFn, item} = this.props;
           deleteBookmarkFn({
             request: {
-              id: item.WzLinkId,
+              id: item.id,
             },
           });
         },
@@ -146,15 +146,15 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
     const {item, userInfo} = this.props;
     //根据链接类型，跳转到对应的本地页面，而不是打开网页
     //博问
-    if (/q\.cnblogs\.com\/q\//.test(item.LinkUrl)) {
+    if (/q\.cnblogs\.com\/q\//.test(item.link)) {
       let Qid = '0';
-      let matches = (item.LinkUrl || '').match(/q\/\d+?(\/){0,1}$/);
+      let matches = (item.link || '').match(/q\/\d+?(\/){0,1}$/);
       if (matches && matches.length > 0) {
         Qid = matches[0].replace('q/', '').replace('/', '');
       }
       this.props.setSelectedQuestionFn({
         Qid: Qid,
-        Url: item.LinkUrl,
+        Url: item.link,
         QuestionUserInfo: {
           // UserID: userInfo.SpaceUserID,
         },
@@ -162,40 +162,42 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
       this.props.navigation.navigate('QuestionDetail', {});
     }
     //知识库
-    else if (/kb\.cnblogs\.com\//.test(item.LinkUrl)) {
+    else if (/kb\.cnblogs\.com\//.test(item.link)) {
       let id = '0';
-      let matches = (item.LinkUrl || '').match(/\/\d+?(\/){0,1}$/);
+      let matches = (item.link || '').match(/\/\d+?(\/){0,1}$/);
       if (matches && matches.length > 0) {
         id = matches[0].replace('/', '');
       }
       this.props.navigation.navigate('KnowledgeBaseDetail', {
         item: {
-          Title: item.Title,
+          Title: item.title,
           //暂时没有下面两个字段
           Author: '',
           PostDate: '',
-          Url: item.LinkUrl,
+          Url: item.link,
           Id: id,
         },
       });
     }
     //新闻
-    else if (/news\.cnblogs\.com\//.test(item.LinkUrl)) {
+    else if (/news\.cnblogs\.com\//.test(item.link)) {
       let id = '0';
-      let matches = (item.LinkUrl || '').match(/\/\d+?(\/){0,1}$/);
+      let matches = (item.link || '').match(/\/\d+?(\/){0,1}$/);
       if (matches && matches.length > 0) {
         id = matches[0].replace('/', '');
       }
       let selectedItem = {
-        Title: item.Title,
+        Title: item.link,
         //暂时没有下面两个字段
         DateAdded: '',
         CommentCount: 0,
-        Url: item.LinkUrl,
+        Url: item.link,
         Id: id,
       };
       let realm;
       try {
+        //Todo:
+        //@ts-ignore
         const realm = await Realm.open({schema: [newsSchema]});
         let blogs = realm.objects(tables.news);
         let curNews: any = blogs.filtered(`id = "${selectedItem.Id}"`);
@@ -222,27 +224,29 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
     } else {
       let id = '0',
         blogApp = '';
-      let matches = (item.LinkUrl || '').match(/\/\d+?\.html/);
+      let matches = (item.link || '').match(/\/\d+?\.html/);
       if (matches && matches.length > 0) {
         id = matches[0].replace('.html', '').replace('/', '');
       }
-      matches = (item.LinkUrl || '').match(/com\/[\s\S]+?\//);
+      matches = (item.link || '').match(/com\/[\s\S]+?\//);
       if (matches && matches.length > 0) {
         blogApp = matches[0].replace('com/', '').replace('/', '');
       }
       let selectedItem = {
-        Title: item.Title,
+        Title: item.title,
         //Tddo:暂时没有下面三个字段
         Author: '',
         PostDate: '',
         CommentCount: 0,
-        Url: item.LinkUrl,
+        Url: item.link,
         Id: id,
         BlogApp: blogApp,
       };
       //本地查找数据，尝试填充那三个字段
       let realm;
       try {
+        //Todo:
+        //@ts-ignore
         realm = await Realm.open({schema: [blogSchema]});
         let blogs = realm.objects(tables.blog);
         let curBlogs = blogs.filtered(`id = "${selectedItem.Id}"`);
@@ -298,7 +302,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                   paddingVertical: 17,
                   flex: 1,
                 }}>
-                {item.Title}
+                {item.title}
               </Text>
               <TouchableOpacity
                 ref={ref => (this.fromView = ref)}
@@ -319,7 +323,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                 fontSize: gFont.sizeDetail,
                 marginVertical: 7,
               }}>
-              {item.LinkUrl}
+              {item.link}
             </Text>
             <Text
               style={{
@@ -328,7 +332,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                 marginRight: 10,
                 alignSelf: 'flex-end',
               }}>
-              {item.postDateDesc}
+              {item.publishedDesc}
             </Text>
           </View>
         </TouchableOpacity>

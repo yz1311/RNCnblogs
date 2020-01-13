@@ -1,89 +1,91 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, Theme} from '@yz1311/teaset';
 import BookmarkItem from './bookmark_item';
-import {
-  getBookmarkList,
-  clearBookmarkList,
-} from '../../actions/bookmark/bookmark_index_actions';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {ImmerState} from 'immer';
-import {ReduxState} from '../../reducers';
+import BaseBookmarkList from './base_bookmark_list';
+import {Api} from "../../api";
+import ScrollableTabView, {ScrollableTabBar} from "react-native-scrollable-tab-view";
+import HomeTabBar from "../home/home_indexTab";
+import BaseNewsList from "../news/base_news_list";
+import {NewsTypes} from "../news/news_index";
 
-interface IProps extends IBaseDataPageProps {
+interface IProps {
   dataList: Array<any>;
   loadDataResult: any;
   noMore: boolean;
 }
 
-interface IState {}
+interface IState {
+  dataList: Array<any>,
+}
 
-@(connect(
-  (state: ReduxState) => ({
-    dataList: state.bookmarkIndex.bookmarkList,
-    loadDataResult: state.bookmarkIndex.getBookmarkListResult,
-    noMore: state.bookmarkIndex.bookmarkList_noMore,
-  }),
-  dispatch => ({
-    dispatch,
-    loadDataFn: data => dispatch(getBookmarkList(data)),
-    clearDataFn: data => dispatch(clearBookmarkList(data)),
-  }),
-) as any)
-export default class bookmark_index extends YZBaseDataPage<IProps, IState> {
+const initialDataList = ['全部'];
+
+export default class bookmark_index extends PureComponent<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {
       title: '收藏',
     };
   };
 
-  pageIndex = 1;
-
-  getParams = () => {
-    const params = {
-      request: {
-        pageIndex: this.pageIndex,
-        pageSize: 10,
-      },
-    };
-    return params;
+  readonly state:IState = {
+    dataList: initialDataList
   };
 
-  _renderItem = ({item, index}) => {
-    return <BookmarkItem item={item} navigation={this.props.navigation} />;
-  };
+  private tabBar:ScrollableTabBar;
+
+  componentDidMount(): void {
+    this.loadData();
+  }
+
+  loadData = async ()=>{
+    try {
+      let response = await Api.bookmark.getMyTags({
+        request: {
+
+        }
+      });
+      this.setState({
+          dataList: initialDataList.concat(response.data.map(x=>x.name))
+      });
+    } catch (e) {
+
+    }
+  }
 
   render() {
     return (
       <View style={[Styles.container]}>
-        <YZStateView
-          loadDataResult={this.props.loadDataResult}
-          placeholderTitle="暂无数据"
-          errorButtonAction={this.loadData}>
-          <YZFlatList
-            renderItem={this._renderItem}
-            data={this.props.dataList}
-            loadDataResult={this.props.loadDataResult}
-            noMore={this.props.noMore}
-            initialNumToRender={20}
-            loadData={this.loadData}
-            onPageIndexChange={pageIndex => {
-              this.pageIndex = pageIndex;
-            }}
-            ItemSeparatorComponent={() => (
-              <View style={{height: 10, backgroundColor: 'transparent'}} />
+        <ScrollableTabView
+            renderTabBar={() => (
+                <ScrollableTabBar
+                    ref={bar => (this.tabBar = bar)}
+                    style={{
+                        backgroundColor: Theme.primaryColor,
+                    }}
+                    activeTextColor={gColors.bgColorF}
+                    inactiveTextColor={'#DBDBDB'}
+                    underlineStyle={{
+                        backgroundColor: gColors.bgColorF,
+                        height: 3
+                    }}
+                />
             )}
-          />
-        </YZStateView>
+            tabBarPosition="top"
+            initialPage={0}
+            scrollWithoutAnimation={true}
+            locked={false}>
+          {
+            this.state.dataList.map((x,index)=>(
+              <BaseBookmarkList
+                  tabLabel={x}
+                  bookmarkType={x}
+              />
+            ))
+          }
+        </ScrollableTabView>
       </View>
     );
   }

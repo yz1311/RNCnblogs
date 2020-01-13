@@ -9,6 +9,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "watch": false,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
       "es2015.promise",

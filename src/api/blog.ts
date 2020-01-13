@@ -178,18 +178,18 @@ export const resolveBlogHtml = (result)=>{
     let item:Partial<blogModel> = {};
     //解析digg
     item.diggs = parseInt((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,''));
-    item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
+    item.link = (match.match(/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
     //不能根据link来截取，部分link后面并不是id
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
     item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.blogapp = (match.match(/DiggPost\(([\s\S]+,){2}[\s\S]+?(?=,)/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
-    item.title = match.match((/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
-    item.summary = (match.match((/post_item_summary\"[\s\S]+?(?=\<\/p)/))||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.title = (match.match(/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.summary = (match.match(/post_item_summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
-      avatar: (match.match((/class=\"pfs\" src=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: match.match(((/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/))||[])[0]?.replace(/[\s\S]+\>/,''),
-      uri: match.match(((/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+(?=\")/,''),
+      avatar: (match.match(/class=\"pfs\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,''),
+      uri: (match.match(/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+(?=\")/,''),
     };
     item.published = match.match(((/发布于 [\s\S]+?(?=\s{3,})/))||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
     item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));

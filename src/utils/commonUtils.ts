@@ -4,7 +4,7 @@ import ToastUtils from './toastUtils';
 export default class commonUtils {
   static copyText = text => {
     Clipboard.setString(text);
-    ToastUtils.show('拷贝成功!', {
+    ToastUtils.showToast('拷贝成功!', {
       position: ToastUtils.positions.CENTER,
     });
   };
