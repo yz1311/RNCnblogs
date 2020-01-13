@@ -248,8 +248,9 @@ export const resolveQuestionHtml = (result)=>{
     // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
     //不能根据link来截取，部分link后面并不是id
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
-    item.id = ((match.match(/id=\"news_item_\d+?(?=\")/))||[])[0]?.replace(/id=\"news_item_/,'');
+    item.id = (match.match(/id=\"news_item_\d+?(?=\")/)||[])[0]?.replace(/id=\"news_item_/,'');
     item.link = `https://news.cnblogs.com/q/${item.id}/`;
+    item.gold = parseInt((match.match(/class=\"gold\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim()||'0');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = (match.match(/class=\"news_entry\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
     //可能有图片，也可能没图片
@@ -276,8 +277,8 @@ export const resolveQuestionHtml = (result)=>{
     }
     item.published = (match.match(/title=\"[\s\S]+?(?=class=\"date\")/)||[])[0]?.replace(/[\s\S]+?\"/,'').replace('"','');
     item.publishedDesc = (match.match(/class=\"date\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
-    item.comments = parseInt(((match.match(/回答\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.views = parseInt(((match.match(/浏览\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.comments = parseInt((match.match(/回答\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt((match.match(/浏览\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
   }
   return items;
@@ -291,8 +292,9 @@ export const resolveQuestion1Html = (result)=>{
     let item:Partial<questionModel> = {};
     //解析digg
     // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
-    item.id = ((match.match(/id=\"feed_content_\d+?(?=\")/))||[])[0]?.replace(/id=\"feed_content_/,'');
+    item.id = (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,'');
     item.link = `https://news.cnblogs.com/q/${item.id}/`;
+    item.gold = parseInt((match.match(/class=\"gold\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim()||'0');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = '';
     item.summary = (match.match(/class=\"feed_title_tip\"[\s\S]+?(?=<\/div)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim();

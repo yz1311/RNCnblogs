@@ -243,14 +243,13 @@ export default class question_item extends PureComponent<IProps, any> {
                 Styles.text4Pie,
               ]}>
               {item.gold > 0 ? (
-                <MaterialCommunityIcons
-                  name="coin"
-                  size={20}
-                  color={gColors.colorff}
+                <Image
+                    style={{width:15,height:15}}
+                  source={{uri: 'https://common.cnblogs.com/images/icons/yuandou20170322.png'}}
                 />
               ) : null}
               {item.gold > 0 ? (
-                <Text style={{color: gColors.colorff}}>
+                <Text style={{color: '#f47a20',fontSize:gFont.size15,marginLeft:3}}>
                   {item.gold + '   '}
                 </Text>
               ) : null}

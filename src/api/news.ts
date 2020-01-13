@@ -154,11 +154,11 @@ export const resolveNewsHtml = (result)=>{
   for (let match of matches) {
     let item:Partial<newsModel> = {};
     //解析digg
-    item.diggs = parseInt(((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/))||[])[0]?.replace(/[\s\S]+>/,''));
+    item.diggs = parseInt((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,''));
     // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
     //不能根据link来截取，部分link后面并不是id
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
-    item.id = ((match.match(/id=\"digg_num_\d+?(?=\")/))||[])[0]?.replace(/id=\"digg_num_/,'');
+    item.id = (match.match(/id=\"digg_num_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_num_/,'');
     item.link = `https://news.cnblogs.com/n/${item.id}/`;
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = (match.match(/class=\"news_entry\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
@@ -177,8 +177,8 @@ export const resolveNewsHtml = (result)=>{
       uri: 'https://news.cnblogs.com/'+(match.match(/class=\"tag\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };
     item.published = match.match(((/发布于 [\s\S]+?(?=<\/span)/))||[])[0]?.replace(/[\s\S]+?>/,'');
-    item.comments = parseInt(((match.match(/评论\([\s\S]+?(?=\))/))||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.views = parseInt(((match.match(/class="view"[\s\S]+(?=人浏览)/))||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
+    item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt((match.match(/class="view"[\s\S]+(?=人浏览)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
     items.push(item);
   }
   return items;
