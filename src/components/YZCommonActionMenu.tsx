@@ -11,7 +11,6 @@ import {
   InteractionManager,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
 import {
@@ -26,6 +25,9 @@ import {showToast} from '../actions/app_actions';
 import moment from 'moment';
 import {ReduxState} from '../reducers';
 import {checkIsBookmarkRequest} from '../api/bookmark';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import ToastUtils from "../utils/toastUtils";
+import {Api} from "../api";
 
 export interface IProps extends IReduxProps {
   data: any;
@@ -41,8 +43,7 @@ export interface IProps extends IReduxProps {
   showShareButton: boolean;
   isFav?: boolean;
   isLogin?: boolean;
-  getIsFavResult?: any;
-  showToastFn?: any;
+  title?: string,
   deleteBookmarkByUrlFn?: any;
   setBlogIsFavFn?: any;
   addBookmarkFn?: any;
@@ -54,13 +55,10 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-    // isFav: state.bookmarkIndex.isFav,
     isLogin: state.loginIndex.isLogin,
-    // getIsFavResult: state.bookmarkIndex.getIsFavResult,
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
     addBookmarkFn: data => dispatch(addBookmark(data)),
@@ -97,31 +95,44 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
     };
   }
 
+  componentDidMount(): void {
+    this.checkIsBookmark();
+  }
+
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.props.isFav !== nextProps.isFav) {
       this.state.starProgress.setValue(nextProps.isFav ? 1 : 0);
     }
   }
 
-  favAction = () => {
+  checkIsBookmark = async ()=>{
+    try {
+      let response = await Api.bookmark.checkIsBookmark({
+        request: {
+          title: this.props.title?.substr(0,15)
+        }
+      });
+    } catch (e) {
+
+    }
+  }
+
+  favAction = async () => {
     const {data, isLogin} = this.props;
     if (!isLogin) {
       //TODO：返回后重新获取收藏状态
       NavigationHelper.navigate('Login', {
         //登录成功后，重新获取
         callback: () => {
-          let params: checkIsBookmarkRequest = {
-            request: {
-              url: (data.Url || '').replace('http:', 'https:'),
-            },
-          };
-          this.props.dispatch(checkIsBookmark(params));
+          //Todo:
+          // let params: checkIsBookmarkRequest = {
+          //   request: {
+          //     url: (data.Url || '').replace('http:', 'https:'),
+          //   },
+          // };
+          // this.props.dispatch(checkIsBookmark(params));
         },
       });
-      return;
-    }
-    if (!this.props.getIsFavResult.success) {
-      this.props.showToastFn('正在获取状态，请稍后再试');
       return;
     }
     if (!data.Url) {
@@ -142,32 +153,21 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       });
       this.state.starProgress.setValue(0);
     } else {
-      Animated.timing(this.state.starProgress, {
-        toValue: 1,
-        duration: 1000,
-        // isInteraction: false
-        // easing: Easing.,
-      }).start();
-      InteractionManager.runAfterInteractions(() => {
-        let request = {
-          Title: data.Title,
-          LinkUrl: (data.Url || '').replace('http:', 'https:'),
-          Summary: '',
-          DateAdded: moment().format('YYYY-MM-DD HH:mm:ss'),
-          FromCNBlogs: true,
-          Tags: [],
-        };
-        this.props.addBookmarkFn({
-          request: request,
-          showLoading: false,
-          successAction: () => {
-            this.props.setBlogIsFavFn(true);
-          },
-          failAction: () => {
-            this.state.starProgress.setValue(0);
-          },
+      try {
+        let response = await Api.bookmark.addBookmark({
+          request: {
+            url: '',
+            title: '',
+            summary: '',
+            tags: ''
+          }
         });
-      });
+        ToastUtils.showToast('添加成功!');
+      } catch (e) {
+
+      } finally {
+
+      }
     }
 
     return;
@@ -238,7 +238,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
         // dismissed
       }
     } catch (error) {
-      alert(error.message);
+
     }
   };
 
@@ -313,15 +313,9 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
         {showFavButton ? (
           <TouchableOpacity
             activeOpacity={activeOpacity}
-            style={{alignSelf: 'stretch', justifyContent: 'center'}}
+            style={{alignSelf: 'stretch', justifyContent: 'center',paddingTop:5}}
             onPress={this.favAction}>
-            {/*<LottieView*/}
-            {/*  style={{width: 37, height: 37}}*/}
-            {/*  source={require('../resources/animation/4852-star-animation')}*/}
-            {/*  progress={this.state.starProgress}*/}
-            {/*  // autoPlay*/}
-            {/*  // loop*/}
-            {/*/>*/}
+            <Ionicons name={isFav?'ios-heart':'ios-heart-empty'} size={27} color={isFav?gColors.colorRed:gColors.color999}/>
           </TouchableOpacity>
         ) : null}
         {showShareButton ? (

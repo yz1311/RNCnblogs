@@ -519,6 +519,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
+              title={this.props.item.title}
               commentCount={item.comments}
               onClickCommentList={() => {
                 NavigationHelper.push('BlogCommentList', {
