@@ -169,6 +169,9 @@ export default class RequestUtils {
                 ...request.headers,
                 'cookie': gUserData.token
             };
+            if(request.showLoading) {
+                ToastUtils.showLoading();
+            }
             return request;
         }, (error => {
 
@@ -178,7 +181,6 @@ export default class RequestUtils {
         axios.interceptors.response.use(async (response) => {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
-            console.log(response)
             //如果是字符串，尝试转换成js对象
             if(typeof response.data == 'string'
                 && ((response.config as AxiosRequestConfigPatch).autoResolveXML == true || (response.config as AxiosRequestConfigPatch).autoResolveXML == undefined)

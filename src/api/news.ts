@@ -113,6 +113,10 @@ export const getNewsCommentList = (data: RequestModel<{
   const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
   return RequestUtils.get<Array<blogCommentModel>>(URL, {
     resolveResult: (result)=>{
+      //说明是空数据
+      if(result.hasOwnProperty('feed')) {
+        result = [];
+      }
       //要重新计算楼层，返回的数据的Floor都只是本页的序号
       result = (result || []).map((x, xIndex) => ({
         ...x,

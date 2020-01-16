@@ -136,13 +136,14 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       });
       return;
     }
+    ToastUtils.showLoading();
     if (this.state.isFav) {
       //由于参数一致，直接统一在本页面操作
       try {
         let response = await Api.bookmark.deleteBookmarkByTitle({
           request: {
             title: this.props.data.title,
-          }
+          },
         });
         //刷新状态
         this.checkIsBookmark();
@@ -150,7 +151,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       } catch (e) {
 
       } finally {
-
+        ToastUtils.hideLoading();
       }
     } else {
       try {
@@ -160,7 +161,8 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
             title: this.props.data.title,
             summary: '',
             tags: ''
-          }
+          },
+          showLoading: true
         });
         //刷新状态
         this.checkIsBookmark();
@@ -168,7 +170,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       } catch (e) {
 
       } finally {
-
+        ToastUtils.hideLoading();
       }
     }
 
