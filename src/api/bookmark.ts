@@ -124,7 +124,7 @@ export const deleteBookmarkByTitle = (data:RequestModel<{title: string}>) => {
 export const addBookmark = (data:addBookmarkRequestModel) => {
   data.request.wzLinkId = '0';
   const URL = `https://wz.cnblogs.com/api/wz`;
-  return RequestUtils.post(URL, data.request);
+  return RequestUtils.post<{success:boolean, message:string}>(URL, data.request);
 };
 
 export const modifyBookmark = data => {

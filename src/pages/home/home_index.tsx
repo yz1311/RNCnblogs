@@ -24,7 +24,9 @@ export enum BlogTypes {
   精华,
   候选,
   关注,
-  知识库
+  知识库,
+  //非tab页面
+  我的
 }
 
 @(connect(

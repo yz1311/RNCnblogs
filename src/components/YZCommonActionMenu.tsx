@@ -164,9 +164,13 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
           },
           showLoading: true
         });
-        //刷新状态
-        this.checkIsBookmark();
-        ToastUtils.showToast('添加成功!');
+        if(response.data.success) {
+          //刷新状态
+          this.checkIsBookmark();
+          ToastUtils.showToast('添加成功!');
+        } else {
+          ToastUtils.showToast(response.data.message);
+        }
       } catch (e) {
 
       } finally {

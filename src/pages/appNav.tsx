@@ -15,6 +15,7 @@ import AppEntry from './login/app_entry';
 import HomeSearch from '../pages/home/home_search';
 import BlogDetail from '../pages/blog/blog_detail';
 import BlogCommentList from '../pages/blog/blog_comment_list';
+import BaseBlogList from '../pages/blog/base_blog_list';
 import NewsDetail from '../pages/news/news_detail';
 import NewsCommentList from '../pages/news/news_comment_list';
 import Status from '../pages/status/status_index';
@@ -53,6 +54,7 @@ const AppNavigation = createStackNavigator(
     },
     BlogDetail: {screen: withMappedNavigationProps(BlogDetail)},
     BlogCommentList: {screen: withMappedNavigationProps(BlogCommentList)},
+    BaseBlogList: {screen: withMappedNavigationProps(BaseBlogList)},
     NewsDetail: {screen: withMappedNavigationProps(NewsDetail)},
     NewsCommentList: {screen: withMappedNavigationProps(NewsCommentList)},
     Status: {screen: withMappedNavigationProps(Status)},

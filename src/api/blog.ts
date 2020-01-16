@@ -53,18 +53,9 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
-export const getPersonalBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts?pageIndex=${
-    data.request.PageIndex
-  }`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取个人博客随笔列表失败!',
-    actionType: types.BLOG_GET_PERSONAL_BLOGLIST,
-  });
+export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number}>) => {
+  const URL = `${gServerPath}/blog/u/${gUserData.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
+  return RequestUtils.get(URL);
 };
 
 export const getPickedBlogList = (data: getBlogListRequest) => {

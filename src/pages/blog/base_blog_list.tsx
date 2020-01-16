@@ -130,10 +130,19 @@ class base_blog_list extends PureComponent<IProps,IState> {
           })
         };
         break;
+      case BlogTypes.我的:
+        action = ()=>{
+          return Api.blog.getPersonalBlogList({
+            request: {
+              pageIndex: this.pageIndex,
+              pageSize: 10
+            }
+          })
+        };
+        break;
     }
     try {
       let response = await action();
-      console.log(response)
       let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,10);
       this.setState({
           ...pagingResult
