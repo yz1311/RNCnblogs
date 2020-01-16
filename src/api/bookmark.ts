@@ -6,6 +6,9 @@ import {questionModel} from "./question";
 import {resolveStatusHtml} from "./status";
 import {blogModel, resolveBlogHtml} from "./blog";
 import Axios from "axios";
+import {decode as atob, encode as btoa} from 'base-64'
+import {Alert} from "@yz1311/teaset";
+
 
 export type myTagModel = {
   name: string,
@@ -32,6 +35,8 @@ export type addBookmarkRequestModel = RequestModel<{
 
 export type checkIsBookmarkRequest = RequestModel<{
   title: string;
+  url: string,
+  id: string,
 }>;
 
 export const getMyTags = (data:RequestModel<{}>) => {
@@ -83,21 +88,36 @@ export const deleteBookmark = (data:RequestModel<{id: string}>) => {
 };
 
 //用户文章中直接取消收藏
-export const deleteBookmarkByUrl = data => {
-  const URL = `${gServerPath}/bookmarks?url=${data.request.url}`;
-  const options = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + gUserData.token,
-    },
-  };
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除书签失败!',
-    actionType: types.BOOKMARK_DELETE,
+export const deleteBookmarkByTitle = (data:RequestModel<{title: string}>) => {
+  //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
+  return new Promise(async (resolve,reject)=>{
+    try {
+      let response = await searchBookmarkList({
+        request: {
+          pageIndex: 1,
+          keyword: data.request.title
+        }
+      });
+      if(response.data.length==0) {
+        Alert.alert('','修改过文章标题的收藏暂不支持取消，是否前往收藏中心进行取消?',[{
+          text: '取消'
+        }, {
+          text: '前往',
+          onPress:()=>{
+
+          }
+        }]);
+        reject(new Error('取消失败'));
+        return;
+      }
+      resolve(await deleteBookmark({
+        request: {
+          id: response.data[0].id
+        }
+      }));
+    } catch (e) {
+      reject(e);
+    }
   });
 };
 
@@ -119,20 +139,17 @@ export const modifyBookmark = data => {
   });
 };
 
-//这个接口很奇怪，statusCode,404为不存在，2xx为存在
 export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
-  //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
-  return new Promise(async (resolve,reject)=>{
-    try {
-      let response = await searchBookmarkList({
-        request: {
-          pageIndex: 1,
-          keyword: data.request.title
-        }
-      });
-      resolve(response.data.length>0);
-    } catch (e) {
-      reject(e);
+  let t = data.request.title;
+  try {
+    t = btoa(unescape(encodeURIComponent(t)));
+  } catch (e) {
+    t = encodeURIComponent(t.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+  }
+  const URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
+  return RequestUtils.get<boolean>(URL,{
+    resolveResult:(result)=>{
+      return !/选择标签/.test(result);
     }
   });
 };

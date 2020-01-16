@@ -41,7 +41,6 @@ export interface IProps extends IReduxProps {
   showCommentButton: boolean;
   showFavButton: boolean;
   showShareButton: boolean;
-  isFav?: boolean;
   isLogin?: boolean;
   title?: string,
   deleteBookmarkByUrlFn?: any;
@@ -51,6 +50,7 @@ export interface IProps extends IReduxProps {
 
 interface IState {
   starProgress: any;
+  isFav: boolean;
 }
 
 @(connect(
@@ -91,7 +91,8 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      starProgress: new Animated.Value(props.isFav ? 1 : 0),
+      starProgress: new Animated.Value(0),
+      isFav: false
     };
   }
 
@@ -99,18 +100,18 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
     this.checkIsBookmark();
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (this.props.isFav !== nextProps.isFav) {
-      this.state.starProgress.setValue(nextProps.isFav ? 1 : 0);
-    }
-  }
-
   checkIsBookmark = async ()=>{
     try {
       let response = await Api.bookmark.checkIsBookmark({
         request: {
-          title: this.props.title?.substr(0,15)
+          title: this.props.title,
+          id: this.props.data.id,
+          url: this.props.data.link
         }
+      });
+      console.log(response.data);
+      this.setState({
+        isFav: response.data
       });
     } catch (e) {
 
@@ -135,33 +136,34 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       });
       return;
     }
-    if (!data.Url) {
-      console.error('收藏功能，对象必须具备Url属性');
-      return;
-    }
-    if (this.props.isFav) {
+    if (this.state.isFav) {
       //由于参数一致，直接统一在本页面操作
-      const {deleteBookmarkByUrlFn, data} = this.props;
-      deleteBookmarkByUrlFn({
-        request: {
-          url: (data.Url || '').replace('http:', 'https:'),
-        },
-        showLoading: false,
-        successAction: () => {
-          this.props.setBlogIsFavFn(false);
-        },
-      });
-      this.state.starProgress.setValue(0);
+      try {
+        let response = await Api.bookmark.deleteBookmarkByTitle({
+          request: {
+            title: this.props.data.title,
+          }
+        });
+        //刷新状态
+        this.checkIsBookmark();
+        ToastUtils.showToast('取消成功!');
+      } catch (e) {
+
+      } finally {
+
+      }
     } else {
       try {
         let response = await Api.bookmark.addBookmark({
           request: {
-            url: '',
-            title: '',
+            url: this.props.data.link,
+            title: this.props.data.title,
             summary: '',
             tags: ''
           }
         });
+        //刷新状态
+        this.checkIsBookmark();
         ToastUtils.showToast('添加成功!');
       } catch (e) {
 
@@ -171,7 +173,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
     }
 
     return;
-    if (this.props.isFav) {
+    if (this.state.isFav) {
       Alert.alert('', '是否删除该条收藏?', [
         {
           text: '取消',
@@ -247,13 +249,13 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       checked,
       size,
       disabled,
-      isFav,
       showCommentButton,
       showFavButton,
       showShareButton,
       onClickCommentList,
       commentCount,
     } = this.props;
+    const {isFav,} = this.state;
     let color;
     if (disabled) {
       color = gColors.borderColor;
