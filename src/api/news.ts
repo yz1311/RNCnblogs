@@ -10,6 +10,8 @@ import {
   resolveBlogHtml
 } from "./blog";
 import {NewsTypes} from '../pages/news/news_index';
+import {Api} from "./index";
+import {AxiosResponse} from "axios";
 
 export type newsModel = {
   tag: {
@@ -118,15 +120,15 @@ export const commentNews = data => {
 };
 
 
-export const getNewsCommentList = (data: RequestModel<{
+export const getNewsCommentList = async (data: RequestModel<{
   commentId: number,
   pageIndex: number,
   pageSize: number,
 }>) => {
-  const URL = `https://news.cnblogs.com/CommentAjax/GetComments?contentId=${data.request.commentId}`
-  return RequestUtils.get(URL, {
+  const URL = `https://news.cnblogs.com/CommentAjax/GetComments?contentId=${data.request.commentId}`;
+  return RequestUtils.get<Array<blogCommentModel>>(URL, {
     resolveResult: (result) => {
-      let dataList = resolveNewsCommentHtml(result);
+      let dataList = resolveNewsCommentHtml(result) as Array<blogCommentModel>;
       //要重新计算楼层，返回的数据的Floor都只是本页的序号
       dataList = (dataList || []).map((x, xIndex) => ({
         ...x,

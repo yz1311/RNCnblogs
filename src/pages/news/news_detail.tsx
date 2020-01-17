@@ -356,7 +356,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
                         <img 
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.author?.uri ||
+                        src="${comment.author?.avatar ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
                         <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
                             <span style="font-weight: bold;">

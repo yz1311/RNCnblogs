@@ -156,8 +156,6 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
       let tags = [] as Array<{name: string, url:string}>;
       let tagMatches = (result.match(/标签[\s\S]+/)||[])[0]?.match(/\<a href=[\s\S]+?(?=\<\/a\>)/g);
       for (let match of (tagMatches||[])) {
-        console.log(match)
-        console.log(match.match(/href=\"[\s\S]+?\<\/"/))
         tags.push({
           name: match.replace(/[\s\S]+href=\"[\s\S]+?\>/,''),
           url: (match.match(/href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/href=\"/,''),

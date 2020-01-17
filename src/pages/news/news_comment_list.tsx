@@ -67,7 +67,7 @@ interface IState {
     deleteNewsCommentFn: data => dispatch(deleteNewsComment(data)),
   }),
 ) as any)
-export default class news_comment_list extends PureComponent<IProps, IState> {
+export default class news_comment_list extends Component<IProps, IState> {
   pageIndex = 1;
 
   static propTypes = {
@@ -147,12 +147,45 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
       this.setState({
         ...pagingResult
       });
+      //获取头像
+      this.getUserAvatar();
     } catch (e) {
       this.setState({
         loadDataResult: dataToReducerResult(e)
       });
     } finally {
 
+    }
+  }
+
+  getUserAvatar = async ()=>{
+    for (let index in this.state.dataList) {
+      let item = this.state.dataList[index];
+      if(!item.author?.avatar || item.author?.avatar=='') {
+        try {
+          let imgRes = await Api.profile.getUserInfo({
+            request: {
+              userId: (item as blogCommentModel).author?.id
+            }
+          });
+          let nextDateList = [
+            ...this.state.dataList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: imgRes.data.avatar
+              }
+            },
+            ...this.state.dataList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            dataList: nextDateList
+          })
+        } catch (e) {
+
+        }
+      }
     }
   }
 
@@ -204,7 +237,7 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
     return (
       <CommentItem
         item={item}
-        iconName={item.author?.uri}
+        iconName={item.author?.avatar}
         userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}

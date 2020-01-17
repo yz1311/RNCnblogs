@@ -300,7 +300,6 @@ export default class comment_item extends PureComponent<IProps, IState> {
     if (iconName.indexOf('http') === -1) {
       avator = `https://pic.cnblogs.com/face/${iconName}`;
     }
-    console.log(userId,authorUserId)
     return (
       <TouchableOpacity
         activeOpacity={activeOpacity}

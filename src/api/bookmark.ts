@@ -165,7 +165,7 @@ export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
     });
   } else {
     //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
-    return new Promise(async (resolve,reject)=>{
+    return new Promise(async (resolve:(data:{data:boolean})=>void,reject)=>{
       try {
         let response = await searchBookmarkList({
           request: {
