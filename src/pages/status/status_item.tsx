@@ -72,7 +72,7 @@ export default class status_item extends PureComponent<IProps, IState> {
             deleteStatusFn &&
               deleteStatusFn({
                 request: {
-                  statusId: item.Id,
+                  statusId: item.id,
                 },
                 successAction: () => {
                   //如果是在详情，则返回到列表界面
@@ -152,17 +152,17 @@ export default class status_item extends PureComponent<IProps, IState> {
               paddingHorizontal: 8,
             }}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              {item.IsPrivate ? (
-                <Text style={{color: gColors.colorRed, fontSize: gFont.size12}}>
-                  [私有]
-                </Text>
-              ) : null}
+              {/*{item.IsPrivate ? (*/}
+              {/*  <Text style={{color: gColors.colorRed, fontSize: gFont.size12}}>*/}
+              {/*    [私有]*/}
+              {/*  </Text>*/}
+              {/*) : null}*/}
               <TouchableOpacity
                 activeOpacity={activeOpacity}
                 onPress={() => {
                   ServiceUtils.viewProfileDetail(
                     this.props.dispatch,
-                    item.UserAlias,
+                    item.author?.id,
                     item.author?.avatar,
                   );
                 }}
@@ -192,7 +192,7 @@ export default class status_item extends PureComponent<IProps, IState> {
               html={item.summary}
               stylesheet={styles}
             />
-            {item.comments.length > 0 ? (
+            {item.commentCount > 0 ? (
               <View
                 style={{
                   flexDirection: 'row',
@@ -201,7 +201,7 @@ export default class status_item extends PureComponent<IProps, IState> {
                   marginTop: 5,
                 }}>
                 <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                  {item.comments.length + ' 评论'}
+                  {item.commentCount + ' 评论'}
                 </Text>
               </View>
             ) : null}

@@ -41,17 +41,18 @@ import {
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
+import {Api} from "../../api";
+import {statusCommentModel, statusModel} from "../../api/status";
+import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 
 interface IProps extends IBaseDataPageProps {
   clearStatusCommentListFn?: any;
   userInfo?: any;
   clearBlogIsFavFn?: any;
-  item: any;
+  item: statusModel;
   deleteStatusCommentFn?: any;
   isFav?: boolean;
   data?: any;
-  getStatusCommentListResult?: any;
-  statusCommentList?: Array<any>;
   commentStatusFn?: any;
 }
 
@@ -60,14 +61,12 @@ interface IState {
   isRefreshing: boolean;
   selectedCommentItem: any;
   headerTitle: string;
+  commentList: Array<statusCommentModel>,
+  getCommentListResult: ReducerResult,
 }
 
 @(connect(
   (state: ReduxState) => ({
-    data: state.statusIndex.statusDetail,
-    loadDataResult: state.statusIndex.getStatusDetailResult,
-    statusCommentList: state.statusIndex.statusCommentList,
-    getStatusCommentListResult: state.statusIndex.getStatusCommentListResult,
     userInfo: state.loginIndex.userInfo,
   }),
   dispatch => ({
@@ -80,7 +79,7 @@ interface IState {
     deleteStatusCommentFn: data => dispatch(deleteStatusComment(data)),
   }),
 ) as any)
-export default class status_detail extends YZBaseDataPage<IProps, IState> {
+export default class status_detail extends PureComponent<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {
       title: '闪存',
@@ -95,16 +94,17 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.state,
       isRefreshing: false,
       headerTitle: '',
       headerSubmit: '',
       selectedCommentItem: null,
+      commentList: [],
+      getCommentListResult: createReducerResult()
     };
   }
 
   componentDidMount() {
-    super.componentDidMount();
+    this.loadData();
     this.reloadListener = DeviceEventEmitter.addListener(
       'reload_status_detail',
       this.loadData,
@@ -120,38 +120,42 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
-    this.props.clearStatusCommentListFn();
-    //清空isFav属性
-    this.props.clearBlogIsFavFn();
     this.reloadListener && this.reloadListener.remove();
   }
 
-  getParams = () => {
-    const {item} = this.props;
-    const params = {
-      request: {
-        id: item.Id,
-      },
-      item: item,
-    };
-    return params;
-  };
+  loadData = async ()=>{
+    try {
+      let imgRes = await Api.status.getStatusCommentList({
+        request: {
+          id: this.props.item.id,
+          userAlias: ''
+        }
+      });
+      this.setState({
+        commentList: imgRes.data,
+        getCommentListResult: dataToReducerResult(imgRes.data)
+      });
+    } catch (e) {
+      this.setState({
+        getCommentListResult: dataToReducerResult(e)
+      })
+    }
+  }
 
-  _renderCommentItem = ({item, index}) => {
+  _renderCommentItem = ({item, index}:{item:statusCommentModel,index:number}) => {
     const {userInfo} = this.props;
     return (
       <CommentItem
         item={item}
-        iconName={item.UserIconUrl}
-        authorUserId={this.props.item.UserId}
-        userId={item.UserId}
-        userName={item.UserDisplayName}
+        iconName={item.author?.avatar}
+        authorUserId={this.props.item.author?.id}
+        userId={item.author?.id}
+        userName={item.author?.name}
         floor={item.Floor}
-        content={item.Content}
-        postDate={item.DateAdded}
+        content={item.summary}
+        postDate={item.published}
         canModify={false}
-        canDelete={item.UserId === userInfo.SpaceUserID}
+        canDelete={item.author?.id === userInfo.SpaceUserID}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -169,8 +173,8 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
           const {deleteStatusCommentFn} = this.props;
           deleteStatusCommentFn({
             request: {
-              statusId: this.props.item.Id,
-              commentId: item.Id,
+              statusId: this.props.item.id,
+              commentId: item.id,
             },
             successAction: () => {
               //刷新当前列表
@@ -194,7 +198,7 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
       request: {
         ReplyTo: '0',
         ParentCommentId: selectedCommentItem ? selectedCommentItem.Id : '0',
-        statusId: item.Id,
+        statusId: item.id,
         Content: this.state.headerSubmit + '\n\n' + text,
       },
       successAction: () => {
@@ -211,11 +215,11 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
   };
 
   render() {
-    const {item, data, isFav} = this.props;
+    const {item, isFav} = this.props;
     let headerComponent = (
       <View>
         <StatusItem
-          item={this.props.data}
+          item={this.props.item}
           clickable={false}
           navigation={this.props.navigation}
         />
@@ -228,11 +232,11 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <YZStateView
-          loadDataResult={this.props.loadDataResult}
+          loadDataResult={createReducerResult({state: 'content'})}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
-          {this.props.getStatusCommentListResult.success &&
-          this.props.statusCommentList.length == 0 ? (
+          {this.state.getCommentListResult.success &&
+          this.state.commentList.length == 0 ? (
             <ScrollView
               refreshControl={
                 <RefreshControl
@@ -256,15 +260,15 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
             </ScrollView>
           ) : (
             <YZStateView
-              loadDataResult={this.props.getStatusCommentListResult}
+              loadDataResult={this.state.getCommentListResult}
               placeholderTitle="-- 暂无评论 --"
               errorButtonAction={this.loadData}>
               <YZFlatList
                 ref={ref => (this._flatList = ref)}
                 ListHeaderComponent={headerComponent}
                 renderItem={this._renderCommentItem}
-                data={this.props.statusCommentList}
-                loadDataResult={this.props.getStatusCommentListResult}
+                data={this.state.commentList}
+                loadDataResult={this.state.getCommentListResult}
                 noMore
                 initialNumToRender={20}
                 loadData={this.loadData}
@@ -286,7 +290,7 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={data.CommentCount}
+              commentCount={this.props.item.commentCount}
               serviceType={ServiceTypes.闪存}
               onClickCommentList={() => {
                 this._flatList &&

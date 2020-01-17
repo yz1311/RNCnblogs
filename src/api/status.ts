@@ -4,6 +4,7 @@ import RequestUtils from "../utils/requestUtils";
 import {QuestionTypes} from "../pages/question/question_index";
 import {questionModel, resolveQuestion1Html, resolveQuestionHtml} from "./question";
 import {StatusTypes} from "../pages/status/status_index";
+import moment from "moment";
 
 export type statusModel = {
   id: string,
@@ -20,8 +21,29 @@ export type statusModel = {
     authorUri: string,
   },
   comments: Array<statusModel>,
+  commentCount: number,
   published: string,
   publishedDesc: string,
+  hasGetComments: boolean;
+};
+
+
+export type statusCommentModel = {
+  id: string,
+  author: {
+    name: string,
+    uri: string,
+    avatar: string,
+    id: string
+  },
+  title: string,
+  summary: string,
+  reply: {
+    author: string,
+    authorUri: string,
+  },
+  published: string,
+  Floor: number
 };
 
 export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number}>) => {
@@ -47,15 +69,35 @@ export const getStatusDetail = data => {
   });
 };
 
-export const getStatusCommentList = data => {
-  const URL = `${gServerPath}/statuses/${data.request.id}/comments`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取闪存评论列表失败!',
-    actionType: types.STATUS_GET_COMMENT_LIST,
+export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/SingleIngComments?ingId=${data.request.id}`;
+  return RequestUtils.get<Array<statusCommentModel>>(URL, {
+    resolveResult: (result)=>{
+      let matches = result.match(/<li id=\"comment_[\s\S]+?<\/li>/g) || [];
+      let comments = [];
+      let index = 1;
+      for (let match of matches) {
+        let comment = {} as Partial<statusCommentModel>;
+        comment.title = '';
+        comment.id = (match.match(/id=\"comment_[\s\S]+?(?=\")/)||[])[0]?.replace(/id=\"comment_/,'')?.trim(),
+        comment.summary = (match.match(/class=\"ing_comment\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+?ing_comment\">/,'')?.trim();
+        comment.author = {
+          id: '',
+          uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+          name: (match.match(/id=\"comment_author_[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').trim(),
+          avatar: ''
+        };
+        comment.author.id = comment.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+        comment.published = (match.match(/class=\"ing_comment_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+        if(/^\d{2}:\d{2}$/.test(comment.published)) {
+          comment.published =moment().format('YYYY-MM-DD ')+comment.published+':00';
+        }
+        comment.Floor =  index;
+        comments.push(comment)
+        index++;
+      }
+      return comments;
+    }
   });
 };
 
@@ -111,7 +153,7 @@ export const addStatus = data => {
 
 export const resolveStatusHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"entry_(a|b)\"[\s\S]+?(?=<\/li>)/g) || [];
+  let matches = result.match(/class=\"entry_(a|b)\"[\s\S]+?clear[\s\S]+?(?=<\/li>[\s\S]*(<li|<\/ul))/g) || [];
   for (let match of matches) {
     let item:Partial<statusModel> = {};
     //解析digg
@@ -128,6 +170,7 @@ export const resolveStatusHtml = (result)=>{
       uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"ing-author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
     };
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
       item.author.avatar = 'https:'+item.author.avatar;
     }
@@ -135,35 +178,20 @@ export const resolveStatusHtml = (result)=>{
       item.author.uri = 'https:'+item.author.uri;
     }
     item.published = (match.match(/class=\"ing_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    if(/^\d{2}:\d{2}$/.test(item.published)) {
+        item.published =moment().format('YYYY-MM-DD ')+item.published+':00';
+    }
     //Todo:
     item.publishedDesc = '';
     item.reply = {
       author: (match.match(/class=\"replyBox\"[\s\S]+?class=\"feed_author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
       authorUri: (match.match(/class=\"replyBox\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
     }
-    item.comments = [];
-    let commentMatches = (match.match(/class=\"feed_ing_comment_block\"[\s\S]+/)||[])[0]?.match(/<li id=\"comment_[\s\S]+?(?=<\/li>)/) || [];
-    for (let commentMatch of commentMatches) {
-      item.comments.push({
-        id: (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,''),
-        title: '',
-        summary: (match.match(/class=\"ing_body\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
-        //ing_comment_time
-        published: (match.match(/class=\"ing_comment_time\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"',''),
-        publishedDesc: '',
-        author: {
-          id: '',
-          avatar: '',
-          uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-          name: (match.match(/id=\"comment_author_[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
-        },
-        reply: {
-          authorUri: (match.match(/class=\"ing_comment\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-          author: (match.match(/class=\"ing_comment\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
-        },
-        comments:[]
-      })
+    item.commentCount = parseInt((match.match(/\d{0,6}回应[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),)
+    if(isNaN(item.commentCount)) {
+      item.commentCount = 0;
     }
+    item.comments = [];
     items.push(item);
   }
   return items;

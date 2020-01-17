@@ -99,7 +99,9 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
   }
 
   componentDidMount(): void {
-    this.checkIsBookmark();
+    if(this.props.showFavButton) {
+      this.checkIsBookmark();
+    }
   }
 
   checkIsBookmark = async ()=>{
