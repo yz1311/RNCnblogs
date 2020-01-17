@@ -89,7 +89,13 @@ export const getNewsDetail = (data: getBlogDetailRequest) => {
       PrevNews: string,
       NextNews: string,
       CommentCount: string,
-    }>(URL);
+    }>(URL, {
+      resolveResult: (result)=>{
+        //图片部分没有带协议头，在app中无法显示
+        result.Content = result.Content.replace(/<img src=\"\/\//g,'<img src="https://');
+        return result;
+      }
+  });
 };
 
 export const commentNews = data => {
@@ -169,6 +175,7 @@ export const resolveNewsHtml = (result)=>{
     //可能有图片，也可能没图片
     item.summary = (match.match((/entry_summary\"[\s\S]+?(?=\<\/div)/))||[])[0]?.replace(/[\s\S]+>/,'').trim();
     item.author = {
+      id: '',
       avatar: (match.match(/src=\"[\s\S]+?(?=\" class=\"topic_img)/)||[])[0]?.replace(/[\s\S]+\"/,''),
       uri: (match.match(/class=\"entry_footer\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"entry_footer\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
@@ -176,6 +183,7 @@ export const resolveNewsHtml = (result)=>{
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
     }
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.tag = {
       name: (match.match(/class=\"tag\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
       uri: 'https://news.cnblogs.com/'+(match.match(/class=\"tag\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),

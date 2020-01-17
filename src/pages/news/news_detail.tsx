@@ -58,6 +58,7 @@ export interface IProps {
 
 interface IState {
   data: any;
+  imgList: Array<string>,
   loadDataResult: ReducerResult,
   commentList: Array<newsCommentModel>;
   commentList_noMore: boolean;
@@ -112,6 +113,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
     super(props);
     this.state = {
       data: {},
+      imgList: [],
       loadDataResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
@@ -234,6 +236,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
             data: {
               body: response.data.Content
             },
+            imgList: StringUtils.getImgUrls(response.data.Content),
             loadDataResult: dataToReducerResult(response.data.Content)
           });
         } catch (e) {
@@ -276,7 +279,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
     const {item} = this.props;
-    const {data} = this.state;
+    const {imgList} = this.state;
     switch (postedMessage.type) {
       case 'loadMore':
         this.props.navigation.navigate('NewsCommentList', {
@@ -286,11 +289,11 @@ export default class news_detail extends PureComponent<IProps, IState> {
         break;
       case 'img_click':
         DeviceEventEmitter.emit('showImgList', {
-          imgList: data.imgList,
+          imgList: imgList,
           imgListIndex:
-            data.imgList.indexOf(postedMessage.url) == -1
+            imgList.indexOf(postedMessage.url) == -1
               ? 0
-              : data.imgList.indexOf(postedMessage.url),
+              : imgList.indexOf(postedMessage.url),
         });
         break;
       case 'link_click':

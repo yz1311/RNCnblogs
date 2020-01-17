@@ -76,7 +76,8 @@ export interface IProps {
 
 
 interface IState {
-  blogDetails: string;
+  blogDetail: string;
+  imgList: Array<string>,
   getDetailResult: ReducerResult,
   commentList?: Array<blogCommentModel>;
   commentList_noMore?: boolean;
@@ -126,7 +127,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      blogDetails: '',
+      blogDetail: '',
+      imgList: [],
       getDetailResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
@@ -247,7 +249,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           });
           console.log(response)
           this.setState({
-            blogDetails: response.data,
+            blogDetail: response.data,
+            imgList: StringUtils.getImgUrls(response.data),
             getDetailResult: dataToReducerResult(response.data)
           });
         } catch (e) {
@@ -303,11 +306,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
     const {item} = this.props;
-    const {blogDetails} = this.state;
-    let data: any = {};
-    if (blogDetails.hasOwnProperty(item.id + '')) {
-      data = blogDetails[item.id + ''].data;
-    }
+    const {imgList} = this.state;
     switch (postedMessage.type) {
       case 'loadMore':
         NavigationHelper.push('BlogCommentList', {
@@ -317,11 +316,11 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         break;
       case 'img_click':
         DeviceEventEmitter.emit('showImgList', {
-          imgList: data.imgList,
+          imgList: imgList,
           imgListIndex:
-            data.imgList.indexOf(postedMessage.url) == -1
+            imgList.indexOf(postedMessage.url) == -1
               ? 0
-              : data.imgList.indexOf(postedMessage.url),
+              : imgList.indexOf(postedMessage.url),
         });
         break;
       case 'link_click':
@@ -375,9 +374,9 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   render() {
     const {item} = this.props;
-    const {getDetailResult, blogDetails, commentList} = this.state;
+    const {getDetailResult, blogDetail, commentList} = this.state;
     let data: any = {
-      body: blogDetails
+      body: blogDetail
     };
     //截取前10条记录进行显示
     let visibleCommentList = commentList.slice(0, 10);
