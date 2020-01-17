@@ -28,6 +28,7 @@ import {checkIsBookmarkRequest} from '../api/bookmark';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ToastUtils from "../utils/toastUtils";
 import {Api} from "../api";
+import {ServiceTypes} from "../pages/YZTabBarView";
 
 export interface IProps extends IReduxProps {
   data: any;
@@ -46,6 +47,7 @@ export interface IProps extends IReduxProps {
   deleteBookmarkByUrlFn?: any;
   setBlogIsFavFn?: any;
   addBookmarkFn?: any;
+  serviceType: ServiceTypes;
 }
 
 interface IState {
@@ -104,10 +106,11 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
     try {
       let response = await Api.bookmark.checkIsBookmark({
         request: {
-          title: this.props.title,
+          title: this.props.data.title,
           id: this.props.data.id,
           url: this.props.data.link
-        }
+        },
+        serviceType: this.props.serviceType
       });
       console.log(response.data);
       this.setState({
@@ -222,17 +225,17 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
 
   shareAction = async () => {
     const {data} = this.props;
-    if (!data.Title) {
+    if (!data.title) {
       console.error('分享功能，对象必须具备Title属性');
       return;
     }
-    if (!data.Url) {
+    if (!data.link) {
       console.error('分享功能，对象必须具备Url属性');
       return;
     }
     try {
       const result = await Share.share({
-        message: data.Title + ',' + data.Url + ' ---来自博客园',
+        message: data.title + ',' + data.link + ' ---来自博客园',
         title: '分享',
       });
 

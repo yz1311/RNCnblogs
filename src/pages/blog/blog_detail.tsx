@@ -48,6 +48,7 @@ import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
 import {spawn} from "redux-saga/effects";
+import {ServiceTypes} from "../YZTabBarView";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -527,6 +528,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
               data={this.props.item}
               title={this.props.item.title}
               commentCount={item.comments}
+              serviceType={ServiceTypes.博客}
               onClickCommentList={() => {
                 NavigationHelper.push('BlogCommentList', {
                   pageIndex: 1,

@@ -8,6 +8,7 @@ import {blogModel, resolveBlogHtml} from "./blog";
 import Axios from "axios";
 import {decode as atob, encode as btoa} from 'base-64'
 import {Alert} from "@yz1311/teaset";
+import {ServiceTypes} from "../pages/YZTabBarView";
 
 
 export type myTagModel = {
@@ -37,7 +38,7 @@ export type checkIsBookmarkRequest = RequestModel<{
   title: string;
   url: string,
   id: string,
-}>;
+}> & {serviceType: ServiceTypes};
 
 export const getMyTags = (data:RequestModel<{}>) => {
   console.log(global.unescape)
@@ -146,7 +147,16 @@ export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
   } catch (e) {
     t = encodeURIComponent(t.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
   }
-  const URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
+  let URL = '';
+  switch (data.serviceType) {
+    case ServiceTypes.博客:
+      URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
+      break;
+      //新闻不支持查询，因为跟博客不一样，需要点击后才知道是否已经收藏了
+    default:
+      URL = `https://wz.cnblogs.com/create?t=${data.request.title}&u=${encodeURIComponent(data.request.url)}&c=&i=0`;
+      break;
+  }
   return RequestUtils.get<boolean>(URL,{
     resolveResult:(result)=>{
       return !/选择标签/.test(result);

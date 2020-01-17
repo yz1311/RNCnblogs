@@ -35,6 +35,7 @@ import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerRes
 import {Api} from "../../api";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {userInfoModel} from "../../api/login";
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   commentNewsFn?: any;
@@ -137,12 +138,12 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
     try {
       let response = await Api.news.getNewsCommentList({
         request: {
-          postId: parseInt(item.id),
+          commentId: parseInt(item.id),
           pageIndex: this.pageIndex,
-          pageSize: 10,
+          pageSize: 50,
         }
       });
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,50);
       this.setState({
         ...pagingResult
       });
@@ -204,12 +205,12 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
       <CommentItem
         item={item}
         iconName={item.author?.uri}
-        userId={item.UserId}
+        userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
-        canDelete={item.UserId === userInfo.id}
+        canDelete={item.author?.id === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -309,6 +310,7 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
                     index: 0,
                   });
               }}
+              serviceType={ServiceTypes.新闻}
               commentCount={this.props.item.comments}
               showCommentButton={false}
               showShareButton={false}

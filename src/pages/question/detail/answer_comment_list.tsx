@@ -43,6 +43,7 @@ import {showToast} from '../../../actions/app_actions';
 import StringUtils from '../../../utils/stringUtils';
 import CommentItem from '../../blog/comment_item';
 import {ReduxState} from '../../../reducers';
+import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -337,6 +338,7 @@ export default class answer_comment_list extends YZBaseDataPage<
                     index: 0,
                   });
               }}
+              serviceType={ServiceTypes.博问}
               commentCount={item.CommentCounts}
               showCommentButton={false}
               showShareButton={false}

@@ -40,6 +40,7 @@ import {
 } from '../../actions/bookmark/bookmark_index_actions';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   clearStatusCommentListFn?: any;
@@ -286,6 +287,7 @@ export default class status_detail extends YZBaseDataPage<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={data.CommentCount}
+              serviceType={ServiceTypes.闪存}
               onClickCommentList={() => {
                 this._flatList &&
                   this._flatList.flatList.scrollToIndex({

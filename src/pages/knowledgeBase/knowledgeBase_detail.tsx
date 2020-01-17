@@ -40,6 +40,7 @@ import StringUtils from '../../utils/stringUtils';
 import {setBlogScrollPosition} from '../../actions/blog/blog_index_actions';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
+import {ServiceTypes} from "../YZTabBarView";
 
 export interface IProps extends IBaseDataPageProps {
   data?: any;
@@ -361,6 +362,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
+              serviceType={ServiceTypes.博客}
               showCommentButton={false}
             />
           )}

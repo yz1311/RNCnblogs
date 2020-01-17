@@ -41,6 +41,7 @@ import {
 import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
 import AutoHeightWebView from 'react-native-autoheight-webview';
+import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -282,6 +283,7 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={data.AnswerCount}
+              serviceType={ServiceTypes.博问}
               onClickCommentList={() => {
                 this._flatList &&
                   this._flatList.flatList.scrollToIndex({

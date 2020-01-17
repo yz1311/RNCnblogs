@@ -34,6 +34,7 @@ import {APP_CHANGE_NET_INFO} from "../../actions/actionTypes";
 import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
@@ -285,6 +286,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={this.props.item.comments}
+              serviceType={ServiceTypes.博客}
               showCommentButton={false}
               showShareButton={false}
               showFavButton={false}

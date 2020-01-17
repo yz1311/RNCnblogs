@@ -46,6 +46,7 @@ import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {blogCommentModel} from "../../api/blog";
+import {ServiceTypes} from "../YZTabBarView";
 
 export interface IProps {
   item?: newsModel;
@@ -253,8 +254,8 @@ export default class news_detail extends PureComponent<IProps, IState> {
           let response = await Api.news.getNewsCommentList({
             request: {
               pageIndex: 1,
-              pageSize: 10,
-              postId: parseInt(this.props.item.id)
+              pageSize: 50,
+              commentId: parseInt(this.props.item.id)
             }
           });
           this.setState({
@@ -484,6 +485,9 @@ export default class news_detail extends PureComponent<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={this.props.item.comments}
+              //因为接口问题，隐藏该按钮
+              showFavButton={false}
+              serviceType={ServiceTypes.新闻}
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {
                   pageIndex: 1,
