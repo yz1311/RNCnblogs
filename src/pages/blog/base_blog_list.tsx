@@ -25,6 +25,14 @@ export interface IState {
 }
 
 class base_blog_list extends PureComponent<IProps,IState> {
+  static navigationOptions = ({navigation})=>{
+    let {title} = navigation.state?.params || {};
+    return {
+      headerShown: title!=undefined,
+      headerTitle: title || ''
+    };
+  }
+
   protected mustLogin: boolean = false;
   pageIndex = 1;
   private scrollListener: EmitterSubscription;
