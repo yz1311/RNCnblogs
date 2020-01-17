@@ -23,6 +23,7 @@ export type blogCommentModel = {
   author: {
     name: string,
     uri: string,
+    avatar: string
   };
   title: string;
   published: string;
@@ -87,20 +88,32 @@ export const getBlogDetail = (data: getBlogDetailRequest) => {
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {
-  const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
-  return RequestUtils.get<Array<blogCommentModel>>(URL, {
-    resolveResult: (result)=>{
-      //说明是空数据
-      if(result.hasOwnProperty('feed')) {
-        result = [];
-      }
+  //wcf的这个评论接口刷新不及时,废弃掉
+  // const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
+  // return RequestUtils.get<Array<blogCommentModel>>(URL, {
+  //   resolveResult: (result)=>{
+  //     //说明是空数据
+  //     if(result.hasOwnProperty('feed')) {
+  //       result = [];
+  //     }
+  //     //要重新计算楼层，返回的数据的Floor都只是本页的序号
+  //     result = (result || []).map((x, xIndex) => ({
+  //       ...x,
+  //       Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
+  //     return result;
+  //   }
+  // });
+  const URL = `https://www.cnblogs.com/yz1311/ajax/GetComments.aspx?postId=${data.request.postId}&pageIndex=${data.request.pageIndex}&anchorCommentId=0`
+  return RequestUtils.get(URL,{
+    resolveResult:(result)=>{
+      let dataList = resolveBlogCommentHtml(result);
       //要重新计算楼层，返回的数据的Floor都只是本页的序号
-      result = (result || []).map((x, xIndex) => ({
+      dataList = (dataList || []).map((x, xIndex) => ({
         ...x,
         Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
-      return result;
+      return dataList;
     }
-  });
+  })
 };
 
 export const getBlogCommentCount = (data: RequestModel<{postId: string}>) => {
@@ -149,20 +162,13 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
   });
 }
 
-export const commentBlog = data => {
-  const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts/${
-    data.request.postId
-  }/comments`;
-  let options = createOptions(data);
-  options.body = data.request.comment;
-  options.headers['Content-Type'] = 'text/plain';
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '评论博客失败!',
-    actionType: types.BLOG_COMMENT_BLOG,
-  });
+export const commentBlog = (data:RequestModel<{postId:number,body:string,parentCommentId?:number}>) => {
+  if(data.request.parentCommentId==undefined) {
+    data.request.parentCommentId = 0;
+  }
+  const URL = `https://www.cnblogs.com/yz1311/ajax/PostComment/Add.aspx`;
+  //message是一段html
+  return RequestUtils.post<{isSuccess:boolean,message:string,duration:number}>(URL,data.request);
 };
 
 
@@ -189,6 +195,27 @@ export const resolveBlogHtml = (result)=>{
     item.published = match.match(((/发布于 [\s\S]+?(?=\s{3,})/))||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
     item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt((match.match(/阅读\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+
+export const resolveBlogCommentHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"feedbackItem\"[\s\S]+?class=\"comment_vote\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<blogCommentModel> = {};
+    item.title = '';
+    item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
+    item.content = (match.match(/class=\"blog_comment_body\"[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.author = {
+      uri: (match.match(/id=\"a_comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/id=\"a_comment_author_[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,''),
+      avatar: (match.match(/id=\"comment_\d+?_avatar\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    };
+
+    item.published = (match.match(/class=\"comment_date[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
     items.push(item);
   }
   return items;

@@ -29,7 +29,6 @@ import moment from 'moment';
 import {
   getBlogDetail,
   clearBlogDetail,
-  commentBlog,
   clearBlogCommentList,
   setBlogScrollPosition,
   setSelectedBlog,
@@ -47,6 +46,8 @@ import {ReduxState} from '../../reducers';
 import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog';
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import ToastUtils from "../../utils/toastUtils";
+import {spawn} from "redux-saga/effects";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -70,7 +71,6 @@ export interface IProps {
   clearBlogIsFavFn?: any;
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
-  commentBlogFn?: any;
   navigation?: any;
 }
 
@@ -94,7 +94,6 @@ interface IState {
     clearDataFn: data => dispatch(clearBlogDetail(data)),
     deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
     clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    commentBlogFn: data => dispatch(commentBlog(data)),
     clearBlogCommentListFn: data => dispatch(clearBlogCommentList(data)),
     setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
@@ -350,20 +349,28 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     }
   };
 
-  onSubmit = (text, callback) => {
-    const {commentBlogFn, item} = this.props;
-    commentBlogFn({
-      request: {
-        blogApp: item.blogapp,
-        postId: item.id,
-        comment: text,
-      },
-      successAction: () => {
+  onSubmit = async (text, callback) => {
+    const {item} = this.props;
+    ToastUtils.showLoading();
+    try {
+      let response = await Api.blog.commentBlog({
+        request: {
+          postId: parseInt(item.id),
+          body: text
+        }
+      });
+      if(response.data.isSuccess) {
         callback && callback();
         //刷新当前列表
         this.loadData();
-      },
-    });
+      } else {
+        ToastUtils.showToast(response.data.message);
+      }
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {
