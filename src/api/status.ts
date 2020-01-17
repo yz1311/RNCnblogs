@@ -12,7 +12,8 @@ export type statusModel = {
     name: string,
     uri: string,
     avatar: string,
-    id: string
+    id: string,
+    no: string,
   },
   title: string,
   summary: string,
@@ -34,7 +35,8 @@ export type statusCommentModel = {
     name: string,
     uri: string,
     avatar: string,
-    id: string
+    id: string,
+    no: string
   },
   title: string,
   summary: string,
@@ -85,7 +87,8 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
           id: '',
           uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
           name: (match.match(/id=\"comment_author_[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').trim(),
-          avatar: ''
+          avatar: '',
+          no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
         };
         comment.author.id = comment.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
         comment.published = (match.match(/class=\"ing_comment_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
@@ -101,15 +104,22 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
   });
 };
 
-export const commentStatus = data => {
-  const URL = `${gServerPath}/statuses/${data.request.statusId}/comments`;
-  const options = createOptions(data);
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '评论闪存失败!',
-    actionType: types.STATUS_COMMENT_STATUS,
+export const commentStatus = (data:RequestModel<{
+  IngId: number,
+  ReplyToUserId: number,
+  ParentCommentId: number,
+  Content: string
+}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/PostComment`;
+  return RequestUtils.post<{
+    id: number,
+    isSuccess: boolean,
+    message: boolean,
+  }>(URL,data.request, {
+    headers: {
+      //必须要加这个，否则请求失败
+      "x-requested-with": 'XMLHttpRequest'
+    }
   });
 };
 
@@ -169,6 +179,7 @@ export const resolveStatusHtml = (result)=>{
       avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"ing-author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+      no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
     };
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {

@@ -45,6 +45,7 @@ import {Api} from "../../api";
 import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import {blogCommentModel} from "../../api/blog";
+import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
   clearStatusCommentListFn?: any;
@@ -60,7 +61,7 @@ interface IProps extends IBaseDataPageProps {
 interface IState {
   headerSubmit: string;
   isRefreshing: boolean;
-  selectedCommentItem: any;
+  selectedCommentItem: statusCommentModel;
   headerTitle: string;
   commentList: Array<statusCommentModel>,
   getCommentListResult: ReducerResult,
@@ -198,6 +199,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
               selectedCommentItem: item,
             },
             () => {
+              //Todo:为啥为空
               this._commentInput &&
                 this._commentInput.getWrappedInstance().show();
             },
@@ -225,27 +227,33 @@ export default class status_detail extends PureComponent<IProps, IState> {
     );
   };
 
-  _onSubmit = (text, callback) => {
-    const {commentStatusFn, item} = this.props;
+  _onSubmit = async (text, callback) => {
     const {selectedCommentItem} = this.state;
-    commentStatusFn({
-      request: {
-        ReplyTo: '0',
-        ParentCommentId: selectedCommentItem ? selectedCommentItem.Id : '0',
-        statusId: item.id,
-        Content: this.state.headerSubmit + '\n\n' + text,
-      },
-      successAction: () => {
-        callback && callback();
-        //刷新当前列表
-        this.pageIndex = 1;
-        if (this._flatList) {
-          this._flatList && this._flatList._onRefresh();
-        } else {
-          this.loadData();
-        }
-      },
-    });
+    try {
+       let response = await Api.status.commentStatus({
+         request: {
+           IngId: parseInt(this.props.item.id),
+           ReplyToUserId: parseInt(selectedCommentItem?.author?.no || this.props.item?.author?.no),
+           //评论的id，就是回复评论
+           ParentCommentId: parseInt(selectedCommentItem?.id || '0'),
+           Content: this.state.headerSubmit + '\n\n' + text,
+         }
+       });
+       if(response.data.isSuccess) {
+         callback && callback();
+         //刷新当前列表
+         this.pageIndex = 1;
+         if (this._flatList) {
+           this._flatList && this._flatList._onRefresh();
+         } else {
+           this.loadData();
+         }
+       } else {
+         ToastUtils.showToast(response.data.message);
+       }
+    } catch (e) {
+
+    }
   };
 
   render() {
@@ -320,6 +328,14 @@ export default class status_detail extends PureComponent<IProps, IState> {
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
           onSubmit={this._onSubmit}
+          onToggle={(toggleState:boolean)=>{
+            if(toggleState) {
+              //关闭的时候，清空选中数据
+              this.setState({
+                selectedCommentItem: null
+              })
+            }
+          }}
           placeholder="想说点什么"
           menuComponent={() => (
             <YZCommonActionMenu
