@@ -274,7 +274,6 @@ export default class news_detail extends PureComponent<IProps, IState> {
   }
 
   _onMessage = event => {
-    console.log(event.nativeEvent.data);
     let postedMessage = event.nativeEvent.data;
     try {
       postedMessage = JSON.parse(event.nativeEvent.data);

@@ -163,7 +163,7 @@ export default class news_comment_list extends Component<IProps, IState> {
       let item = this.state.dataList[index];
       if(!item.author?.avatar || item.author?.avatar=='') {
         try {
-          let imgRes = await Api.profile.getUserInfo({
+          let imgRes = await Api.profile.getUserAvatar({
             request: {
               userId: (item as blogCommentModel).author?.id
             }
