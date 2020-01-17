@@ -42,7 +42,8 @@ interface IProps extends IBaseDataPageProps {
   modifyNewsCommentFn?: any;
   deleteNewsCommentFn?: any;
   userInfo?: userInfoModel;
-  item: newsModel
+  item: newsModel,
+  isLogin?: boolean
 }
 
 interface IState {
@@ -56,6 +57,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -252,7 +254,7 @@ export default class news_comment_list extends Component<IProps, IState> {
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -330,6 +332,7 @@ export default class news_comment_list extends Component<IProps, IState> {
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
+          isLogin={this.props.isLogin}
           onSubmit={this._onSubmit}
           minLength={3}
           placeholder="想说点什么"

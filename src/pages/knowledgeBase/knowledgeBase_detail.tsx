@@ -53,6 +53,7 @@ export interface IProps extends IBaseDataPageProps {
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
+  isLogin?: boolean
 }
 
 @(connect(
@@ -61,6 +62,7 @@ export interface IProps extends IBaseDataPageProps {
     loadDataResult: state.knowledgeBaseIndex.getKbDetailResult,
     isFav: state.bookmarkIndex.isFav,
     getIsFavResult: state.bookmarkIndex.getIsFavResult,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -348,7 +350,6 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
               source={{html: html}}
               // automaticallyAdjustContentInsets
               // scalesPageToFit={false}
-              useWebKit={true}
               javaScriptEnabled={true}
               onMessage={this._onMessage}
               // injectedJavaScript={injectedJsCode}
@@ -358,6 +359,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
         </YZStateView>
         <YZCommentInput
           editable={false}
+          isLogin={this.props.isLogin}
           onSubmit={() => {}}
           menuComponent={() => (
             <YZCommonActionMenu

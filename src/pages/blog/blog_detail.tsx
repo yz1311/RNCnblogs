@@ -73,6 +73,7 @@ export interface IProps {
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   navigation?: any;
+  isLogin?: boolean
 }
 
 
@@ -87,7 +88,7 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -523,6 +524,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         </YZStateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}

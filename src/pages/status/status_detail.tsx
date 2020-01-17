@@ -56,6 +56,7 @@ interface IProps extends IBaseDataPageProps {
   isFav?: boolean;
   data?: any;
   commentStatusFn?: any;
+  isLogin?: boolean;
 }
 
 interface IState {
@@ -70,6 +71,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -199,9 +201,9 @@ export default class status_detail extends PureComponent<IProps, IState> {
               selectedCommentItem: item,
             },
             () => {
-              //Todo:为啥为空
+              console.log(this._commentInput)
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -328,6 +330,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
           onSubmit={this._onSubmit}
+          isLogin={this.props.isLogin}
           onToggle={(toggleState:boolean)=>{
             if(toggleState) {
               //关闭的时候，清空选中数据

@@ -54,7 +54,8 @@ export interface IProps {
   commentNewsFn?: any;
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
-  navigation: any
+  navigation: any,
+  isLogin?: boolean
 }
 
 interface IState {
@@ -73,7 +74,7 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -479,6 +480,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
         </YZStateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           minLength={3}
           menuComponent={() => (
             <YZCommonActionMenu

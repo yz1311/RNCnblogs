@@ -56,6 +56,7 @@ interface IProps extends IBaseDataPageProps {
   selectedQuestion?: any;
   userInfo?: any;
   dataList?: Array<any>;
+  isLogin?: boolean
 }
 
 interface IState {
@@ -71,6 +72,7 @@ interface IState {
     item: state.questionDetail.selectedAnswer,
     selectedQuestion: state.questionDetail.selectedQuestion,
     userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -221,7 +223,7 @@ export default class answer_comment_list extends YZBaseDataPage<
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -318,6 +320,7 @@ export default class answer_comment_list extends YZBaseDataPage<
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           headerTitle={this.state.headerTitle}
           placeholder="想说点什么"
           onToggle={toggleState => {

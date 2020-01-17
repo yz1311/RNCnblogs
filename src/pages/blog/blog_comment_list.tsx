@@ -41,6 +41,7 @@ interface IProps extends IBaseDataPageProps {
   userInfo?: userInfoModel;
   item: blogModel;
   commentBlogFn?: any;
+  isLogin?: boolean
 }
 
 interface IState {
@@ -53,7 +54,8 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-    userInfo: state.loginIndex.userInfo
+    userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -199,7 +201,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -273,6 +275,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
+          isLogin={this.props.isLogin}
           onSubmit={this._onSubmit}
           onToggle={toggleState => {
             if (!toggleState) {
