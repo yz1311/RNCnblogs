@@ -115,11 +115,11 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         request: {
           postId: parseInt(item.id),
           pageIndex: this.pageIndex,
-          pageSize: 10,
+          pageSize: 50,
         },
       };
       let response = await Api.blog.getBlogCommentList(params);
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,50);
       this.setState({
           ...pagingResult
       });
@@ -177,18 +177,19 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   _renderItem = ({item, index}: {item: blogCommentModel; index: number}) => {
     const {userInfo} = this.props;
+    console.log(this.props.item)
     return (
       <CommentItem
         item={item}
         iconName={item.author?.avatar||''}
-        authorUserId={this.props.item.author?.name}
-        userId={item.UserId}
+        authorUserId={this.props.item.author?.id}
+        userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
         canModify={false}
-        canDelete={item.UserId === userInfo.id}
+        canDelete={(item.author?.id+'') === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
