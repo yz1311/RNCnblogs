@@ -34,12 +34,14 @@ import {APP_CHANGE_NET_INFO} from "../../actions/actionTypes";
 import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
   userInfo?: userInfoModel;
   item: blogModel;
   commentBlogFn?: any;
+  isLogin?: boolean
 }
 
 interface IState {
@@ -52,7 +54,8 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-    userInfo: state.loginIndex.userInfo
+    userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -115,11 +118,11 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         request: {
           postId: parseInt(item.id),
           pageIndex: this.pageIndex,
-          pageSize: 10,
+          pageSize: 50,
         },
       };
       let response = await Api.blog.getBlogCommentList(params);
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,50);
       this.setState({
           ...pagingResult
       });
@@ -177,18 +180,19 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   _renderItem = ({item, index}: {item: blogCommentModel; index: number}) => {
     const {userInfo} = this.props;
+    console.log(this.props.item)
     return (
       <CommentItem
         item={item}
-        iconName={item.author?.uri}
-        authorUserId={this.props.item.author?.name}
-        userId={item.UserId}
+        iconName={item.author?.avatar||''}
+        authorUserId={this.props.item.author?.id}
+        userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
         canModify={false}
-        canDelete={item.UserId === userInfo.id}
+        canDelete={(item.author?.id+'') === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -197,7 +201,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -271,6 +275,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
+          isLogin={this.props.isLogin}
           onSubmit={this._onSubmit}
           onToggle={toggleState => {
             if (!toggleState) {
@@ -284,6 +289,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={this.props.item.comments}
+              serviceType={ServiceTypes.博客}
               showCommentButton={false}
               showShareButton={false}
               showFavButton={false}

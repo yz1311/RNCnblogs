@@ -103,3 +103,40 @@ export const getUserAliasByUserName = (data: getUserAliasByUserNameRequest) => {
     postcount: string,
     link: string,}>>(URL);
 };
+
+
+export const getUserInfo = (data:RequestModel<{userId:string}>) => {
+  const URL = `https://home.cnblogs.com/u/${data.request.userId}/`;
+  return RequestUtils.get<{id: string,
+    avatar: string,
+    nickName: string,
+    link: string,}>(URL, {
+      resolveResult: (result)=>{
+        //Todo:完善信息
+        let user:any = {};
+        user.avatar = (result.match(/class=\"user_avatar[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+        if(user.avatar.indexOf('http')!==0) {
+          user.avatar = 'https:'+user.avatar;
+        }
+        return user;
+      }
+  });
+};
+
+
+export const getUserAvatar = (data:RequestModel<{userId:string}>) => {
+  const URL = `https://home.cnblogs.com/u/${data.request.userId}/detail/`;
+  return RequestUtils.get<{id: string,
+    avatar: string,
+    nickName: string,
+    link: string,}>(URL, {
+    resolveResult: (result)=>{
+      let user:any = {};
+      user.avatar = (result.match(/class=\"user_detail_left[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+      if(user.avatar.indexOf('http')!==0) {
+        user.avatar = 'https:'+user.avatar;
+      }
+      return user;
+    }
+  });
+};

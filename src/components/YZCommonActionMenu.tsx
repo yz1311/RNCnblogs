@@ -11,7 +11,6 @@ import {
   InteractionManager,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
 import {
@@ -26,6 +25,10 @@ import {showToast} from '../actions/app_actions';
 import moment from 'moment';
 import {ReduxState} from '../reducers';
 import {checkIsBookmarkRequest} from '../api/bookmark';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import ToastUtils from "../utils/toastUtils";
+import {Api} from "../api";
+import {ServiceTypes} from "../pages/YZTabBarView";
 
 export interface IProps extends IReduxProps {
   data: any;
@@ -39,28 +42,25 @@ export interface IProps extends IReduxProps {
   showCommentButton: boolean;
   showFavButton: boolean;
   showShareButton: boolean;
-  isFav?: boolean;
   isLogin?: boolean;
-  getIsFavResult?: any;
-  showToastFn?: any;
+  title?: string,
   deleteBookmarkByUrlFn?: any;
   setBlogIsFavFn?: any;
   addBookmarkFn?: any;
+  serviceType: ServiceTypes;
 }
 
 interface IState {
   starProgress: any;
+  isFav: boolean;
 }
 
 @(connect(
   (state: ReduxState) => ({
-    // isFav: state.bookmarkIndex.isFav,
     isLogin: state.loginIndex.isLogin,
-    // getIsFavResult: state.bookmarkIndex.getIsFavResult,
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
     addBookmarkFn: data => dispatch(addBookmark(data)),
@@ -93,85 +93,98 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      starProgress: new Animated.Value(props.isFav ? 1 : 0),
+      starProgress: new Animated.Value(0),
+      isFav: false
     };
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (this.props.isFav !== nextProps.isFav) {
-      this.state.starProgress.setValue(nextProps.isFav ? 1 : 0);
+  componentDidMount(): void {
+    if(this.props.showFavButton) {
+      this.checkIsBookmark();
     }
   }
 
-  favAction = () => {
+  checkIsBookmark = async ()=>{
+    try {
+      let response = await Api.bookmark.checkIsBookmark({
+        request: {
+          title: this.props.data.title,
+          id: this.props.data.id,
+          url: this.props.data.link
+        },
+        serviceType: this.props.serviceType
+      });
+      console.log(response.data);
+      this.setState({
+        isFav: response.data
+      });
+    } catch (e) {
+
+    }
+  }
+
+  favAction = async () => {
     const {data, isLogin} = this.props;
     if (!isLogin) {
       //TODO：返回后重新获取收藏状态
       NavigationHelper.navigate('Login', {
         //登录成功后，重新获取
         callback: () => {
-          let params: checkIsBookmarkRequest = {
-            request: {
-              url: (data.Url || '').replace('http:', 'https:'),
-            },
-          };
-          this.props.dispatch(checkIsBookmark(params));
+          //Todo:
+          // let params: checkIsBookmarkRequest = {
+          //   request: {
+          //     url: (data.Url || '').replace('http:', 'https:'),
+          //   },
+          // };
+          // this.props.dispatch(checkIsBookmark(params));
         },
       });
       return;
     }
-    if (!this.props.getIsFavResult.success) {
-      this.props.showToastFn('正在获取状态，请稍后再试');
-      return;
-    }
-    if (!data.Url) {
-      console.error('收藏功能，对象必须具备Url属性');
-      return;
-    }
-    if (this.props.isFav) {
+    ToastUtils.showLoading();
+    if (this.state.isFav) {
       //由于参数一致，直接统一在本页面操作
-      const {deleteBookmarkByUrlFn, data} = this.props;
-      deleteBookmarkByUrlFn({
-        request: {
-          url: (data.Url || '').replace('http:', 'https:'),
-        },
-        showLoading: false,
-        successAction: () => {
-          this.props.setBlogIsFavFn(false);
-        },
-      });
-      this.state.starProgress.setValue(0);
-    } else {
-      Animated.timing(this.state.starProgress, {
-        toValue: 1,
-        duration: 1000,
-        // isInteraction: false
-        // easing: Easing.,
-      }).start();
-      InteractionManager.runAfterInteractions(() => {
-        let request = {
-          Title: data.Title,
-          LinkUrl: (data.Url || '').replace('http:', 'https:'),
-          Summary: '',
-          DateAdded: moment().format('YYYY-MM-DD HH:mm:ss'),
-          FromCNBlogs: true,
-          Tags: [],
-        };
-        this.props.addBookmarkFn({
-          request: request,
-          showLoading: false,
-          successAction: () => {
-            this.props.setBlogIsFavFn(true);
-          },
-          failAction: () => {
-            this.state.starProgress.setValue(0);
+      try {
+        let response = await Api.bookmark.deleteBookmarkByTitle({
+          request: {
+            title: this.props.data.title,
           },
         });
-      });
+        //刷新状态
+        this.checkIsBookmark();
+        ToastUtils.showToast('取消成功!');
+      } catch (e) {
+
+      } finally {
+        ToastUtils.hideLoading();
+      }
+    } else {
+      try {
+        let response = await Api.bookmark.addBookmark({
+          request: {
+            url: this.props.data.link,
+            title: this.props.data.title,
+            summary: '',
+            tags: ''
+          },
+          showLoading: true
+        });
+        if(response.data.success) {
+          //刷新状态
+          this.checkIsBookmark();
+          ToastUtils.showToast('添加成功!');
+        } else {
+          ToastUtils.showToast(response.data.message);
+        }
+      } catch (e) {
+
+      } finally {
+        ToastUtils.hideLoading();
+      }
     }
 
     return;
-    if (this.props.isFav) {
+    if (this.state.isFav) {
       Alert.alert('', '是否删除该条收藏?', [
         {
           text: '取消',
@@ -214,17 +227,17 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
 
   shareAction = async () => {
     const {data} = this.props;
-    if (!data.Title) {
+    if (!data.title) {
       console.error('分享功能，对象必须具备Title属性');
       return;
     }
-    if (!data.Url) {
+    if (!data.link) {
       console.error('分享功能，对象必须具备Url属性');
       return;
     }
     try {
       const result = await Share.share({
-        message: data.Title + ',' + data.Url + ' ---来自博客园',
+        message: data.title + ',' + data.link + ' ---来自博客园',
         title: '分享',
       });
 
@@ -238,7 +251,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
         // dismissed
       }
     } catch (error) {
-      alert(error.message);
+
     }
   };
 
@@ -247,13 +260,13 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       checked,
       size,
       disabled,
-      isFav,
       showCommentButton,
       showFavButton,
       showShareButton,
       onClickCommentList,
       commentCount,
     } = this.props;
+    const {isFav,} = this.state;
     let color;
     if (disabled) {
       color = gColors.borderColor;
@@ -313,15 +326,9 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
         {showFavButton ? (
           <TouchableOpacity
             activeOpacity={activeOpacity}
-            style={{alignSelf: 'stretch', justifyContent: 'center'}}
+            style={{alignSelf: 'stretch', justifyContent: 'center',paddingTop:5}}
             onPress={this.favAction}>
-            {/*<LottieView*/}
-            {/*  style={{width: 37, height: 37}}*/}
-            {/*  source={require('../resources/animation/4852-star-animation')}*/}
-            {/*  progress={this.state.starProgress}*/}
-            {/*  // autoPlay*/}
-            {/*  // loop*/}
-            {/*/>*/}
+            <Ionicons name={isFav?'ios-heart':'ios-heart-empty'} size={27} color={isFav?gColors.colorRed:gColors.color999}/>
           </TouchableOpacity>
         ) : null}
         {showShareButton ? (

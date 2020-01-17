@@ -16,6 +16,7 @@ import {logout} from '../../actions/login/login_index_actions';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
+import {BlogTypes} from "../home/home_index";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -122,7 +123,10 @@ export default class profile_index extends Component<IProps, IState> {
               }
               onPress={() => {
                 if (this.props.isLogin) {
-                  this.props.navigation.navigate('MyBlogList');
+                  this.props.navigation.navigate('BaseBlogList', {
+                    title: '我的博客',
+                    blogType: BlogTypes.我的
+                  });
                 } else {
                   NavigationHelper.navigate('Login');
                 }

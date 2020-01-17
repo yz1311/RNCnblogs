@@ -97,7 +97,6 @@ export default class base_question_list extends PureComponent<IProps,IState> {
     let curScrollY = event.nativeEvent.contentOffset.y;
     // 向下滑动了20
     if (curScrollY - this.lastScrollY > 20) {
-      console.log('向下滑动了20');
       DeviceEventEmitter.emit('toggleActionButton_question', false);
     }
     // 向上滑动了20

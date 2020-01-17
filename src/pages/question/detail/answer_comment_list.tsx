@@ -43,6 +43,7 @@ import {showToast} from '../../../actions/app_actions';
 import StringUtils from '../../../utils/stringUtils';
 import CommentItem from '../../blog/comment_item';
 import {ReduxState} from '../../../reducers';
+import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -55,6 +56,7 @@ interface IProps extends IBaseDataPageProps {
   selectedQuestion?: any;
   userInfo?: any;
   dataList?: Array<any>;
+  isLogin?: boolean
 }
 
 interface IState {
@@ -70,6 +72,7 @@ interface IState {
     item: state.questionDetail.selectedAnswer,
     selectedQuestion: state.questionDetail.selectedQuestion,
     userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -220,7 +223,7 @@ export default class answer_comment_list extends YZBaseDataPage<
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -317,6 +320,7 @@ export default class answer_comment_list extends YZBaseDataPage<
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           headerTitle={this.state.headerTitle}
           placeholder="想说点什么"
           onToggle={toggleState => {
@@ -337,6 +341,7 @@ export default class answer_comment_list extends YZBaseDataPage<
                     index: 0,
                   });
               }}
+              serviceType={ServiceTypes.博问}
               commentCount={item.CommentCounts}
               showCommentButton={false}
               showShareButton={false}

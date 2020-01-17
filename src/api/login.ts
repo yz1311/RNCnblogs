@@ -88,15 +88,3 @@ export const getUserAlias = (data:RequestModel<{}>)=>{
     }
   });
 }
-
-export const getUserInfo = data => {
-  const URL = `${gServerPath}/users`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取用户信息失败!',
-    actionType: types.LOGIN_GET_USER_INFO,
-  });
-};

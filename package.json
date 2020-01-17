@@ -27,6 +27,7 @@
     "@yz1311/teaset": "^0.6.25",
     "@yz1311/teaset-code-push": "^0.3.0-beta1",
     "axios": "0.18.1",
+    "base-64": "^0.1.0",
     "dva-core": "2.0.2",
     "dva-immer": "0.4.19",
     "immer": "5.1.0",

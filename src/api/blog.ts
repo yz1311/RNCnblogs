@@ -10,7 +10,8 @@ export type blogModel = {
   author: {
     name: string,
     uri: string,
-    avatar: string
+    avatar: string,
+    id: string
   };
   blogapp: string;
   published: string;
@@ -23,6 +24,8 @@ export type blogCommentModel = {
   author: {
     name: string,
     uri: string,
+    avatar: string,
+    id: string
   };
   title: string;
   published: string;
@@ -53,17 +56,15 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
-export const getPersonalBlogList = (data: getBlogListRequest) => {
-  const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts?pageIndex=${
-    data.request.PageIndex
-  }`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取个人博客随笔列表失败!',
-    actionType: types.BLOG_GET_PERSONAL_BLOGLIST,
+export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number}>) => {
+  const URL = `${gServerPath}/blog/u/${gUserData.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
+  return RequestUtils.get(URL,{
+    resolveResult: (result)=>{
+      result.map(item=>{
+        item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+      });
+      return result;
+    }
   });
 };
 
@@ -96,16 +97,33 @@ export const getBlogDetail = (data: getBlogDetailRequest) => {
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {
-  const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
-  return RequestUtils.get<Array<blogCommentModel>>(URL, {
-    resolveResult: (result)=>{
+  const URL = `https://www.cnblogs.com/yz1311/ajax/GetComments.aspx?postId=${data.request.postId}&pageIndex=${data.request.pageIndex}&anchorCommentId=0`
+  return RequestUtils.get(URL,{
+    resolveResult:(result)=>{
+      let dataList = resolveBlogCommentHtml(result);
       //要重新计算楼层，返回的数据的Floor都只是本页的序号
-      result = (result || []).map((x, xIndex) => ({
+      dataList = (dataList || []).map((x, xIndex) => ({
         ...x,
         Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
-      return result;
+      return dataList;
     }
   });
+  //# region  wcf的这个评论接口刷新不及时,废弃掉
+  // const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
+  // return RequestUtils.get<Array<blogCommentModel>>(URL, {
+  //   resolveResult: (result)=>{
+  //     //说明是空数据
+  //     if(result.hasOwnProperty('feed')) {
+  //       result = [];
+  //     }
+  //     //要重新计算楼层，返回的数据的Floor都只是本页的序号
+  //     result = (result || []).map((x, xIndex) => ({
+  //       ...x,
+  //       Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
+  //     return result;
+  //   }
+  // });
+  //# endregion
 };
 
 export const getBlogCommentCount = (data: RequestModel<{postId: string}>) => {
@@ -138,8 +156,6 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
       let tags = [] as Array<{name: string, url:string}>;
       let tagMatches = (result.match(/标签[\s\S]+/)||[])[0]?.match(/\<a href=[\s\S]+?(?=\<\/a\>)/g);
       for (let match of (tagMatches||[])) {
-        console.log(match)
-        console.log(match.match(/href=\"[\s\S]+?\<\/"/))
         tags.push({
           name: match.replace(/[\s\S]+href=\"[\s\S]+?\>/,''),
           url: (match.match(/href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/href=\"/,''),
@@ -154,20 +170,13 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
   });
 }
 
-export const commentBlog = data => {
-  const URL = `${gServerPath}/blogs/${data.request.blogApp}/posts/${
-    data.request.postId
-  }/comments`;
-  let options = createOptions(data);
-  options.body = data.request.comment;
-  options.headers['Content-Type'] = 'text/plain';
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '评论博客失败!',
-    actionType: types.BLOG_COMMENT_BLOG,
-  });
+export const commentBlog = (data:RequestModel<{postId:number,body:string,parentCommentId?:number}>) => {
+  if(data.request.parentCommentId==undefined) {
+    data.request.parentCommentId = 0;
+  }
+  const URL = `https://www.cnblogs.com/yz1311/ajax/PostComment/Add.aspx`;
+  //message是一段html
+  return RequestUtils.post<{isSuccess:boolean,message:string,duration:number}>(URL,data.request);
 };
 
 
@@ -187,13 +196,37 @@ export const resolveBlogHtml = (result)=>{
     item.title = (match.match(/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.summary = (match.match(/post_item_summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
+      id: '',
       avatar: (match.match(/class=\"pfs\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: (match.match(/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,''),
-      uri: (match.match(/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+(?=\")/,''),
+      name: (match.match(/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      uri: (match.match(/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.published = match.match(((/发布于 [\s\S]+?(?=\s{3,})/))||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
     item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt((match.match(/阅读\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+
+export const resolveBlogCommentHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"feedbackItem\"[\s\S]+?class=\"comment_vote\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<blogCommentModel> = {};
+    item.title = '';
+    item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
+    item.content = (match.match(/class=\"blog_comment_body\"[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.author = {
+      id: '',
+      uri: (match.match(/id=\"a_comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/id=\"a_comment_author_[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').trim(),
+      avatar: (match.match(/id=\"comment_\d+?_avatar\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+    };
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+    item.published = (match.match(/class=\"comment_date[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
     items.push(item);
   }
   return items;

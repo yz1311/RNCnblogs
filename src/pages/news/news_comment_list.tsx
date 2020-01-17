@@ -35,13 +35,15 @@ import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerRes
 import {Api} from "../../api";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {userInfoModel} from "../../api/login";
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   commentNewsFn?: any;
   modifyNewsCommentFn?: any;
   deleteNewsCommentFn?: any;
   userInfo?: userInfoModel;
-  item: newsModel
+  item: newsModel,
+  isLogin?: boolean
 }
 
 interface IState {
@@ -55,6 +57,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -66,7 +69,7 @@ interface IState {
     deleteNewsCommentFn: data => dispatch(deleteNewsComment(data)),
   }),
 ) as any)
-export default class news_comment_list extends PureComponent<IProps, IState> {
+export default class news_comment_list extends Component<IProps, IState> {
   pageIndex = 1;
 
   static propTypes = {
@@ -137,21 +140,54 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
     try {
       let response = await Api.news.getNewsCommentList({
         request: {
-          postId: parseInt(item.id),
+          commentId: parseInt(item.id),
           pageIndex: this.pageIndex,
-          pageSize: 10,
+          pageSize: 50,
         }
       });
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data||[],this.pageIndex,50);
       this.setState({
         ...pagingResult
       });
+      //获取头像
+      this.getUserAvatar();
     } catch (e) {
       this.setState({
         loadDataResult: dataToReducerResult(e)
       });
     } finally {
 
+    }
+  }
+
+  getUserAvatar = async ()=>{
+    for (let index in this.state.dataList) {
+      let item = this.state.dataList[index];
+      if(!item.author?.avatar || item.author?.avatar=='') {
+        try {
+          let imgRes = await Api.profile.getUserAvatar({
+            request: {
+              userId: (item as blogCommentModel).author?.id
+            }
+          });
+          let nextDateList = [
+            ...this.state.dataList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: imgRes.data.avatar
+              }
+            },
+            ...this.state.dataList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            dataList: nextDateList
+          })
+        } catch (e) {
+
+        }
+      }
     }
   }
 
@@ -203,13 +239,13 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
     return (
       <CommentItem
         item={item}
-        iconName={item.author?.uri}
-        userId={item.UserId}
+        iconName={item.author?.avatar}
+        userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
-        canDelete={item.UserId === userInfo.id}
+        canDelete={item.author?.id === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -218,7 +254,7 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
             },
             () => {
               this._commentInput &&
-                this._commentInput.getWrappedInstance().show();
+                this._commentInput.show();
             },
           );
         }}
@@ -296,6 +332,7 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
+          isLogin={this.props.isLogin}
           onSubmit={this._onSubmit}
           minLength={3}
           placeholder="想说点什么"
@@ -309,6 +346,7 @@ export default class news_comment_list extends PureComponent<IProps, IState> {
                     index: 0,
                   });
               }}
+              serviceType={ServiceTypes.新闻}
               commentCount={this.props.item.comments}
               showCommentButton={false}
               showShareButton={false}

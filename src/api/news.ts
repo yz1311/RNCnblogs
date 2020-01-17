@@ -1,8 +1,17 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from "../utils/requestUtils";
-import {blogCommentModel, blogModel, getBlogCommentListRequest, getBlogDetailRequest, resolveBlogHtml} from "./blog";
+import {
+  blogCommentModel,
+  blogModel,
+  getBlogCommentListRequest,
+  getBlogDetailRequest,
+  resolveBlogCommentHtml,
+  resolveBlogHtml
+} from "./blog";
 import {NewsTypes} from '../pages/news/news_index';
+import {Api} from "./index";
+import {AxiosResponse} from "axios";
 
 export type newsModel = {
   tag: {
@@ -89,7 +98,13 @@ export const getNewsDetail = (data: getBlogDetailRequest) => {
       PrevNews: string,
       NextNews: string,
       CommentCount: string,
-    }>(URL);
+    }>(URL, {
+      resolveResult: (result)=>{
+        //图片部分没有带协议头，在app中无法显示
+        result.Content = result.Content.replace(/<img src=\"\/\//g,'<img src="https://');
+        return result;
+      }
+  });
 };
 
 export const commentNews = data => {
@@ -105,19 +120,21 @@ export const commentNews = data => {
 };
 
 
-export const getNewsCommentList = (data: RequestModel<{
-  postId: number,
+export const getNewsCommentList = async (data: RequestModel<{
+  commentId: number,
   pageIndex: number,
   pageSize: number,
 }>) => {
-  const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
+  const URL = `https://news.cnblogs.com/CommentAjax/GetComments?contentId=${data.request.commentId}`;
   return RequestUtils.get<Array<blogCommentModel>>(URL, {
-    resolveResult: (result)=>{
+    resolveResult: (result) => {
+      let dataList = resolveNewsCommentHtml(result) as Array<blogCommentModel>;
       //要重新计算楼层，返回的数据的Floor都只是本页的序号
-      result = (result || []).map((x, xIndex) => ({
+      dataList = (dataList || []).map((x, xIndex) => ({
         ...x,
-        Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
-      return result;
+        Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1
+      }));
+      return dataList;
     }
   });
 };
@@ -165,6 +182,7 @@ export const resolveNewsHtml = (result)=>{
     //可能有图片，也可能没图片
     item.summary = (match.match((/entry_summary\"[\s\S]+?(?=\<\/div)/))||[])[0]?.replace(/[\s\S]+>/,'').trim();
     item.author = {
+      id: '',
       avatar: (match.match(/src=\"[\s\S]+?(?=\" class=\"topic_img)/)||[])[0]?.replace(/[\s\S]+\"/,''),
       uri: (match.match(/class=\"entry_footer\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"entry_footer\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
@@ -172,6 +190,7 @@ export const resolveNewsHtml = (result)=>{
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
     }
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.tag = {
       name: (match.match(/class=\"tag\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
       uri: 'https://news.cnblogs.com/'+(match.match(/class=\"tag\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
@@ -179,6 +198,31 @@ export const resolveNewsHtml = (result)=>{
     item.published = match.match(((/发布于 [\s\S]+?(?=<\/span)/))||[])[0]?.replace(/[\s\S]+?>/,'');
     item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt((match.match(/class="view"[\s\S]+(?=人浏览)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
+    items.push(item);
+  }
+  return items;
+}
+
+
+export const resolveNewsCommentHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"user_comment\"[\s\S]+?class=\"comment_option\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<blogCommentModel> = {};
+    item.title = '';
+    item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
+    item.content = (match.match(/id=\"comment_body_[\s\S]+?(?=<\/div>)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.author = {
+      id: '',
+      uri: (match.match(/class=\"layer_num\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"comment-author\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').trim(),
+      avatar: '',
+    };
+    if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
+      item.author.uri = 'https:'+item.author.uri;
+    }
+    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+    item.published = (match.match(/class=\"time[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.replace('发表于 ','')?.trim();
     items.push(item);
   }
   return items;

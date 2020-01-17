@@ -41,6 +41,7 @@ import {
 import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
 import AutoHeightWebView from 'react-native-autoheight-webview';
+import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -52,6 +53,7 @@ interface IProps extends IBaseDataPageProps {
   getAnswerListResult?: any;
   userInfo?: any;
   data?: any;
+  isLogin?: boolean
 }
 
 @(connect(
@@ -62,6 +64,7 @@ interface IProps extends IBaseDataPageProps {
     getAnswerListResult: state.questionDetail.getAnswerListResult,
     userInfo: state.loginIndex.userInfo,
     item: state.questionDetail.selectedQuestion,
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -277,11 +280,13 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
         </YZStateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           placeholder="想说点什么"
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={data.AnswerCount}
+              serviceType={ServiceTypes.博问}
               onClickCommentList={() => {
                 this._flatList &&
                   this._flatList.flatList.scrollToIndex({

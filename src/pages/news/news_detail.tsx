@@ -46,6 +46,7 @@ import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {blogCommentModel} from "../../api/blog";
+import {ServiceTypes} from "../YZTabBarView";
 
 export interface IProps {
   item?: newsModel;
@@ -53,11 +54,13 @@ export interface IProps {
   commentNewsFn?: any;
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
-  navigation: any
+  navigation: any,
+  isLogin?: boolean
 }
 
 interface IState {
   data: any;
+  imgList: Array<string>,
   loadDataResult: ReducerResult,
   commentList: Array<newsCommentModel>;
   commentList_noMore: boolean;
@@ -71,7 +74,7 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -112,6 +115,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
     super(props);
     this.state = {
       data: {},
+      imgList: [],
       loadDataResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
@@ -234,6 +238,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
             data: {
               body: response.data.Content
             },
+            imgList: StringUtils.getImgUrls(response.data.Content),
             loadDataResult: dataToReducerResult(response.data.Content)
           });
         } catch (e) {
@@ -250,8 +255,8 @@ export default class news_detail extends PureComponent<IProps, IState> {
           let response = await Api.news.getNewsCommentList({
             request: {
               pageIndex: 1,
-              pageSize: 10,
-              postId: parseInt(this.props.item.id)
+              pageSize: 50,
+              commentId: parseInt(this.props.item.id)
             }
           });
           this.setState({
@@ -270,13 +275,12 @@ export default class news_detail extends PureComponent<IProps, IState> {
   }
 
   _onMessage = event => {
-    console.log(event.nativeEvent.data);
     let postedMessage = event.nativeEvent.data;
     try {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
     const {item} = this.props;
-    const {data} = this.state;
+    const {imgList} = this.state;
     switch (postedMessage.type) {
       case 'loadMore':
         this.props.navigation.navigate('NewsCommentList', {
@@ -286,11 +290,11 @@ export default class news_detail extends PureComponent<IProps, IState> {
         break;
       case 'img_click':
         DeviceEventEmitter.emit('showImgList', {
-          imgList: data.imgList,
+          imgList: imgList,
           imgListIndex:
-            data.imgList.indexOf(postedMessage.url) == -1
+            imgList.indexOf(postedMessage.url) == -1
               ? 0
-              : data.imgList.indexOf(postedMessage.url),
+              : imgList.indexOf(postedMessage.url),
         });
         break;
       case 'link_click':
@@ -352,7 +356,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
                         <img 
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.author?.uri ||
+                        src="${comment.author?.avatar ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
                         <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
                             <span style="font-weight: bold;">
@@ -476,11 +480,13 @@ export default class news_detail extends PureComponent<IProps, IState> {
         </YZStateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           minLength={3}
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={this.props.item.comments}
+              serviceType={ServiceTypes.新闻}
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {
                   pageIndex: 1,

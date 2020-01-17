@@ -20,6 +20,8 @@ import CommonUtils from '../../utils/commonUtils';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import {StatusTypes} from "./status_index";
 import {Api} from "../../api";
+import {blogCommentModel} from "../../api/blog";
+import {statusModel} from "../../api/status";
 
 export interface IProps {
   tabLabel: string;
@@ -28,7 +30,7 @@ export interface IProps {
 }
 
 interface IState {
-  dataList: Array<any>;
+  dataList: Array<statusModel>;
   noMore: boolean;
   loadDataResult: ReducerResult;
 }
@@ -109,12 +111,10 @@ export default class base_status_list extends PureComponent<IProps, IState> {
     let curScrollY = event.nativeEvent.contentOffset.y;
     // 向下滑动了20
     if (curScrollY - this.lastScrollY > 20) {
-      console.log('向下滑动了20');
       DeviceEventEmitter.emit('toggleActionButton', false);
     }
     // 向上滑动了20
     else if (curScrollY - this.lastScrollY < -20) {
-      console.log('向上滑动了20');
       DeviceEventEmitter.emit('toggleActionButton', true);
     }
     this.lastScrollY = curScrollY;

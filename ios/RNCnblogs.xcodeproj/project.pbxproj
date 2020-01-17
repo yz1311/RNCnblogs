@@ -68,6 +68,7 @@
 		00E356EE1AD99517003FC87E /* RNCnblogsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNCnblogsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RNCnblogsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNCnblogsTests.m; sourceTree = "<group>"; };
+		0CBA8CFE23CF00AD005C02EF /* RNCnblogs-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNCnblogs-Bridging-Header.h"; sourceTree = "<group>"; };
 		0CBB443423C6C37300955B95 /* RCTBarCode.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBarCode.xcodeproj; path = "../node_modules/@yz1311/react-native-smart-barcode/ios/RCTBarcode/RCTBarCode.xcodeproj"; sourceTree = "<group>"; };
 		11C8F54F925349E3A05B6153 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNCnblogs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNCnblogs.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,6 +211,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				0CBA8CFE23CF00AD005C02EF /* RNCnblogs-Bridging-Header.h */,
 				13B07FAE1A68108700A75B9A /* RNCnblogs */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RNCnblogsTests */,

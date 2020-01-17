@@ -36,7 +36,7 @@ export interface IProps {
   renderHeader?: any;
   headerTiteStyle?: any;
   onToggle?: any;
-  isLogin?: boolean;
+  isLogin: boolean;
 }
 
 export interface IState {
@@ -44,15 +44,6 @@ export interface IState {
   isToggle: boolean;
 }
 
-@(connect(
-  (state: ReduxState) => ({
-    isLogin: state.loginIndex.isLogin,
-  }),
-  dispatch => ({
-    dispatch,
-  }),
-  null,
-) as any)
 export default class YZCommentInput extends Component<IProps, IState> {
   static propTypes = {
     menuComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),

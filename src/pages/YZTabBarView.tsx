@@ -46,6 +46,13 @@ interface IState {
   imgListIndex: number;
 }
 
+export enum ServiceTypes {
+  '博客',
+  '新闻',
+  '博问',
+  '闪存'
+}
+
 let lastClickTime = 0;
 
 @(connect(

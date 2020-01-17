@@ -54,6 +54,7 @@ export default {
         },
         setUserInfo: (state:IState, action) => {
             const {userInfo} = action.payload;
+            gUserData.userId = (userInfo as userInfoModel).id
             state.userInfo = userInfo;
         },
     },

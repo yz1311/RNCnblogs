@@ -169,6 +169,9 @@ export default class RequestUtils {
                 ...request.headers,
                 'cookie': gUserData.token
             };
+            if(request.showLoading) {
+                ToastUtils.showLoading();
+            }
             return request;
         }, (error => {
 
@@ -178,7 +181,6 @@ export default class RequestUtils {
         axios.interceptors.response.use(async (response) => {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
-            console.log(response)
             //如果是字符串，尝试转换成js对象
             if(typeof response.data == 'string'
                 && ((response.config as AxiosRequestConfigPatch).autoResolveXML == true || (response.config as AxiosRequestConfigPatch).autoResolveXML == undefined)
@@ -199,8 +201,6 @@ export default class RequestUtils {
                         resolve(true);
                     });
                 })
-            } else {
-                console.log(response.data)
             }
             //如果是未登录
             if(typeof response.data == 'string' && response.data.indexOf(`<a href="javascript:void(0);" onclick="return login();">登录`)>=0) {
@@ -220,10 +220,12 @@ export default class RequestUtils {
             if((response.config as AxiosRequestConfigPatch).resolveResult!=null) {
                 response.data =  (response.config as AxiosRequestConfigPatch).resolveResult(response.data);
                 console.log('解析后:',response.data);
+            } else {
+                console.log(response.data)
             }
             //部分接口没有result字段，直接返回data
             if(response.data.status=='OK'||(response.data.status===undefined&&response.data!=undefined)) {
-                if(response.data!=undefined && response.data.result===undefined) {
+                if(response.data.result===undefined) {
                     if(Array.isArray(response.data) || typeof response.data != 'object'){
                         return response;
                     }

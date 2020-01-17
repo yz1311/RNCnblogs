@@ -6,6 +6,10 @@ import {questionModel} from "./question";
 import {resolveStatusHtml} from "./status";
 import {blogModel, resolveBlogHtml} from "./blog";
 import Axios from "axios";
+import {decode as atob, encode as btoa} from 'base-64'
+import {Alert} from "@yz1311/teaset";
+import {ServiceTypes} from "../pages/YZTabBarView";
+
 
 export type myTagModel = {
   name: string,
@@ -22,9 +26,19 @@ export type bookmarkModel = {
   collects: number
 }
 
-export type checkIsBookmarkRequest = RequestModel<{
-  url: string;
+export type addBookmarkRequestModel = RequestModel<{
+  wzLinkId?: string,
+  url: string,  //"https://www.cnblogs.com/manupstairs/p/12196909.html#commentform"
+  title: string,  //".NET Core学习笔记（3）——async/await中的Exception处理 - 楼上那个蜀黍 - 博客园"
+  tags: string,  //tags
+  summary: string,  //summary
 }>;
+
+export type checkIsBookmarkRequest = RequestModel<{
+  title: string;
+  url: string,
+  id: string,
+}> & {serviceType: ServiceTypes};
 
 export const getMyTags = (data:RequestModel<{}>) => {
   console.log(global.unescape)
@@ -56,10 +70,18 @@ export const getBookmarkList = (data:RequestModel<{bookmarkType:string,pageIndex
       URL = `https://wz.cnblogs.com/my/tag/${data.request.bookmarkType}/${data.request.pageIndex}.html`;
       break;
   }
-  return RequestUtils.get(URL, {
+  return RequestUtils.get<Array<bookmarkModel>>(URL, {
     resolveResult: resolveBookmarkHtml
   });
 };
+
+export const searchBookmarkList = (data:RequestModel<{pageIndex: number,keyword?:string}>) => {
+  let URL = `https://wz.cnblogs.com/my/search/${data.request.keyword}/${data.request.pageIndex}`;
+  return RequestUtils.get<Array<bookmarkModel>>(URL, {
+    resolveResult: resolveBookmarkHtml
+  });
+};
+
 
 export const deleteBookmark = (data:RequestModel<{id: string}>) => {
   const URL = `https://wz.cnblogs.com/api/wz/${data.request.id}`;
@@ -67,34 +89,43 @@ export const deleteBookmark = (data:RequestModel<{id: string}>) => {
 };
 
 //用户文章中直接取消收藏
-export const deleteBookmarkByUrl = data => {
-  const URL = `${gServerPath}/bookmarks?url=${data.request.url}`;
-  const options = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + gUserData.token,
-    },
-  };
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除书签失败!',
-    actionType: types.BOOKMARK_DELETE,
+export const deleteBookmarkByTitle = (data:RequestModel<{title: string}>) => {
+  //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
+  return new Promise(async (resolve,reject)=>{
+    try {
+      let response = await searchBookmarkList({
+        request: {
+          pageIndex: 1,
+          keyword: data.request.title
+        }
+      });
+      if(response.data.length==0) {
+        Alert.alert('','修改过文章标题的收藏暂不支持取消，是否前往收藏中心进行取消?',[{
+          text: '取消'
+        }, {
+          text: '前往',
+          onPress:()=>{
+
+          }
+        }]);
+        reject(new Error('取消失败'));
+        return;
+      }
+      resolve(await deleteBookmark({
+        request: {
+          id: response.data[0].id
+        }
+      }));
+    } catch (e) {
+      reject(e);
+    }
   });
 };
 
-export const addBookmark = data => {
-  const URL = `${gServerPath}/bookmarks`;
-  const options = createOptions(data, 'POST');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '添加书签失败!',
-    actionType: types.BOOKMARK_ADD,
-  });
+export const addBookmark = (data:addBookmarkRequestModel) => {
+  data.request.wzLinkId = '0';
+  const URL = `https://wz.cnblogs.com/api/wz`;
+  return RequestUtils.post<{success:boolean, message:string}>(URL, data.request);
 };
 
 export const modifyBookmark = data => {
@@ -109,17 +140,47 @@ export const modifyBookmark = data => {
   });
 };
 
-//这个接口很奇怪，statusCode,404为不存在，2xx为存在
 export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
-  const URL = `${gServerPath}/bookmarks?url=${data.request.url}`;
-  const options = createOptions(data, 'HEAD');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '检查书签失败!',
-    actionType: types.BOOKMARK_CHECK_IS,
-  });
+  if(data.serviceType==ServiceTypes.博客) {
+    let t = data.request.title;
+    try {
+      t = btoa(unescape(encodeURIComponent(t)));
+    } catch (e) {
+      t = encodeURIComponent(t.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    }
+    let URL = '';
+    switch (data.serviceType) {
+      case ServiceTypes.博客:
+        URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
+        break;
+        //新闻不支持查询，因为跟博客不一样，需要点击后才知道是否已经收藏了
+      default:
+        URL = `https://wz.cnblogs.com/create?t=${data.request.title}&u=${encodeURIComponent(data.request.url)}&c=&i=0`;
+        break;
+    }
+    return RequestUtils.get<boolean>(URL, {
+      resolveResult: (result) => {
+        return !/选择标签/.test(result);
+      }
+    });
+  } else {
+    //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
+    return new Promise(async (resolve:(data:{data:boolean})=>void,reject)=>{
+      try {
+        let response = await searchBookmarkList({
+          request: {
+            pageIndex: 1,
+            keyword: data.request.title
+          }
+        });
+        resolve({
+          data: response.data.length>0
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 };
 
 export const checkIsBookmarkMyId = (data: RequestModel<{id:string}>) => {

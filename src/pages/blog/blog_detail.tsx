@@ -29,7 +29,6 @@ import moment from 'moment';
 import {
   getBlogDetail,
   clearBlogDetail,
-  commentBlog,
   clearBlogCommentList,
   setBlogScrollPosition,
   setSelectedBlog,
@@ -47,6 +46,9 @@ import {ReduxState} from '../../reducers';
 import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog';
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import ToastUtils from "../../utils/toastUtils";
+import {spawn} from "redux-saga/effects";
+import {ServiceTypes} from "../YZTabBarView";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -70,13 +72,14 @@ export interface IProps {
   clearBlogIsFavFn?: any;
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
-  commentBlogFn?: any;
   navigation?: any;
+  isLogin?: boolean
 }
 
 
 interface IState {
-  blogDetails: string;
+  blogDetail: string;
+  imgList: Array<string>,
   getDetailResult: ReducerResult,
   commentList?: Array<blogCommentModel>;
   commentList_noMore?: boolean;
@@ -85,7 +88,7 @@ interface IState {
 
 @(connect(
   (state: ReduxState) => ({
-
+    isLogin: state.loginIndex.isLogin
   }),
   dispatch => ({
     dispatch,
@@ -94,7 +97,6 @@ interface IState {
     clearDataFn: data => dispatch(clearBlogDetail(data)),
     deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
     clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    commentBlogFn: data => dispatch(commentBlog(data)),
     clearBlogCommentListFn: data => dispatch(clearBlogCommentList(data)),
     setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
@@ -127,7 +129,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      blogDetails: '',
+      blogDetail: '',
+      imgList: [],
       getDetailResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
@@ -248,7 +251,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           });
           console.log(response)
           this.setState({
-            blogDetails: response.data,
+            blogDetail: response.data,
+            imgList: StringUtils.getImgUrls(response.data),
             getDetailResult: dataToReducerResult(response.data)
           });
         } catch (e) {
@@ -304,11 +308,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       postedMessage = JSON.parse(event.nativeEvent.data);
     } catch (e) {}
     const {item} = this.props;
-    const {blogDetails} = this.state;
-    let data: any = {};
-    if (blogDetails.hasOwnProperty(item.id + '')) {
-      data = blogDetails[item.id + ''].data;
-    }
+    const {imgList} = this.state;
     switch (postedMessage.type) {
       case 'loadMore':
         NavigationHelper.push('BlogCommentList', {
@@ -318,11 +318,11 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         break;
       case 'img_click':
         DeviceEventEmitter.emit('showImgList', {
-          imgList: data.imgList,
+          imgList: imgList,
           imgListIndex:
-            data.imgList.indexOf(postedMessage.url) == -1
+            imgList.indexOf(postedMessage.url) == -1
               ? 0
-              : data.imgList.indexOf(postedMessage.url),
+              : imgList.indexOf(postedMessage.url),
         });
         break;
       case 'link_click':
@@ -350,27 +350,35 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     }
   };
 
-  onSubmit = (text, callback) => {
-    const {commentBlogFn, item} = this.props;
-    commentBlogFn({
-      request: {
-        blogApp: item.blogapp,
-        postId: item.id,
-        comment: text,
-      },
-      successAction: () => {
+  onSubmit = async (text, callback) => {
+    const {item} = this.props;
+    ToastUtils.showLoading();
+    try {
+      let response = await Api.blog.commentBlog({
+        request: {
+          postId: parseInt(item.id),
+          body: text
+        }
+      });
+      if(response.data.isSuccess) {
         callback && callback();
         //刷新当前列表
         this.loadData();
-      },
-    });
+      } else {
+        ToastUtils.showToast(response.data.message);
+      }
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {
     const {item} = this.props;
-    const {getDetailResult, blogDetails, commentList} = this.state;
+    const {getDetailResult, blogDetail, commentList} = this.state;
     let data: any = {
-      body: blogDetails
+      body: blogDetail
     };
     //截取前10条记录进行显示
     let visibleCommentList = commentList.slice(0, 10);
@@ -516,10 +524,13 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         </YZStateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
+              title={this.props.item.title}
               commentCount={item.comments}
+              serviceType={ServiceTypes.博客}
               onClickCommentList={() => {
                 NavigationHelper.push('BlogCommentList', {
                   pageIndex: 1,
