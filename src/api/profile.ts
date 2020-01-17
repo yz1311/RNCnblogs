@@ -140,3 +140,20 @@ export const getUserAvatar = (data:RequestModel<{userId:string}>) => {
     }
   });
 };
+
+export const getUserAvatarByNo = (data:RequestModel<{userNo:string}>) => {
+  const URL = `https://home.cnblogs.com/u/${data.request.userNo}/`;
+  return RequestUtils.get<{id: string,
+    avatar: string,
+    nickName: string,
+    link: string,}>(URL, {
+    resolveResult: (result)=>{
+      let user:any = {};
+      user.avatar = (result.match(/class=\"user_avatar[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+      if(user.avatar.indexOf('http')!==0) {
+        user.avatar = 'https:'+user.avatar;
+      }
+      return user;
+    }
+  });
+};

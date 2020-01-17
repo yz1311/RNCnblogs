@@ -184,8 +184,11 @@ export default class question_item extends PureComponent<IProps, any> {
           activeOpacity={clickable ? activeOpacity : 1}
           onPress={() => {
             if (clickable) {
-              this.props.setSelectedQuestionFn(item);
-              this.props.navigation.navigate('QuestionDetail', {});
+              // this.props.navigation.navigate('QuestionDetail', {});
+              NavigationHelper.push('YZWebPage',{
+                title: '博问详情',
+                uri: item.link
+              });
             }
           }}>
           <View

@@ -31,6 +31,7 @@ import ProfileSetting from './profile/profile_setting';
 import ProfileAbout from './profile/profile_about';
 import ProfileFontSize from './profile/profile_fontSize';
 import ProfilePerson from '../pages/profile/profile_person';
+import MessageIndex from '../pages/message/message_index';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 
 const AppNavigation = createStackNavigator(
@@ -72,6 +73,7 @@ const AppNavigation = createStackNavigator(
     ProfileAbout: {screen: withMappedNavigationProps(ProfileAbout)},
     ProfileFontSize: {screen: withMappedNavigationProps(ProfileFontSize)},
     ProfilePerson: {screen: withMappedNavigationProps(ProfilePerson)},
+    MessageIndex: {screen: withMappedNavigationProps(MessageIndex),navigationOptions: {headerTitle: '消息中心'}},
   },
   {
     initialRouteName: 'AppEntry',

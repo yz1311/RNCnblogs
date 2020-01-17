@@ -109,6 +109,30 @@ export default class profile_index extends Component<IProps, IState> {
               </View>
             </TouchableOpacity>
           )}
+
+          <View style={{marginTop: 10}}>
+            <ListRow
+              activeOpacity={activeOpacity}
+              title="消息中心"
+              icon={
+                <Entypo
+                  style={{marginRight: 6}}
+                  size={18}
+                  color={gColors.colorGreen1}
+                  name="message"
+                />
+              }
+              onPress={() => {
+                if (this.props.isLogin) {
+                  this.props.navigation.navigate('MessageIndex', {
+
+                  });
+                } else {
+                  NavigationHelper.navigate('Login');
+                }
+              }}
+            />
+          </View>
           <View style={{marginTop: 10}}>
             <ListRow
               activeOpacity={activeOpacity}
