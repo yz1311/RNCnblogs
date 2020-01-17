@@ -383,8 +383,9 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                     if(response.data) {
                       Alert.alert('','该内容已收藏过！',[{text: '知道了'}]);
                     } else {
-                      //Todo:添加收藏
-                      ToastUtils.showToast('敬请期待');
+                      NavigationHelper.push('BookmarkModify', {
+                        item: this.props.item
+                      });
                     }
                   } catch (e) {
 

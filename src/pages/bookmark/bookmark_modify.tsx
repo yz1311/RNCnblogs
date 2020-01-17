@@ -22,6 +22,8 @@ import {
 import moment from 'moment';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
+import {bookmarkModel} from '../../api/bookmark';
+import {Api} from '../../api';
 
 interface IProps {
   dispatch: any;
@@ -29,7 +31,7 @@ interface IProps {
   addBookmarkFn: any;
   modifyBookmarkFn: any;
   navigation: NavigationScreenProp<NavigationState>;
-  item: bookmark;
+  item: bookmarkModel;
   successAction: any;
 }
 
@@ -48,9 +50,7 @@ interface IState {
   (state: ReduxState) => ({}),
   dispatch => ({
     dispatch,
-    deleteBookmarkFn: data => dispatch(deleteBookmark(data)),
-    addBookmarkFn: data => dispatch(addBookmark(data)),
-    modifyBookmarkFn: data => dispatch(modifyBookmark(data)),
+
   }),
 ) as any)
 export default class bookmark_modify extends Component<IProps, IState> {
@@ -93,11 +93,11 @@ export default class bookmark_modify extends Component<IProps, IState> {
     let {item} = this.props;
 
     this.setState({
-      WzLinkId: item.WzLinkId,
-      Title: item.Title,
-      LinkUrl: item.LinkUrl,
-      Summary: item.Summary,
-      DateAdded: item.DateAdded,
+      WzLinkId: item.id,
+      Title: item.title,
+      LinkUrl: item.link,
+      Summary: item.summary,
+      DateAdded: item.published,
       Tags: item.Tags,
       TagsDesc: ((item || {Tags: undefined}).Tags || []).join(','),
     });
@@ -116,25 +116,22 @@ export default class bookmark_modify extends Component<IProps, IState> {
         text: '保存',
         onPress: () => {
           let request = {
-            Title: this.state.Title,
-            LinkUrl: this.state.LinkUrl,
-            Summary: this.state.Summary,
-            DateAdded: moment().format('YYYY-MM-DD HH:mm:ss'),
-            FromCNBlogs: true,
-            Tags: this.state.TagsDesc.split(','),
+            title: this.state.Title,
+            url: this.state.LinkUrl,
+            summary: this.state.Summary,
+            tags: this.state.TagsDesc.split(',').join(','),
           };
+          let method:any = null;
           //修改
           if (this.state.WzLinkId) {
-            this.props.modifyBookmarkFn({
+            method = Api.bookmark.modifyBookmark({
               request: {
                 ...request,
-                WzLinkId: this.state.WzLinkId,
-                id: this.state.WzLinkId,
-              },
-              successAction:
-                this.props.successAction && this.props.successAction(),
+                wzLinkId: this.state.WzLinkId,
+              }
             });
           } else {
+            method = Api.bookmark.addBookmark({request: request});
             this.props.addBookmarkFn({
               request: request,
               successAction:

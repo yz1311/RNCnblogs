@@ -128,16 +128,9 @@ export const addBookmark = (data:addBookmarkRequestModel) => {
   return RequestUtils.post<{success:boolean, message:string}>(URL, data.request);
 };
 
-export const modifyBookmark = data => {
-  const URL = `${gServerPath}/bookmarks/${data.request.id}`;
-  const options = createOptions(data, 'PATCH');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '修改书签失败!',
-    actionType: types.BOOKMARK_MODIFY,
-  });
+export const modifyBookmark = (data:RequestModel<{wzLinkId:string,url:string,title:string,tags?:string,summary?:string}>) => {
+  const URL = `https://wz.cnblogs.com/api/wz`;
+  return RequestUtils.put(URL, data.request);
 };
 
 export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
