@@ -141,27 +141,46 @@ export const modifyBookmark = data => {
 };
 
 export const checkIsBookmark = (data: checkIsBookmarkRequest) => {
-  let t = data.request.title;
-  try {
-    t = btoa(unescape(encodeURIComponent(t)));
-  } catch (e) {
-    t = encodeURIComponent(t.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
-  }
-  let URL = '';
-  switch (data.serviceType) {
-    case ServiceTypes.博客:
-      URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
-      break;
-      //新闻不支持查询，因为跟博客不一样，需要点击后才知道是否已经收藏了
-    default:
-      URL = `https://wz.cnblogs.com/create?t=${data.request.title}&u=${encodeURIComponent(data.request.url)}&c=&i=0`;
-      break;
-  }
-  return RequestUtils.get<boolean>(URL,{
-    resolveResult:(result)=>{
-      return !/选择标签/.test(result);
+  if(data.serviceType==ServiceTypes.博客) {
+    let t = data.request.title;
+    try {
+      t = btoa(unescape(encodeURIComponent(t)));
+    } catch (e) {
+      t = encodeURIComponent(t.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
     }
-  });
+    let URL = '';
+    switch (data.serviceType) {
+      case ServiceTypes.博客:
+        URL = `http://wz.cnblogs.com/create?t=${t}&u=${encodeURIComponent(data.request.url)}&c=${encodeURIComponent("")}&bid=${data.request.id}&i=0&base64=1`;
+        break;
+        //新闻不支持查询，因为跟博客不一样，需要点击后才知道是否已经收藏了
+      default:
+        URL = `https://wz.cnblogs.com/create?t=${data.request.title}&u=${encodeURIComponent(data.request.url)}&c=&i=0`;
+        break;
+    }
+    return RequestUtils.get<boolean>(URL, {
+      resolveResult: (result) => {
+        return !/选择标签/.test(result);
+      }
+    });
+  } else {
+    //先根据标题搜索我的收藏，然后获取到wzId，然后再使用checkIsBookmarkMyId进行筛选
+    return new Promise(async (resolve,reject)=>{
+      try {
+        let response = await searchBookmarkList({
+          request: {
+            pageIndex: 1,
+            keyword: data.request.title
+          }
+        });
+        resolve({
+          data: response.data.length>0
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 };
 
 export const checkIsBookmarkMyId = (data: RequestModel<{id:string}>) => {

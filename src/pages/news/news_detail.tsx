@@ -485,8 +485,6 @@ export default class news_detail extends PureComponent<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               commentCount={this.props.item.comments}
-              //因为接口问题，隐藏该按钮
-              showFavButton={false}
               serviceType={ServiceTypes.新闻}
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {
