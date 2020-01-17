@@ -1,32 +1,32 @@
 import React, {PureComponent} from 'react';
-import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
+import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
-import MessageItem from './message_item';
-import {MessageTypes} from './message_index';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';
-import {messageModel} from '../../api/message';
-import {blogCommentModel} from '../../api/blog';
+import {followingModel} from '../../api/profile';
+import ServiceUtils from '../../utils/serviceUtils';
+import {Alert, Button, Theme} from '@yz1311/teaset';
+import ToastUtils from '../../utils/toastUtils';
 
 export interface IProps {
   tabIndex?: number;
   navigation?: any;
-  messageType: MessageTypes;
+  userId: string;
 }
 
 interface IState {
-  dataList: Array<messageModel>;
+  dataList: Array<any>;
   loadDataResult: ReducerResult;
   noMore: boolean;
 }
 
-export default class base_message_list extends PureComponent<IProps, IState> {
+export default class base_follow_list extends PureComponent<IProps, IState> {
   protected pageIndex: number = 1;
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
-  private _flatList: any;
+  private _flatList: YZFlatList;
 
   readonly state:IState = {
     dataList: [],
@@ -40,6 +40,7 @@ export default class base_message_list extends PureComponent<IProps, IState> {
       'list_scroll_to_top',
       ({tabIndex}) => {
         if (tabIndex === this.props.tabIndex) {
+          //@ts-ignore
           this._flatList && this._flatList._scrollToTop();
         }
       },
@@ -63,20 +64,21 @@ export default class base_message_list extends PureComponent<IProps, IState> {
     this.refreshListener.remove();
   }
 
+  onRefresh = ()=>{
+    this._flatList&&this._flatList._onRefresh();
+  }
+
   loadData = async ()=>{
     try {
-      let response = await Api.message.getMessageList({
+      let response = await Api.profile.getFollowerListByUserId({
         request: {
-          pageIndex: this.pageIndex,
-        },
-        messageType: this.props.messageType
+          userId: this.props.userId,
+          pageIndex: this.pageIndex
+        }
       });
-      console.log(response)
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,30);
       this.setState({
         ...pagingResult
-      },()=>{
-        this.getUserAvatar();
       });
     } catch (e) {
       this.setState({
@@ -85,41 +87,33 @@ export default class base_message_list extends PureComponent<IProps, IState> {
     }
   }
 
-  getUserAvatar = async ()=>{
-    for (let index in this.state.dataList) {
-      let item = this.state.dataList[index];
-      if(!item.author?.avatar || item.author?.avatar=='') {
-        try {
-          let imgRes = await Api.profile.getUserAvatarByNo({
-            request: {
-              userNo: (item as messageModel).author?.no
-            }
-          });
-          let nextDateList = [
-            ...this.state.dataList.slice(0,parseInt(index)),
-            {
-              ...item,
-              author: {
-                ...item.author,
-                avatar: imgRes.data.avatar
-              }
-            },
-            ...this.state.dataList.slice(parseInt(index)+1),
-          ];
-          this.setState({
-            dataList: nextDateList
-          })
-        } catch (e) {
-
-        }
-      }
-    }
-  }
-
-  // pageIndex = 1;
-
-  _renderItem = ({item, index}) => {
-    return <MessageItem item={item} navigation={this.props.navigation} />;
+  _renderItem = ({item, index}:{item: followingModel,index:number}) => {
+    return (
+      <View style={{backgroundColor:gColors.bgColorF,flexDirection:'row',alignItems:'center',justifyContent:'space-between',
+        paddingHorizontal:10,paddingVertical:15}}>
+        <TouchableOpacity
+          activeOpacity={activeOpacity}
+          onPress={() => {
+            ServiceUtils.viewProfileDetail(
+              gStore.dispatch,
+              this.props.userId,
+              item.avatar,
+            );
+          }}
+          style={{
+            flexDirection: 'row',
+            alignSelf: 'stretch',
+            alignItems: 'center',
+          }}>
+          <Image
+            style={[Styles.avator]}
+            resizeMode="contain"
+            source={{uri: item?.avatar}}
+          />
+          <Text style={[Styles.userName]}>{item?.name}</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   render() {
@@ -142,7 +136,7 @@ export default class base_message_list extends PureComponent<IProps, IState> {
               this.pageIndex = pageIndex;
             }}
             ItemSeparatorComponent={() => (
-              <View style={{height: 10, backgroundColor: 'transparent'}} />
+              <View style={{height: Theme.onePix, backgroundColor: gColors.borderColor}} />
             )}
           />
         </YZStateView>
@@ -151,4 +145,10 @@ export default class base_message_list extends PureComponent<IProps, IState> {
   }
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  avator: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+  },
+});

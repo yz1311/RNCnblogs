@@ -52,37 +52,68 @@ export default class profile_index extends Component<IProps, IState> {
             <TouchableOpacity
               activeOpacity={activeOpacity}
               style={{marginTop: 10}}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: gColors.bgColorF,
-                  paddingHorizontal: 13,
-                  paddingVertical: 10,
-                }}>
-                  <Image
-                      style={[styles.avator]}
-                      resizeMode={'contain'}
-                      source={{uri: userInfo.avatar || 'https://pic.cnblogs.com/avatar/simple_avatar.gif'}}
-                  />
-                <View style={{marginLeft: 10, flex: 1}}>
-                  <Text
-                    style={{
-                      fontSize: gFont.size17,
-                      color: gColors.color0,
-                    }}>
-                    {userInfo.nickName}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: gFont.size13,
-                      color: gColors.color666,
-                      marginTop: 6,
-                    }}>
-                    {userInfo.seniority}
-                  </Text>
+              <View style={{backgroundColor: gColors.bgColorF,}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 13,
+                    paddingVertical: 10,
+                  }}>
+                    <Image
+                        style={[styles.avator]}
+                        resizeMode={'contain'}
+                        source={{uri: userInfo.avatar || 'https://pic.cnblogs.com/avatar/simple_avatar.gif'}}
+                    />
+                  <View style={{marginLeft: 10, flex: 1}}>
+                    <Text
+                      style={{
+                        fontSize: gFont.size17,
+                        color: gColors.color0,
+                      }}>
+                      {userInfo.nickName}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: gFont.size13,
+                        color: gColors.color666,
+                        marginTop: 6,
+                      }}>
+                      {userInfo.seniority}
+                    </Text>
+                  </View>
+                  {/*<Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>*/}
                 </View>
-                {/*<Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>*/}
+                <View style={{flexDirection:'row',marginBottom:15,marginTop:15}}>
+                  <TouchableOpacity
+                    style={[styles.topButtonContainer]}
+                    onPress={()=>{
+                      NavigationHelper.push('StarList', {
+                        userId: userInfo.id
+                      });
+                    }}
+                    >
+                    <Text style={[styles.topButtonDetail]}>{userInfo.stars}</Text>
+                    <Text style={[styles.topButtonTitle]}>我的关注</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={()=>{
+                      NavigationHelper.push('FollowerList', {
+                        userId: userInfo.id
+                      });
+                    }}
+                    style={[styles.topButtonContainer]}
+                  >
+                    <Text style={[styles.topButtonDetail]}>{userInfo.stars}</Text>
+                    <Text style={[styles.topButtonTitle]}>我的粉丝</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.topButtonContainer]}
+                  >
+                    <Text style={[styles.topButtonDetail]}>{userInfo.seniority}</Text>
+                    <Text style={[styles.topButtonTitle]}>园龄</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableOpacity>
           ) : (
@@ -204,4 +235,20 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  topButtonContainer: {
+    flex:1,
+    justifyContent:'center',
+    alignItems: 'center'
+  },
+  topButtonDetail: {
+    fontWeight: '500',
+    fontSize:gFont.size16,
+    color: gColors.color0,
+    height: 20
+  },
+  topButtonTitle: {
+    fontSize:gFont.size13,
+    color: gColors.color333,
+    marginTop: 7
+  }
 });

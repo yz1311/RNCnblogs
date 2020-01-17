@@ -10,6 +10,14 @@ export type getUserAliasByUserNameRequest = RequestModel<{
   fuzzy: boolean;
 }>;
 
+export type followingModel = {
+  uuid: string,
+  uri: string,
+  name: string,
+  id: string,
+  avatar: string
+}
+
 export const getPersonInfo = (data:RequestModel<{userAlias: string}>) => {
   const URL = `https://www.cnblogs.com/${
       data.request.userAlias
@@ -157,3 +165,54 @@ export const getUserAvatarByNo = (data:RequestModel<{userNo:string}>) => {
     }
   });
 };
+
+
+export const getStarListByUserId = (data:RequestModel<{userId:string,pageIndex: number}>) => {
+  const URL = `https://home.cnblogs.com/u/${data.request.userId}/relation/following?page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<followingModel>>(URL, {
+    resolveResult: resolveUserHtml
+  });
+};
+
+export const getFollowerListByUserId = (data:RequestModel<{userId:string,pageIndex: number}>) => {
+  const URL = `https://home.cnblogs.com/u/${data.request.userId}/relation/followers?page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<followingModel>>(URL, {
+    resolveResult: resolveUserHtml
+  });
+};
+
+
+export const followUser = (data:RequestModel<{userUuid:string,remark?:string}>) => {
+  data.request.remark = '';
+  const URL = `https://home.cnblogs.com/ajax/follow/followUser?userId=${data.request.userUuid}&remark=${data.request.remark}`;
+  return RequestUtils.post<{IsSucceed: boolean}>(URL, data.request);
+};
+
+
+export const unfollowUser = (data:RequestModel<{userUuid:string,isRemoveGroup?:boolean}>) => {
+  data.request.isRemoveGroup = false;
+  const URL = `https://home.cnblogs.com/ajax/follow/RemoveFollow?userId=${data.request.userUuid}&isRemoveGroup=${data.request.isRemoveGroup}`;
+  return RequestUtils.post<{IsSucceed: boolean}>(URL, data.request);
+};
+
+
+export const resolveUserHtml = (result)=>{
+  let users:any = [] as Array<followingModel>;
+  let matches = (result.match(/class=\"avatar_list[\s\S]+src=\"[\s\S]+?(?=<\/ul>)/)||[])[0]?.match(/<li[\s\S]+?<\/li>/g) || [];
+  console.log(matches)
+  for (let match of matches) {
+    let user = {
+      uuid: (match.match(/id=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
+      uri: (match.match(/<a href=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/<a[\s\S]+?(?=\">)/) || [])[0]?.replace(/[\s\S]+\"/,''),
+      avatar: (match.match(/<img src=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
+      id: ''
+    };
+    user.uri = 'https://home.cnblogs.com'+user.uri;
+    if(user.avatar!=undefined&&user.avatar!=''&&user.avatar.indexOf('http')!=0) {
+      user.avatar = 'https:'+user.avatar;
+    }
+    users.push(user);
+  }
+  return users;
+}
