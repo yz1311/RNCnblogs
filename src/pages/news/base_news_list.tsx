@@ -7,11 +7,14 @@ import NewsItem from './news_item';
 import {NewsTypes} from './news_index';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';
+import {SearchParams} from "../home/home_search";
 
 export interface IProps {
   tabIndex?: number;
   navigation?: any;
   newsType: NewsTypes;
+  keyword?: string;
+  searchParams?: SearchParams
 }
 
 interface IState {
@@ -57,7 +60,6 @@ export default class base_news_list extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.scrollListener.remove();
     this.refreshListener.remove();
   }
@@ -66,6 +68,7 @@ export default class base_news_list extends PureComponent<IProps, IState> {
     let action:any = ()=>{
       return ;
     };
+    let pageSize = 18;
     switch (this.props.newsType) {
       case NewsTypes.最新:
         action = ()=>{
@@ -79,6 +82,7 @@ export default class base_news_list extends PureComponent<IProps, IState> {
             newsType: this.props.newsType
           })
         };
+        pageSize = 30;
         break;
       case NewsTypes.热门:
         action = ()=>{
@@ -106,11 +110,24 @@ export default class base_news_list extends PureComponent<IProps, IState> {
           })
         };
         break;
+      case NewsTypes.搜索:
+        action = ()=>{
+          return Api.news.getSearchNewsList({
+            request: {
+              Keywords: this.props.keyword,
+              pageIndex: this.pageIndex,
+              ...(this.props.searchParams||{})
+              // pageSize: 10
+            },
+          })
+        };
+        pageSize = 10;
+        break;
     }
     try {
       let response = await action();
       console.log(response)
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,this.props.newsType==NewsTypes.最新?30:18);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,pageSize);
       this.setState({
         ...pagingResult
       });

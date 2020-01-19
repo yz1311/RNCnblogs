@@ -1,36 +1,21 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StatusBar,
-  StyleSheet,
-  Platform,
-  TouchableOpacity,
-  TextInput,
-  DeviceEventEmitter,
-  Alert,
-} from 'react-native';
+import {Alert, DeviceEventEmitter, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
-import {
-  searchData,
-  clearSearchData,
-} from '../../actions/home/home_index_actions';
+import {IBaseDataPageProps,} from '../../components/YZBaseDataPage';
+import {clearSearchData, searchData,} from '../../actions/home/home_index_actions';
 import {connect} from 'react-redux';
 import HomeTabBar from './home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import SearchBlogList from '../blog/base_blog_list';
-import SearchNewsList from './search_list/search_news_list';
+import SearchNewsList from '../news/base_news_list';
 import SearchQuestionList from './search_list/search_question_list';
 import SearchKbList from './search_list/search_kb_list';
 import PropTypes from 'prop-types';
 import {ReduxState} from '../../reducers';
 import {BlogTypes} from "./home_index";
+import {NewsTypes} from "../news/news_index";
 
 
 export interface SearchParams {
@@ -384,8 +369,8 @@ export default class home_search extends Component<IProps, IState> {
             />
             <SearchNewsList
               navigation={this.props.navigation}
-              keyWords={this.state.keyword}
-              type={this.props.type}
+              keyword={this.state.keyword}
+              newsType={NewsTypes.搜索}
             />
             <SearchQuestionList
               navigation={this.props.navigation}

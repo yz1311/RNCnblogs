@@ -21,7 +21,8 @@ interface IState {
 export enum NewsTypes {
   最新,
   推荐,
-  热门
+  热门,
+  搜索
 }
 
 @(connect(

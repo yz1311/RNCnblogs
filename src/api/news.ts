@@ -7,11 +7,12 @@ import {
   getBlogCommentListRequest,
   getBlogDetailRequest,
   resolveBlogCommentHtml,
-  resolveBlogHtml
+  resolveBlogHtml, resolveSearchBlogHtml
 } from "./blog";
 import {NewsTypes} from '../pages/news/news_index';
 import {Api} from "./index";
 import {AxiosResponse} from "axios";
+import {SearchParams} from "../pages/home/home_search";
 
 export type newsModel = {
   tag: {
@@ -56,6 +57,18 @@ export const getOtherNewsList = (data: getNewsListRequest) => {
 
   return RequestUtils.get<Array<newsModel>>(url, {
     resolveResult: resolveNewsHtml
+  });
+};
+
+export const getSearchNewsList = (data: RequestModel<{Keywords: string,
+  pageIndex: number,}&Partial<SearchParams>>) => {
+  const URL = `https://zzk.cnblogs.com/s/news?Keywords=${data.request.Keywords}&pageindex=${data.request.pageIndex}
+  ${data.request.ViewCount!=undefined?('&ViewCount='+data.request.ViewCount):''}
+  ${data.request.DiggCount!=undefined?('&DiggCount='+data.request.DiggCount):''}
+  ${data.request.DateTimeRange!=undefined?('&datetimerange='+data.request.DateTimeRange):''}
+  ${data.request.DateTimeRange=='Customer'?`&from=${data.request.from}&to=${data.request.to}`:''}`;
+  return RequestUtils.get(URL, {
+    resolveResult: resolveSearchNewsHtml
   });
 };
 
@@ -198,6 +211,36 @@ export const resolveNewsHtml = (result)=>{
     item.published = (match.match(/发布于 [\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+?>/,'');
     item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     item.views = parseInt((match.match(/class="view"[\s\S]+(?=人浏览)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim());
+    items.push(item);
+  }
+  return items;
+}
+
+export const resolveSearchNewsHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"searchItem\"[\s\S]+?(?=searchURL\"[\s\S]+?<\/div>)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<newsModel> = {};
+    item.link = (match.match(/class=\"searchItemTitle\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
+    //不能根据link来截取，部分link后面并不是id
+    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    //搜索的博客没有id
+    item.id = '';
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.blogapp = (match.match(/DiggPost\(([\s\S]+,){2}[\s\S]+?(?=,)/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
+    item.title = (match.match(/class=\"searchItemTitle\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+?href=\"[\s\S]+?\">/,'');
+    item.summary = (match.match(/searchCon\"[\s\S]+?(?=\<\/span)/)||[])[0]?.replace(/searchCon\">/,'').trim();
+    item.author = {
+      id: '',
+      avatar: (match.match(/class=\"pfs\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"searchItemInfo-userName\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      uri: (match.match(/class=\"searchItemInfo-userName\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+    };
+    item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+    item.published = (match.match(/class=\"searchItemInfo-publishDate\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'')+' 00:00:00';
+    item.diggs = parseInt((match.match(/推荐\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'') || '0');
+    item.comments = parseInt((match.match(/评论\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'') || '0');
+    item.views = parseInt((match.match(/浏览\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'') || '0');
     items.push(item);
   }
   return items;
