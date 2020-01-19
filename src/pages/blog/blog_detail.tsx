@@ -73,7 +73,7 @@ export interface IProps {
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   navigation?: any;
-  isLogin?: boolean
+  isLogin?: boolean,
 }
 
 
@@ -84,6 +84,7 @@ interface IState {
   commentList?: Array<blogCommentModel>;
   commentList_noMore?: boolean;
   getCommentListResult?: ReducerResult;
+  postId: string;
 }
 
 @(connect(
@@ -134,7 +135,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       getDetailResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
-      getCommentListResult: createReducerResult()
+      getCommentListResult: createReducerResult(),
+      postId: ''
     };
   }
 
@@ -246,15 +248,16 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogDetail({
             request: {
-              id: this.props.item.id+''
+              url: this.props.item.link+''
             }
           });
-          console.log(response)
           this.setState({
-            blogDetail: response.data,
-            imgList: StringUtils.getImgUrls(response.data),
-            getDetailResult: dataToReducerResult(response.data)
+            blogDetail: response.data.body,
+            postId: response.data.id,
+            imgList: StringUtils.getImgUrls(response.data.body),
+            getDetailResult: dataToReducerResult(response.data.body)
           });
+          this.getOtherData(response.data.id);
         } catch (e) {
           this.setState({
             getDetailResult: dataToReducerResult(e)
@@ -263,6 +266,12 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
         }
       })(),
+    ]);
+
+  }
+
+  getOtherData = async (postId:string)=>{
+    Promise.all([
       //部分评论(第一页)
       (async ()=>{
         try {
@@ -270,7 +279,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             request: {
               pageIndex: 1,
               pageSize: 10,
-              postId: parseInt(this.props.item.id)
+              postId: parseInt(postId)
             }
           });
           this.setState({
@@ -289,8 +298,9 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogCategoryAndTags({
             request: {
+              //Todo:搜索列表，还没有blogapp
               blogId: this.props.item.blogapp,
-              postId: this.props.item.id
+              postId: postId
             }
           });
 
@@ -302,6 +312,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       })()
     ])
   }
+
   _onMessage = event => {
     let postedMessage = event.nativeEvent.data;
     try {
@@ -356,7 +367,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     try {
       let response = await Api.blog.commentBlog({
         request: {
-          postId: parseInt(item.id),
+          postId: parseInt(this.state.postId),
           body: text
         }
       });

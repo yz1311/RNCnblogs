@@ -30,6 +30,18 @@ import SearchQuestionList from './search_list/search_question_list';
 import SearchKbList from './search_list/search_kb_list';
 import PropTypes from 'prop-types';
 import {ReduxState} from '../../reducers';
+import {BlogTypes} from "./home_index";
+
+
+export interface SearchParams {
+  //浏览数，以上
+  ViewCount: number,
+  //推荐数，以上
+  DiggCount: number,
+  DateTimeRange: 'OneWeek'|'OneMonth'|'ThreeMonth'|'OneYear'|'Customer',
+  from: string,
+  to: string
+}
 
 const __ANDROID__ = Platform.OS === 'android';
 const LeftItem = ({onPress, type, leftTitle}) => {
@@ -154,7 +166,6 @@ export default class home_search extends Component<IProps, IState> {
         showHistory: false,
       },
       () => {
-        this.props.clearDataFn();
         this.page = 1;
         setTimeout(() => {
           this.loadData();
@@ -367,8 +378,9 @@ export default class home_search extends Component<IProps, IState> {
             onChangeTab={this._onChangeTab}>
             <SearchBlogList
               navigation={this.props.navigation}
-              keyWords={this.state.keyword}
-              type={this.props.type}
+              keyword={this.state.keyword}
+              tabIndex={0}
+              blogType={BlogTypes.搜索}
             />
             <SearchNewsList
               navigation={this.props.navigation}

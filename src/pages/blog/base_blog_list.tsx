@@ -9,12 +9,16 @@ import {ReduxState} from "../../models";
 import YZStateView from "../../components/YZStateCommonView";
 import YZFlatList from "../../components/YZFlatList";
 import {Api} from "../../api";
+import {SearchParams} from "../home/home_search";
+import {messageModel} from "../../api/message";
 
 export interface IProps {
   navigation: any,
   tabIndex: number,
   blogType: BlogTypes,
-  userInfo?: any
+  userInfo?: any,
+  keyword?: string,
+  searchParams?: SearchParams
 }
 
 export interface IState {
@@ -37,6 +41,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   pageIndex = 1;
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
+  private searchReloadListener: EmitterSubscription;
   private _flatList: any;
 
   readonly state:IState = {
@@ -63,6 +68,11 @@ class base_blog_list extends PureComponent<IProps,IState> {
         }
       },
     );
+    this.searchReloadListener = DeviceEventEmitter.addListener('search_blog_list_reload', ()=>{
+      if(this.props.blogType==BlogTypes.搜索) {
+        this._flatList&&this._flatList._onRefresh();
+      }
+    })
   }
 
   componentDidMount(): void {
@@ -73,6 +83,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   componentWillUnmount() {
     this.scrollListener.remove();
     this.refreshListener.remove();
+    this.searchReloadListener.remove();
   }
 
   loadData = async ()=>{
@@ -148,17 +159,65 @@ class base_blog_list extends PureComponent<IProps,IState> {
           })
         };
         break;
+      case BlogTypes.搜索:
+        action = ()=>{
+          return Api.blog.getSearchBlogList({
+            request: {
+              pageIndex: this.pageIndex,
+              Keywords: this.props.keyword,
+              ...(this.props.searchParams||{})
+              // pageSize: 10
+            }
+          })
+        };
+        break;
     }
     try {
       let response = await action();
       let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,10);
       this.setState({
           ...pagingResult
+      },()=>{
+        //搜索列表没有头像
+        if(this.props.blogType==BlogTypes.搜索) {
+          this.getUserAvatar();
+        }
       });
     } catch (e) {
       this.setState({
         loadDataResult: dataToReducerResult(e)
       });
+    }
+  }
+
+  getUserAvatar = async ()=>{
+    for (let index in this.state.dataList) {
+      let item = this.state.dataList[index];
+      if(!item.author?.avatar || item.author?.avatar=='') {
+        try {
+          let imgRes = await Api.profile.getUserAvatar({
+            request: {
+              userId: (item as messageModel).author?.name
+            }
+          });
+          let nextDateList = [
+            ...this.state.dataList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: imgRes.data.avatar
+              }
+            },
+            ...this.state.dataList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            dataList: nextDateList
+          })
+        } catch (e) {
+
+        }
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {blogModel} from '../../api/blog';
 import moment from "moment";
+import HTMLView from 'react-native-render-html';
 
 interface IProps {
   item: blogModel;
@@ -83,30 +84,41 @@ export default class blog_item extends PureComponent<IProps, IState> {
               />
               <Text style={[Styles.userName]}>{item.author?.name}</Text>
             </TouchableOpacity>
-            <Text
-              style={[
-                {
-                  color: gColors.color0,
-                  fontSize: gFont.size16,
-                  fontWeight: 'bold',
-                  marginVertical: 7,
-                },
-                Styles.text4Pie,
-              ]}>
-              {item.title}
-            </Text>
-            <Text
-              style={[
-                {
-                  color: gColors.color4c,
-                  fontSize: gFont.sizeDetail,
-                  marginVertical: 4,
-                },
-                Styles.text4Pie,
-              ]}
-              numberOfLines={4}>
-              {item.summary}
-            </Text>
+            {/*<Text*/}
+            {/*  style={[*/}
+            {/*    {*/}
+            {/*      color: gColors.color0,*/}
+            {/*      fontSize: gFont.size16,*/}
+            {/*      fontWeight: 'bold',*/}
+            {/*      marginVertical: 7,*/}
+            {/*    },*/}
+            {/*    Styles.text4Pie,*/}
+            {/*  ]}>*/}
+            {/*  {item.title}*/}
+            {/*</Text>*/}
+              <HTMLView
+                  baseFontStyle={{fontWeight:'bold',color: gColors.color0}}
+                  containerStyle={{marginVertical: 7}}
+                  html={item.title}
+                  stylesheet={styles}
+              />
+            {/*<Text*/}
+            {/*  style={[*/}
+            {/*    {*/}
+            {/*      color: gColors.color4c,*/}
+            {/*      fontSize: gFont.sizeDetail,*/}
+            {/*      marginVertical: 4,*/}
+            {/*    },*/}
+            {/*    Styles.text4Pie,*/}
+            {/*  ]}*/}
+            {/*  numberOfLines={4}>*/}
+            {/*  {item.summary}*/}
+            {/*</Text>*/}
+              <HTMLView
+                  baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
+                  containerStyle={{marginVertical: 4}}
+                  html={item.summary}
+              />
             <View
               style={{
                 flexDirection: 'row',
