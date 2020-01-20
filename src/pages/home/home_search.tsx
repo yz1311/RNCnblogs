@@ -10,13 +10,14 @@ import HomeTabBar from './home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import SearchBlogList from '../blog/base_blog_list';
 import SearchNewsList from '../news/base_news_list';
-import SearchQuestionList from './search_list/search_question_list';
+import SearchQuestionList from '../question/base_question_list';
 import SearchKbList from './search_list/search_kb_list';
 import PropTypes from 'prop-types';
 import {ReduxState} from '../../reducers';
 import {BlogTypes} from "./home_index";
 import {NewsTypes} from "../news/news_index";
 import {Theme} from "@yz1311/teaset";
+import {QuestionTypes} from "../question/question_index";
 
 
 export interface SearchParams {
@@ -374,8 +375,8 @@ export default class home_search extends Component<IProps, IState> {
               newsType={NewsTypes.搜索}
             />
             <SearchQuestionList
-              keyWords={this.state.keyword}
-              type={this.props.type}
+              keyword={this.state.keyword}
+              questionType={QuestionTypes.搜索}
             />
             <SearchKbList
               navigation={this.props.navigation}

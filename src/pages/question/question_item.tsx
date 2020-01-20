@@ -28,6 +28,7 @@ import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ServiceUtils from '../../utils/serviceUtils';
 import {questionModel} from '../../api/question';
+import HTMLView from 'react-native-render-html';
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
@@ -235,29 +236,19 @@ export default class question_item extends PureComponent<IProps, any> {
                 </Text>
               </View>
             </View>
-            <Text
-              style={[
-                {
-                  color: gColors.color0,
-                  fontSize: gFont.size16,
-                  fontWeight: 'bold',
-                  marginVertical: 7,
-                },
-                Styles.text4Pie,
-              ]}>
-              {item.gold > 0 ? (
-                <Image
-                    style={{width:15,height:15}}
-                  source={{uri: 'https://common.cnblogs.com/images/icons/yuandou20170322.png'}}
-                />
-              ) : null}
-              {item.gold > 0 ? (
-                <Text style={{color: '#f47a20',fontSize:gFont.size15,marginLeft:3}}>
-                  {item.gold + '   '}
-                </Text>
-              ) : null}
-              <Text selectable>{item.title}</Text>
-            </Text>
+            <HTMLView
+                baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
+                containerStyle={{marginVertical: 7}}
+                html={`<div>${item.gold?`
+                    <img src='https://common.cnblogs.com/images/icons/yuandou20170322.png' /><span>${item.gold}</span>`:''}
+                    ${item.title}</div>`}
+                styles={{
+                  img: {
+                    width: '6px',
+                    height: '6px'
+                  }
+                }}
+            />
             <View style={{flexDirection: 'row'}}>
               {showAll ? (
                 <Markdown>{item.summary}</Markdown>

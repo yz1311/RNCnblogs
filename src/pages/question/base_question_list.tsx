@@ -10,10 +10,15 @@ import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerRes
 import {QuestionTypes} from './question_index';
 import {Api} from '../../api';
 import {questionModel} from '../../api/question';
+import {SearchParams} from "../home/home_search";
+import {BlogTypes} from "../home/home_index";
+import {messageModel} from "../../api/message";
 
 export interface IProps {
   questionType: QuestionTypes;
   navigation?: any;
+  keyword?: string,
+  searchParams?: SearchParams
 }
 
 interface IState {
@@ -66,16 +71,32 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   }
 
   loadData = async ()=>{
+    let response:any = null;
     try {
-      let response = await Api.question.getQuestionList({
-        request: {
-          pageIndex: this.pageIndex,
-          questionType: this.props.questionType
-        }
-      });
+      if(this.props.questionType==QuestionTypes.搜索) {
+        response = await Api.question.getSearchQuestionList({
+          request: {
+            pageIndex: this.pageIndex,
+            Keywords: this.props.keyword,
+            ...(this.props.searchParams||{})
+          }
+        });
+      } else {
+        response = await Api.question.getQuestionList({
+          request: {
+            pageIndex: this.pageIndex,
+            questionType: this.props.questionType,
+          }
+        });
+      }
       let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,25);
       this.setState({
         ...pagingResult
+      },()=>{
+        //搜索列表没有头像
+        if(this.props.questionType==QuestionTypes.搜索) {
+          this.getUserAvatar();
+        }
       });
     } catch (e) {
       this.setState({
@@ -83,6 +104,37 @@ export default class base_question_list extends PureComponent<IProps,IState> {
       });
     } finally {
 
+    }
+  }
+
+  getUserAvatar = async ()=>{
+    for (let index in this.state.dataList) {
+      let item = this.state.dataList[index];
+      if(!item.author?.avatar || item.author?.avatar=='') {
+        try {
+          let imgRes = await Api.profile.getUserAvatar({
+            request: {
+              userId: (item as messageModel).author?.name
+            }
+          });
+          let nextDateList = [
+            ...this.state.dataList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: imgRes.data.avatar
+              }
+            },
+            ...this.state.dataList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            dataList: nextDateList
+          })
+        } catch (e) {
+
+        }
+      }
     }
   }
 

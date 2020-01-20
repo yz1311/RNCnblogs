@@ -36,6 +36,7 @@ export enum QuestionTypes {
   新评论 = 'newcomment',
   零回答 = 'noanswer',
   已解决 = 'solved',
+  搜索 = 'search',
 }
 
 @(connect(
