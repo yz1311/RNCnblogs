@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import {ReduxState} from '../../reducers';
 import {BlogTypes} from "./home_index";
 import {NewsTypes} from "../news/news_index";
+import {Theme} from "@yz1311/teaset";
 
 
 export interface SearchParams {
@@ -48,7 +49,7 @@ const LeftItem = ({onPress, type, leftTitle}) => {
           style={{}}
           name="chevron-thin-left"
           size={23}
-          color={gColors.themeColor}
+          color={gColors.bgColorF}
         />
       )}
     </TouchableOpacity>
@@ -198,7 +199,7 @@ export default class home_search extends Component<IProps, IState> {
               style={[styles.icon, {marginLeft: 5}]}
               name="search"
               size={24}
-              color={gColors.color999}
+              color={gColors.color333}
             />
             <TextInput
               ref={input => (this.textInput = input)}
@@ -342,7 +343,7 @@ export default class home_search extends Component<IProps, IState> {
             position: 'absolute',
             width: gScreen.width,
             height: gScreen.statusBarHeight,
-            backgroundColor: gColors.bgColorF,
+            backgroundColor: Theme.primaryColor,
           }}
         />
         {this.renderHeader()}
@@ -352,7 +353,7 @@ export default class home_search extends Component<IProps, IState> {
             renderTabBar={() => (
               <HomeTabBar
                 ref={bar => (this.tabBar = bar)}
-                containerStyle={{backgroundColor: gColors.themeColor}}
+                containerStyle={{backgroundColor: Theme.primaryColor}}
                 tabDatas={this.state.tabNames}
               />
             )}
@@ -373,7 +374,6 @@ export default class home_search extends Component<IProps, IState> {
               newsType={NewsTypes.搜索}
             />
             <SearchQuestionList
-              navigation={this.props.navigation}
               keyWords={this.state.keyword}
               type={this.props.type}
             />
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     height: __ANDROID__ ? 50 : 44 + gScreen.statusBarHeight,
     // width: screenW,
     paddingTop: __ANDROID__ ? 0 : gScreen.statusBarHeight,
-    backgroundColor: gColors.bgColorF,
+    backgroundColor: Theme.primaryColor,
     flexDirection: 'row',
     // justifyContent: 'center',
     // alignItems: 'center',
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   textInputWrapper: {
     alignSelf: 'center',
-    backgroundColor: gColors.borderColor,
+    backgroundColor: gColors.bgColorF,
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   cancelButtonText: {
-    color: gColors.themeColor,
+    color: gColors.bgColorF,
     marginHorizontal: 8,
   },
 });

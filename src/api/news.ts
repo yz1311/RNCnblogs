@@ -100,23 +100,17 @@ export const getRecommendedNewsList = data => {
   });
 };
 
-export const getNewsDetail = (data: getBlogDetailRequest) => {
-  const URL = `http://wcf.open.cnblogs.com/news/item/${data.request.id}`;
-  return RequestUtils.get<{
-      Title: string,
-      SourceName: string,
-      SubmitDate: string,
-      Content: string,
-      ImageUrl: string,
-      PrevNews: string,
-      NextNews: string,
-      CommentCount: string,
-    }>(URL, {
-      resolveResult: (result)=>{
-        //图片部分没有带协议头，在app中无法显示
-        result.Content = result.Content.replace(/<img src=\"\/\//g,'<img src="https://');
-        return result;
+export const getNewsDetail = (data: RequestModel<{url:string}>) => {
+  return RequestUtils.get<{body:string,id:string}>(data.request.url, {
+    resolveResult: (result)=>{
+      //图片部分没有带协议头，在app中无法显示
+      result = result?.replace(/<img src=\"\/\//g,'<img src="https://');
+      return {
+        body: (result.match(/id=\"news_body\"[\s\S]*?\">[\s\S]+?(?=id=\"news_otherinfo\")/) || [])[0]
+            ?.replace(/id=\"news_body\">/,'')?.trim(),
+        id: (result.match(/onclick=\"AddToWz\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''),
       }
+    }
   });
 };
 

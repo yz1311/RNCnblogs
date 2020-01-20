@@ -12,10 +12,10 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {newsModel} from "../../api/news";
 import moment from "moment";
+import HTMLView from 'react-native-render-html';
 
 interface IProps {
   navigation: NavigationScreenProp<NavigationState>;
-  setSelectedDetailFn?: any;
   item: newsModel;
 }
 
@@ -23,13 +23,6 @@ interface IState {
   tabNames: Array<string>;
 }
 
-@(connect(
-  state => ({}),
-  dispatch => ({
-    dispatch,
-    setSelectedDetailFn: data => dispatch(setSelectedDetail(data)),
-  }),
-) as any)
 export default class news_item extends PureComponent<IProps, IState> {
   render() {
     const {item} = this.props;
@@ -39,7 +32,6 @@ export default class news_item extends PureComponent<IProps, IState> {
         <TouchableOpacity
           activeOpacity={activeOpacity}
           onPress={() => {
-            this.props.setSelectedDetailFn(item);
             this.props.navigation.navigate('NewsDetail', {
                 item: item
             });
@@ -50,18 +42,12 @@ export default class news_item extends PureComponent<IProps, IState> {
               paddingVertical: 10,
               paddingHorizontal: 8,
             }}>
-            <Text
-              style={[
-                {
-                  color: gColors.color0,
-                  fontSize: gFont.size16,
-                  fontWeight: 'bold',
-                  marginVertical: 7,
-                },
-                Styles.text4Pie,
-              ]}>
-              {item.title}
-            </Text>
+              <HTMLView
+                  baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
+                  containerStyle={{marginVertical: 7}}
+                  html={item.title}
+                  stylesheet={styles}
+              />
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {item.author?.avatar ? (
                 <Image
@@ -72,20 +58,25 @@ export default class news_item extends PureComponent<IProps, IState> {
               ) : (
                 <View style={[styles.icon]} />
               )}
-              <Text
-                style={[
-                  {
-                    color: gColors.color4c,
-                    fontSize: gFont.sizeDetail,
-                    marginVertical: 4,
-                    marginLeft: 8,
-                    flex: 1,
-                  },
-                  Styles.text4Pie,
-                ]}
-                numberOfLines={4}>
-                {item.summary}
-              </Text>
+              {/*<Text*/}
+              {/*  style={[*/}
+              {/*    {*/}
+              {/*      color: gColors.color4c,*/}
+              {/*      fontSize: gFont.sizeDetail,*/}
+              {/*      marginVertical: 4,*/}
+              {/*      marginLeft: 8,*/}
+              {/*      flex: 1,*/}
+              {/*    },*/}
+              {/*    Styles.text4Pie,*/}
+              {/*  ]}*/}
+              {/*  numberOfLines={4}>*/}
+              {/*  {item.summary}*/}
+              {/*</Text>*/}
+                <HTMLView
+                    baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
+                    containerStyle={{marginVertical: 4,flex:1}}
+                    html={item.summary}
+                />
             </View>
             <View
               style={{

@@ -29,13 +29,6 @@ interface IProps {
 
 interface IState {}
 
-@(connect(
-  (state: ReduxState) => ({
-  }),
-  dispatch => ({
-    dispatch,
-  }),
-) as any)
 export default class blog_item extends PureComponent<IProps, IState> {
   static defaultProps = {
     canViewProfile: true,
@@ -97,7 +90,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
             {/*  {item.title}*/}
             {/*</Text>*/}
               <HTMLView
-                  baseFontStyle={{fontWeight:'bold',color: gColors.color0}}
+                  baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
                   containerStyle={{marginVertical: 7}}
                   html={item.title}
                   stylesheet={styles}

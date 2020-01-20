@@ -231,15 +231,15 @@ export default class news_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.news.getNewsDetail({
             request: {
-              id: this.props.item.id+''
+              url: this.props.item.link
             }
           });
           this.setState({
             data: {
-              body: response.data.Content
+              body: response.data.body
             },
-            imgList: StringUtils.getImgUrls(response.data.Content),
-            loadDataResult: dataToReducerResult(response.data.Content)
+            imgList: StringUtils.getImgUrls(response.data.body),
+            loadDataResult: dataToReducerResult(response.data.body)
           });
         } catch (e) {
           this.setState({
