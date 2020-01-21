@@ -8,7 +8,7 @@ import {
   Alert,
   Share,
   DeviceEventEmitter,
-  Linking,
+  Linking, EmitterSubscription,
 } from 'react-native';
 import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
@@ -44,14 +44,14 @@ import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {newsCommentModel, newsModel} from "../../api/news";
+import {newsCommentModel, newsInfoModel, newsModel} from "../../api/news";
 import {blogCommentModel} from "../../api/blog";
 import {ServiceTypes} from "../YZTabBarView";
+import ToastUtils from "../../utils/toastUtils";
 
 export interface IProps {
   item?: newsModel;
   clearBlogIsFavFn?: any;
-  commentNewsFn?: any;
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
   navigation: any,
@@ -65,11 +65,7 @@ interface IState {
   commentList: Array<newsCommentModel>;
   commentList_noMore: boolean;
   getCommentListResult: ReducerResult;
-}
-
-
-interface IState {
-
+  newsInfo: Partial<newsInfoModel>
 }
 
 @(connect(
@@ -82,7 +78,6 @@ interface IState {
     loadDataFn: data => dispatch(getNewsDetail(data)),
     clearDataFn: data => dispatch(clearNewsDetail(data)),
     clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    commentNewsFn: data => dispatch(commentNews(data)),
     clearNewsCommentListFn: data => dispatch(clearNewsCommentList(data)),
     setNewsScrollPositionFn: data => dispatch(setNewsScrollPosition(data)),
   }),
@@ -110,6 +105,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
   private fromView: any;
   private overlayKey: any;
   private webView: any;
+  private reloadNewsInfoListener: EmitterSubscription;
 
   constructor(props) {
     super(props);
@@ -119,7 +115,8 @@ export default class news_detail extends PureComponent<IProps, IState> {
       loadDataResult: createReducerResult(),
       commentList: [],
       commentList_noMore: false,
-      getCommentListResult: createReducerResult()
+      getCommentListResult: createReducerResult(),
+      newsInfo: {}
     };
   }
 
@@ -138,6 +135,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
         </TouchableOpacity>
       ),
     });
+    this.reloadNewsInfoListener = DeviceEventEmitter.addListener('reload_news_info',this.loadCommentsAndInfo);
   }
 
   componentWillUnmount() {
@@ -152,6 +150,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
     //     value: this.scrollPosition,
     //   });
     // }
+    this.reloadNewsInfoListener&&this.reloadNewsInfoListener.remove();
   }
 
   _onBack = () => {
@@ -249,6 +248,12 @@ export default class news_detail extends PureComponent<IProps, IState> {
 
         }
       })(),
+      this.loadCommentsAndInfo()
+    ])
+  }
+
+  loadCommentsAndInfo = ()=>{
+    return Promise.all([
       //部分评论(第一页)
       (async ()=>{
         try {
@@ -270,7 +275,24 @@ export default class news_detail extends PureComponent<IProps, IState> {
         } finally {
 
         }
-      })()
+      })(),
+      //部分评论(第一页)
+      (async ()=>{
+        try {
+          let response = await Api.news.getNewsInfo({
+            request: {
+              contentId: parseInt(this.props.item.id)
+            }
+          });
+          this.setState({
+            newsInfo: response.data,
+          });
+        } catch (e) {
+
+        } finally {
+
+        }
+      })(),
     ])
   }
 
@@ -322,20 +344,27 @@ export default class news_detail extends PureComponent<IProps, IState> {
     }
   };
 
-  onSubmit = (text, callback) => {
-    const {commentNewsFn, item} = this.props;
-    commentNewsFn({
-      request: {
-        ParentId: 1,
-        newsId: item.id,
-        Content: text,
-      },
-      successAction: () => {
-        callback && callback();
-        //刷新当前列表
-        this.loadData();
-      },
-    });
+  onSubmit = async (text, callback) => {
+    ToastUtils.showLoading();
+    const {item} = this.props;
+    try {
+      let response = await Api.news.commentNews({
+        request: {
+          parentCommentId: 0,
+          ContentID: parseInt(item.id),
+          strComment: '',
+          Content: text,
+          title: this.props.item.title
+        }
+      });
+      callback && callback();
+      //刷新当前列表
+      this.loadData();
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {
@@ -485,7 +514,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={this.props.item.comments}
+              commentCount={this.state.newsInfo.CommentCount}
               serviceType={ServiceTypes.新闻}
               onClickCommentList={() => {
                 this.props.navigation.navigate('NewsCommentList', {

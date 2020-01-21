@@ -154,6 +154,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
         },
         {
           text: '删除',
+          style: 'destructive',
           onPress: () => {
             const {onDeleteCommentFn} = this.props;
             onDeleteCommentFn && onDeleteCommentFn(() => {}, () => {});
@@ -166,8 +167,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
 
   showMenu = () => {
     const {userInfo, userId, canDelete} = this.props;
-    let canModify =
-      userInfo.SpaceUserID + '' === userId + '' && this.props.canModify;
+    let canModify = this.props.canModify;
     let listProps = {};
     if (!canModify && !canDelete) {
       listProps = {

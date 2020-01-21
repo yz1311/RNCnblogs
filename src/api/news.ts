@@ -25,6 +25,14 @@ export type newsCommentModel = {
 
 } & blogCommentModel;
 
+export type newsInfoModel = {
+  ContentID: number,
+  CommentCount: number,
+  TotalView: number,
+  DiggCount: number,
+  BuryCount: number,
+};
+
 export type getNewsListRequest = RequestModel<{
   CategoryType: string
   ParentCategoryId: number
@@ -114,15 +122,26 @@ export const getNewsDetail = (data: RequestModel<{url:string}>) => {
   });
 };
 
-export const commentNews = data => {
-  const URL = `${gServerPath}/news/${data.request.newsId}/comments`;
-  const options = createOptions(data, 'POST');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '评论新闻失败!',
-    actionType: types.NEWS_COMMENT,
+export const getNewsInfo = (data:RequestModel<{contentId:number}>) => {
+  const URL = `https://news.cnblogs.com/NewsAjax/GetAjaxNewsInfo?contentId=${data.request.contentId}`;
+  return RequestUtils.get<newsInfoModel>(URL);
+};
+
+export const commentNews = (data:RequestModel<{ContentID:number,Content:string,parentCommentId?:number,strComment?: string,title: string}>) => {
+  //ContentID: 653993
+  // Content: "123"
+  // strComment: ""
+  // parentCommentId: "0"
+  // title: "<a href="//news.cnblogs.com/n/653993/">JetBrains 发布基于 IntelliJ 的 IDE 2020 年功能路线图</a>"
+  if(data.request.parentCommentId==undefined) {
+    data.request.parentCommentId = 0;
+  }
+  const URL = `https://news.cnblogs.com/Comment/InsertComment`;
+  //message是一段html
+  return RequestUtils.post<boolean>(URL,data.request,{
+    resolveResult: ()=>{
+      return true;
+    }
   });
 };
 
@@ -147,27 +166,22 @@ export const getNewsCommentList = async (data: RequestModel<{
 };
 
 //可以删除自己发的评论
-export const deleteNewsComment = data => {
-  const URL = `${gServerPath}/newscomments/${data.request.id}`;
-  const options = createOptions(data, 'DELETE');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除新闻评论失败!',
-    actionType: types.NEWS_COMMENT_DELETE,
+export const deleteNewsComment = (data:RequestModel<{commentId:string}>) => {
+  const URL = `https://news.cnblogs.com/Comment/DelComment`;
+  return RequestUtils.delete<boolean>(URL,{
+    data: data.request,
+    resolveResult: ()=>{
+      return true;
+    }
   });
 };
 
-export const modifyNewsComment = data => {
-  const URL = `${gServerPath}/newscomments/${data.request.id}`;
-  const options = createOptions(data, 'PATCH');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '修改新闻评论失败!',
-    actionType: types.NEWS_COMMENT_MODIFY,
+export const modifyNewsComment = (data:RequestModel<{ContentID:number,CommentID:string,CommentContent:string}>) => {
+  const URL = `https://news.cnblogs.com/Comment/UpdateComment`;
+  return RequestUtils.post<boolean>(URL,data.request,{
+    resolveResult: (result)=>{
+      return /修改成功/.test(result);
+    }
   });
 };
 

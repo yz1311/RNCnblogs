@@ -167,6 +167,7 @@ export default class RequestUtils {
         axios.interceptors.request.use( function (request:AxiosRequestConfigPatch) {
             request.headers = {
                 ...request.headers,
+                'content-type': 'application/json; charset=UTF-8',
                 'cookie': gUserData.token
             };
             if(request.showLoading) {

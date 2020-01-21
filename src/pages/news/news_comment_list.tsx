@@ -36,9 +36,9 @@ import {Api} from "../../api";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {userInfoModel} from "../../api/login";
 import {ServiceTypes} from "../YZTabBarView";
+import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
-  commentNewsFn?: any;
   modifyNewsCommentFn?: any;
   deleteNewsCommentFn?: any;
   userInfo?: userInfoModel;
@@ -64,7 +64,6 @@ interface IState {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getNewsCommentList(data)),
     clearDataFn: data => dispatch(clearNewsCommentList(data)),
-    commentNewsFn: data => dispatch(commentNews(data)),
     modifyNewsCommentFn: data => dispatch(modifyNewsComment(data)),
     deleteNewsCommentFn: data => dispatch(deleteNewsComment(data)),
   }),
@@ -134,6 +133,10 @@ export default class news_comment_list extends Component<IProps, IState> {
       title: nextProps.item.CommentCount,
     });
   };
+
+  onRefresh = ()=>{
+    this._flatList&&this._flatList._onRefresh();
+  }
 
   loadData = async ()=>{
     const {item} = this.props;
@@ -245,7 +248,8 @@ export default class news_comment_list extends Component<IProps, IState> {
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
-        canDelete={item.author?.id === userInfo.id}
+        canDelete={item.author?.name === userInfo.nickName}
+        canModify={item.author?.name === userInfo.nickName}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -258,52 +262,76 @@ export default class news_comment_list extends Component<IProps, IState> {
             },
           );
         }}
-        onDeleteCommentFn={() => {
-          const {deleteNewsCommentFn} = this.props;
-          deleteNewsCommentFn({
-            request: {
-              id: item.id,
-              newsId: this.props.item.id,
-            },
-          });
+        onDeleteCommentFn={async () => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.news.deleteNewsComment({
+              request: {
+                commentId: item.id+''
+              }
+            });
+            this.onRefresh();
+            ToastUtils.showToast('删除成功!');
+            DeviceEventEmitter.emit('reload_news_info');
+          } catch (e) {
+
+          } finally {
+            ToastUtils.hideLoading();
+          }
         }}
-        onModifyComment={(content, successAction, failAction) => {
-          const {modifyNewsCommentFn} = this.props;
-          modifyNewsCommentFn({
-            request: {
-              id: item.id,
-              Content: content,
-              newsId: this.props.item.id,
-            },
-            successAction: () => {
-              //成功后关闭对话框
-              successAction && successAction();
-            },
-          });
+        onModifyComment={async (content, successAction, failAction) => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.news.modifyNewsComment({
+              request: {
+                ContentID: parseInt(this.props.item.id),
+                CommentID: item.id+'',
+                CommentContent: content,
+              }
+            });
+            //成功后关闭对话框
+            successAction && successAction();
+            this.onRefresh();
+            ToastUtils.showToast('修改成功!');
+            DeviceEventEmitter.emit('reload_news_info');
+          } catch (e) {
+
+          } finally {
+            ToastUtils.hideLoading();
+          }
         }}
       />
     );
   };
 
-  _onSubmit = (text, callback) => {
-    const {commentNewsFn, item} = this.props;
-    commentNewsFn({
-      request: {
-        ParentId: 1,
-        newsId: item.id,
-        Content: this.state.headerSubmit + '\n\n' + text,
-      },
-      successAction: () => {
-        callback && callback();
-        //刷新当前列表
-        this.pageIndex = 1;
-        if (this._flatList) {
-          this._flatList && this._flatList._onRefresh();
-        } else {
-          this.loadData();
+  _onSubmit = async (text, callback) => {
+    ToastUtils.showLoading();
+    const {item} = this.props;
+    try {
+      let response = await Api.news.commentNews({
+        request: {
+          parentCommentId: 0,
+          ContentID: parseInt(item.id),
+          strComment: '',
+          Content: this.state.headerSubmit + '\n\n' + text,
+          title: this.props.item.title
         }
-      },
-    });
+      });
+      callback && callback();
+      //刷新当前列表
+      this.pageIndex = 1;
+      if (this._flatList) {
+        this._flatList && this._flatList._onRefresh();
+      } else {
+        this.loadData();
+      }
+      ToastUtils.showToast('添加成功!');
+      DeviceEventEmitter.emit('reload_news_info');
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {
