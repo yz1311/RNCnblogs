@@ -9,11 +9,15 @@ import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
 import {Alert, Button, Theme} from '@yz1311/teaset';
 import ToastUtils from '../../utils/toastUtils';
+import {connect} from "react-redux";
+import {ReduxState} from "../../models";
+import {userInfoModel} from "../../api/login";
 
 export interface IProps {
   tabIndex?: number;
   navigation?: any;
   userId: string;
+  userInfo?: userInfoModel
 }
 
 interface IState {
@@ -22,6 +26,9 @@ interface IState {
   noMore: boolean;
 }
 
+@(connect((state:ReduxState)=>({
+    userInfo: state.loginIndex.userInfo
+})) as any)
 export default class base_star_list extends PureComponent<IProps, IState> {
   protected pageIndex: number = 1;
   private scrollListener: EmitterSubscription;
@@ -110,8 +117,16 @@ export default class base_star_list extends PureComponent<IProps, IState> {
   }
 
   _renderItem = ({item, index}:{item: followingModel,index:number}) => {
+    console.log(item.id,this.props.userInfo?.id)
     return (
-      <View style={{backgroundColor:gColors.bgColorF,flexDirection:'row',alignItems:'center',justifyContent:'space-between',
+      <TouchableOpacity
+          onPress={()=>{
+            NavigationHelper.push('ProfilePerson', {
+              userAlias: item.id,
+              avatorUrl: '',
+            });
+          }}
+          style={{backgroundColor:gColors.bgColorF,flexDirection:'row',alignItems:'center',justifyContent:'space-between',
         paddingHorizontal:10,paddingVertical:15}}>
         <TouchableOpacity
           activeOpacity={activeOpacity}
@@ -134,18 +149,22 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           />
           <Text style={[Styles.userName]}>{item?.name}</Text>
         </TouchableOpacity>
-        <Button title={'取消关注'} onPress={()=>{
-          Alert.alert('','是否取消关注?',[{
-            text: '返回',
-          }, {
-            text: '取消关注',
-            style: 'destructive',
-            onPress:()=>{
-              this.unStar(item);
-            }
-          }])
-        }}/>
-      </View>
+        {item.id === this.props.userInfo?.id ?
+            <Button title={'取消关注'} onPress={() => {
+              Alert.alert('', '是否取消关注?', [{
+                text: '返回',
+              }, {
+                text: '取消关注',
+                style: 'destructive',
+                onPress: () => {
+                  this.unStar(item);
+                }
+              }])
+            }}/>
+            :
+            null
+        }
+      </TouchableOpacity>
     );
   };
 

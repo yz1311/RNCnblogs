@@ -146,6 +146,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
         ToastUtils.showToast('操作失败!');
       }
     } catch (e) {
+
+    } finally {
       ToastUtils.hideLoading();
     }
   }
@@ -165,6 +167,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
         ToastUtils.showToast('操作失败!');
       }
     } catch (e) {
+
+    }  finally {
       ToastUtils.hideLoading();
     }
   }
@@ -232,20 +236,30 @@ export default class profile_person extends PureComponent<IProps, IState> {
                     nativeEvent.layout.y + nativeEvent.layout.height;
                 }}
                 style={{flexDirection: 'row', marginTop: 10,width: 220}}>
-                <View
-                  style={{flex: 1, alignItems: 'center'}}>
-                  <Text style={styles.titleDesc}>{personInfo.seniority}</Text>
-                  <Text style={styles.title}>园龄</Text>
-                </View>
-                <View
+                <TouchableOpacity
+                    onPress={()=>{
+                      NavigationHelper.push('StarList', {
+                        userId: this.props.userAlias
+                      });
+                    }}
                   style={{flex: 1, alignItems: 'center'}}>
                   <Text style={styles.titleDesc}>{personInfo.stars}</Text>
                   <Text style={styles.title}>关注</Text>
-                </View>
-                <View
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={()=>{
+                      NavigationHelper.push('FollowerList', {
+                        userId: this.props.userAlias
+                      });
+                    }}
                   style={{flex: 1,  alignItems: 'center'}}>
                   <Text style={styles.titleDesc}>{personInfo.follows}</Text>
                   <Text style={styles.title}>粉丝</Text>
+                </TouchableOpacity>
+                <View
+                    style={{flex: 1, alignItems: 'center'}}>
+                  <Text style={styles.titleDesc}>{personInfo.seniority}</Text>
+                  <Text style={styles.title}>园龄</Text>
                 </View>
               </View>
             </View>
@@ -339,7 +353,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
     const {personInfo} = this.state;
     return (
       <View style={[Styles.container]}>
-        {/*<NavigationBar style={{position:'relative',backgroundColor:'transparent'}} title={''} />*/}
+        <NavigationBar style={{position:'relative'}} title={'详情'} />
         <YZStickyTabView
             ref={ref => this.stickyTabViewRef = ref}
             style={{flex: 1}}
@@ -370,7 +384,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
             }}
             data={this.getDataFromState()}
         />
-        <NavigationBar style={{backgroundColor:'transparent'}} title={'测试'}/>
+        {/*<NavigationBar style={{backgroundColor:'transparent'}} title={'测试'}/>*/}
       </View>
     );
   }

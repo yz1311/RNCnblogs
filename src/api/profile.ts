@@ -135,6 +135,14 @@ export const getFullUserInfo = (data:RequestModel<{userId:string}>) => {
         if(user.avatar.indexOf('http')!==0) {
           user.avatar = 'https:'+user.avatar;
         }
+        //出现了部分详情页没有图片，但是动态中有图片
+        if(user.avatar=='https://pic.cnblogs.com/avatar/simple_avatar.gif') {
+          let avatar = (result.match(/class=\"feed_avatar\"[\s\S]+?<img[\s\S]+?(?=\">)/)||[])[0]?.replace(/[\s\S]+\"/,'');
+          if(avatar && avatar.indexOf('http')!==0) {
+            avatar = 'https:'+avatar;
+            user.avatar = avatar;
+          }
+        }
         user.uuid = ((result.match(/var currentUserId = \"[\s\S]+?(?=\")/) || [])[0]).replace(/[\s\S]+\"/,'');
         user.seniority = ((result.match(/入园时间：[\s\S]+?(?=<\/span>)/) || [])[0]).replace(/[\s\S]+>/,'');
         user.isStar = /id=\"followedPanel\"[\s\S]{2,10}\"display:block\">/.test(result);
@@ -228,6 +236,7 @@ export const resolveUserHtml = (result)=>{
     if(user.avatar!=undefined&&user.avatar!=''&&user.avatar.indexOf('http')!=0) {
       user.avatar = 'https:'+user.avatar;
     }
+    user.id = user?.uri.replace(/^[\s\S]+\//,'');
     users.push(user);
   }
   return users;
