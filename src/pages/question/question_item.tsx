@@ -6,7 +6,7 @@ import {
   Image,
   Text,
   Alert,
-  DeviceEventEmitter,
+  DeviceEventEmitter, PixelRatio,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
@@ -14,7 +14,7 @@ import YZFlatList from '../../components/YZFlatList';
 import Styles from '../../common/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import StringUtils from '../../utils/stringUtils';
@@ -236,37 +236,51 @@ export default class question_item extends PureComponent<IProps, any> {
                 </Text>
               </View>
             </View>
-            <HTMLView
-                baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
-                containerStyle={{marginVertical: 7}}
-                html={`<div>${item.gold?`
-                    <img src='https://common.cnblogs.com/images/icons/yuandou20170322.png' /><span>${item.gold}</span>`:''}
-                    ${item.title}</div>`}
-                styles={{
-                  img: {
-                    width: '6px',
-                    height: '6px'
-                  }
-                }}
-            />
+            <Text
+                style={[
+                  {
+                    color: gColors.color0,
+                    fontSize: gFont.size16,
+                    fontWeight: 'bold',
+                    marginVertical: 7,
+                  },
+                  Styles.text4Pie,
+                ]}>
+              {item.gold > 0 ? (
+                  <Image
+                      style={{width:15,height:15}}
+                      source={{uri: 'https://common.cnblogs.com/images/icons/yuandou20170322.png'}}
+                  />
+              ) : null}
+              {item.gold > 0 ? (
+                  <Text style={{color: '#f47a20',fontSize:gFont.size15,marginLeft:3}}>
+                    {item.gold + '   '}
+                  </Text>
+              ) : null}
+              <Text selectable>{item.title}</Text>
+            </Text>
+            {/*<HTMLView*/}
+            {/*    baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}*/}
+            {/*    containerStyle={{marginVertical: 7,width:Theme.deviceWidth}}*/}
+            {/*    html={`<div style="display: flex;flex-direction: row;flex-wrap:wrap;word-break:break-all;">${item.gold?`<img src='https://common.cnblogs.com/images/icons/yuandou20170322.png' /><span style="color:#f47a20;font-size:16px;"> ${item.gold}</span>`:''}  ${item.title}</div>`}*/}
+            {/*    renderers={{*/}
+            {/*      img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{*/}
+            {/*        return (*/}
+            {/*            <Image style={{width:17,height:17,backgroundColor:'yellow'}} resizeMode={'contain'} source={{uri:'https://common.cnblogs.com/images/icons/yuandou20170322.png'}} />*/}
+            {/*        );*/}
+            {/*      },*/}
+            {/*    }}*/}
+            {/*/>*/}
             <View style={{flexDirection: 'row'}}>
               {showAll ? (
                 <Markdown>{item.summary}</Markdown>
-              ) : (
-                <Text
-                  style={[
-                    {
-                      color: gColors.color333,
-                      fontSize: gFont.sizeDetail,
-                      marginVertical: 4,
-                    },
-                    Styles.text4Pie,
-                  ]}
-                  {...detailProps}
-                  selectable>
-                  {item.summary}
-                </Text>
-              )}
+              ) :
+                  <HTMLView
+                      baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
+                      containerStyle={{marginVertical: 4}}
+                      html={item.summary}
+                  />
+              }
             </View>
             <View
               style={{

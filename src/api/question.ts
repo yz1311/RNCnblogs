@@ -310,7 +310,9 @@ export const resolveSearchQuestionHtml = (result)=>{
     item.gold = -1;
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = (match.match(/class=\"searchItemTitle\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+?href=\"[\s\S]+?\">/,'');
-    item.summary = (match.match(/searchCon\"[\s\S]+?(?=\<\/span)/)||[])[0]?.replace(/searchCon\">/,'').trim();
+    let summaryMatches = match.match(/class=\"searchCon\"[\s\S]+?(?=(<div class=\"searchCon|<!--end: searchCon -->))/)||[];
+    //只显示问题，不需要答案
+    item.summary = (summaryMatches[0]?.replace(/class=\"searchCon\">/,'').replace('问：','').trim().match(/[\s\S]+(?=<\/div>)/)||[])[0];
     item.author = {
       id: '',
       avatar: (match.match(/class=\"pfs\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),

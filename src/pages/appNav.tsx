@@ -127,6 +127,10 @@ const AppNavigation = createStackNavigator(
         headerTitleAlign: 'center',  //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
         // header:null,
         headerTintColor: gColors.bgColorF,
+        headerTitleStyle: {
+          //防止标题过长
+          maxWidth: Theme.deviceWidth/2
+        },
         headerStyle: {
           backgroundColor: Theme.navColor,
         },
