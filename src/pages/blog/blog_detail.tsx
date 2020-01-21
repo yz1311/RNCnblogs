@@ -9,7 +9,7 @@ import {
   TextInput,
   Share,
   DeviceEventEmitter,
-  Linking,
+  Linking, EmitterSubscription,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {WebView} from 'react-native-webview';
@@ -85,6 +85,7 @@ interface IState {
   commentList_noMore?: boolean;
   getCommentListResult?: ReducerResult;
   postId: string;
+  commentCount: number
 }
 
 @(connect(
@@ -102,7 +103,6 @@ interface IState {
     setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
-//@ts-ignore
 // @ts-ignore
 @YZBackHandler
 export default class blog_detail extends PureComponent<IProps, IState> {
@@ -126,8 +126,9 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   private fromView: any;
   private overlayKey: any;
   private webView: any;
+  private reloadBlogInfoListener:EmitterSubscription;
 
-  constructor(props) {
+  constructor(props:IProps) {
     super(props);
     this.state = {
       blogDetail: '',
@@ -136,7 +137,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       commentList: [],
       commentList_noMore: false,
       getCommentListResult: createReducerResult(),
-      postId: ''
+      postId: '',
+      commentCount: props.item?.comments
     };
   }
 
@@ -155,6 +157,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         </TouchableOpacity>
       ),
     });
+    this.reloadBlogInfoListener = DeviceEventEmitter.addListener('reload_blog_info',this.getOtherData);
   }
 
   componentWillUnmount() {
@@ -169,6 +172,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     //     value: this.scrollPosition,
     //   });
     // }
+    this.reloadBlogInfoListener&&this.reloadBlogInfoListener.remove();
   }
 
   _onBack = () => {
@@ -270,7 +274,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   }
 
-  getOtherData = async (postId:string)=>{
+  getOtherData = async (postId:string = this.state.postId)=>{
     Promise.all([
       //部分评论(第一页)
       (async ()=>{
@@ -304,6 +308,22 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             }
           });
 
+        } catch (e) {
+
+        } finally {
+
+        }
+      })(),
+      (async ()=>{
+        try {
+          let response = await Api.blog.getBlogCommentCount({
+            request: {
+              postId: postId
+            }
+          });
+          this.setState({
+            commentCount: response.data
+          });
         } catch (e) {
 
         } finally {
@@ -540,12 +560,15 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             <YZCommonActionMenu
               data={this.props.item}
               title={this.props.item.title}
-              commentCount={item.comments}
+              commentCount={this.state.commentCount}
               serviceType={ServiceTypes.博客}
               onClickCommentList={() => {
                 NavigationHelper.push('BlogCommentList', {
                   pageIndex: 1,
-                  item: item,
+                  item: {
+                    ...item,
+                    id: this.state.postId
+                  },
                 });
               }}
             />

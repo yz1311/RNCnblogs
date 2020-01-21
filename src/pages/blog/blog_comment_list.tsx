@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert,
+  Alert, DeviceEventEmitter,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZBaseDataPage, {
@@ -35,6 +35,7 @@ import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
 import {ServiceTypes} from "../YZTabBarView";
+import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
@@ -111,6 +112,10 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     });
   };
 
+  onRefresh = ()=>{
+    this._flatList&&this._flatList._onRefresh();
+  }
+
   loadData = async ()=>{
     const {item} = this.props;
     try {
@@ -180,7 +185,6 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   _renderItem = ({item, index}: {item: blogCommentModel; index: number}) => {
     const {userInfo} = this.props;
-    console.log(this.props.item)
     return (
       <CommentItem
         item={item}
@@ -191,8 +195,8 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         floor={item.Floor}
         content={item.content}
         postDate={item.published}
-        canModify={false}
         canDelete={(item.author?.id+'') === userInfo.id}
+        canModify={(item.author?.id+'') === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -205,46 +209,76 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             },
           );
         }}
-        onDeleteCommentFn={() => {
-          Alert.alert(
-            '',
-            '官方没有删除博客评论的api，需要跳转到网页登录后删除，是否跳转?',
-            [
-              {
-                text: '取消',
-              },
-              {
-                text: '继续',
-                onPress: () => {
-                  CommonUtils.openUrl(this.props.item.link);
-                },
-              },
-            ],
-          );
+        onDeleteCommentFn={async () => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.blog.deleteComment({
+              request: {
+                commentId: parseInt(item.id+''),
+                parentId: parseInt(this.props.item.id)
+              }
+            });
+            this.onRefresh();
+            ToastUtils.showToast('删除成功!');
+            DeviceEventEmitter.emit('reload_blog_info');
+          } catch (e) {
+
+          } finally {
+            ToastUtils.hideLoading();
+          }
+        }}
+        onModifyComment={async (content, successAction, failAction) => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.blog.modifyComment({
+              request: {
+                commentId: parseInt(item.id+''),
+                body: content,
+              }
+            });
+            if(response.data.isSuccess) {
+              //成功后关闭对话框
+              successAction && successAction();
+              this.onRefresh();
+              ToastUtils.showToast('修改成功!');
+              DeviceEventEmitter.emit('reload_blog_info');
+            } else {
+              ToastUtils.showToast(response.data.message);
+            }
+          } catch (e) {
+
+          } finally {
+            ToastUtils.hideLoading();
+          }
         }}
       />
     );
   };
 
-  _onSubmit = (text, callback) => {
-    const {commentBlogFn, item} = this.props;
-    commentBlogFn({
-      request: {
-        blogApp: item.blogapp,
-        postId: item.id,
-        comment: this.state.headerSubmit + '\n\n' + text,
-      },
-      successAction: () => {
-        callback && callback();
-        //刷新当前列表
-        this.pageIndex = 1;
-        if (this._flatList) {
-          this._flatList && this._flatList._onRefresh();
-        } else {
-          this.loadData();
+  _onSubmit = async (text, callback) => {
+    const {item} = this.props;
+    ToastUtils.showLoading();
+    try {
+      let response = await Api.blog.commentBlog({
+        request: {
+          postId: parseInt(item.id),
+          body: text
         }
-      },
-    });
+      });
+      callback && callback();
+      //刷新当前列表
+      this.pageIndex = 1;
+      if (this._flatList) {
+        this._flatList && this._flatList._onRefresh();
+      } else {
+        this.loadData();
+      }
+      DeviceEventEmitter.emit('reload_blog_info');
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {

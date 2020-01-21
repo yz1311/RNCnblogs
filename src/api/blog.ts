@@ -205,6 +205,18 @@ export const commentBlog = (data:RequestModel<{postId:number,body:string,parentC
 };
 
 
+export const deleteComment = (data:RequestModel<{parentId:number,commentId?:number,pageIndex?:number}>) => {
+  data.request.pageIndex = 0;
+  const URL = `https://www.cnblogs.com/yz1311/ajax/comment/DeleteComment.aspx`;
+  return RequestUtils.post<boolean>(URL,data.request);
+};
+
+export const modifyComment = (data:RequestModel<{commentId:number,body:string}>) => {
+  const URL = `https://www.cnblogs.com/yz1311/ajax/PostComment/Update.aspx`;
+  return RequestUtils.post<{isSuccess:boolean,message:string}>(URL,data.request);
+};
+
+
 export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
   let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g)|| [];
