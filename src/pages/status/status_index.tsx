@@ -40,6 +40,7 @@ export enum StatusTypes {
   '新回应' = 'recentcomment',
   '提到我' = 'mention',
   '回复我' = 'comment',
+  '搜索' = 'search'
 }
 
 @(connect(

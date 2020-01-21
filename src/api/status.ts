@@ -2,9 +2,10 @@ import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from "../utils/requestUtils";
 import {QuestionTypes} from "../pages/question/question_index";
-import {questionModel, resolveQuestion1Html, resolveQuestionHtml} from "./question";
+import {questionModel, resolveQuestion1Html, resolveQuestionHtml, resolveSearchQuestionHtml} from "./question";
 import {StatusTypes} from "../pages/status/status_index";
 import moment from "moment";
+import {SearchParams} from "../pages/home/home_search";
 
 export type statusModel = {
   id: string,
@@ -15,6 +16,7 @@ export type statusModel = {
     id: string,
     no: string,
   },
+  link: string,
   title: string,
   summary: string,
   reply: {
@@ -56,6 +58,18 @@ export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageInde
       "x-requested-with": 'XMLHttpRequest'
     },
     resolveResult: resolveStatusHtml
+  });
+};
+
+export const getSearchStatusList = (data: RequestModel<{Keywords: string,
+  pageIndex: number,}&Partial<SearchParams>>) => {
+  const URL = `https://zzk.cnblogs.com/s/ing?Keywords=${data.request.Keywords}&pageindex=${data.request.pageIndex}
+  ${data.request.ViewCount!=undefined?('&ViewCount='+data.request.ViewCount):''}
+  ${data.request.DiggCount!=undefined?('&DiggCount='+data.request.DiggCount):''}
+  ${data.request.DateTimeRange!=undefined?('&datetimerange='+data.request.DateTimeRange):''}
+  ${data.request.DateTimeRange=='Customer'?`&from=${data.request.from}&to=${data.request.to}`:''}`;
+  return RequestUtils.get(URL, {
+    resolveResult: resolveSearchStatusHtml
   });
 };
 
@@ -203,6 +217,31 @@ export const resolveStatusHtml = (result)=>{
       item.commentCount = 0;
     }
     item.comments = [];
+    items.push(item);
+  }
+  return items;
+}
+
+
+export const resolveSearchStatusHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/class=\"searchItem searchItem-ing\"[\s\S]+?searchItem-time\"[\s\S]+?[\s\S]+?(?=<\/div>)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<statusModel> = {};
+    item.id = '';
+    item.link = (match.match(/class=\"searchItem-content\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.title = '';
+    item.summary = (match.match(/class=\"searchItem-content\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+?href=\"[\s\S]+?\">/,'');
+    item.author = {
+      id: '',
+      no: '',
+      avatar: (match.match(/<img src=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"searchItem-user\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      uri: (match.match(/class=\"searchItem-user\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+    };
+    item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
+    item.published = (match.match(/\"searchItem-time\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'')+':00';
     items.push(item);
   }
   return items;

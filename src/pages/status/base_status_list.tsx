@@ -21,11 +21,15 @@ import {StatusTypes} from "./status_index";
 import {Api} from "../../api";
 import {blogCommentModel} from "../../api/blog";
 import {statusModel} from "../../api/status";
+import {SearchParams} from "../home/home_search";
+import {QuestionTypes} from "../question/question_index";
 
 export interface IProps {
-  tabLabel: string;
+  tabLabel?: string;
   navigation: any;
-  statusType: StatusTypes
+  statusType: StatusTypes,
+  keyword?: string,
+  searchParams?: SearchParams
 }
 
 interface IState {
@@ -81,14 +85,25 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   }
 
   loadData = async ()=>{
+    let response:any = null;
     try {
-      let response = await Api.status.getStatusList({
-        request: {
-          pageIndex: this.pageIndex,
-          pageSize: this.pageSize,
-          statusType: this.props.statusType
-        }
-      });
+      if(this.props.statusType==StatusTypes.搜索) {
+        response = await Api.status.getSearchStatusList({
+          request: {
+            pageIndex: this.pageIndex,
+            Keywords: this.props.keyword,
+            ...(this.props.searchParams||{})
+          }
+        });
+      } else {
+        response = await Api.status.getStatusList({
+          request: {
+            pageIndex: this.pageIndex,
+            pageSize: this.pageSize,
+            statusType: this.props.statusType
+          }
+        });
+      }
       let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,this.pageSize);
       this.setState({
         ...pagingResult
