@@ -6,7 +6,6 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import HomeTabBar from '../home/home_indexTab';

@@ -163,7 +163,6 @@ export default class YZWebPage extends Component<IProps, any> {
             source={{uri: this.props.uri}}
             automaticallyAdjustContentInsets
             // scalesPageToFit
-            useWebKit={true}
             injectedJavaScript={injectedJsCode}
             style={{flex: 1}}
           />

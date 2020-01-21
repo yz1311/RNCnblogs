@@ -8,7 +8,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
 import Styles from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {ListRow, NavigationBar} from '@yz1311/teaset';

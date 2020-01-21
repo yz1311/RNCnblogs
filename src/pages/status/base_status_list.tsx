@@ -6,7 +6,6 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZHeader from '../../components/YZHeader';
 import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
