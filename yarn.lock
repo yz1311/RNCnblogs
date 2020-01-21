@@ -1309,10 +1309,10 @@
   dependencies:
     hoist-non-react-statics "3.3.0"
 
-"@yz1311/teaset@^0.6.28":
-  version "0.6.28"
-  resolved "https://registry.npm.taobao.org/@yz1311/teaset/download/@yz1311/teaset-0.6.28.tgz#c974d5ca015992dbc5e4f237546d48f9b4dc291d"
-  integrity sha1-yXTVygFZktvF5PI3VG1I+bTcKR0=
+"@yz1311/teaset@^0.6.29":
+  version "0.6.29"
+  resolved "https://registry.npmjs.org/@yz1311/teaset/-/teaset-0.6.29.tgz#e65397784d0c4b55cab49c8620ba0e5740de2901"
+  integrity sha512-iVjVtjzxzuXwr+DVGYyq5BnXsBqc/B7ev1vLQsyYdewL1TJzdf1PYWKriLj8zoPoNS3/DeXCE2i8sbxv8tB/DA==
   dependencies:
     hoist-non-react-statics latest
     prop-types "^15.5.10"

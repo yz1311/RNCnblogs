@@ -24,7 +24,7 @@
     "@yz1311/react-native-shadow": "^0.1.0",
     "@yz1311/react-native-smart-barcode": "^1.1.0-beta7",
     "@yz1311/react-native-wheel-picker": "0.2.0-beta15",
-    "@yz1311/teaset": "^0.6.28",
+    "@yz1311/teaset": "^0.6.29",
     "@yz1311/teaset-code-push": "^0.3.0-beta1",
     "axios": "0.18.1",
     "base-64": "^0.1.0",

@@ -24,7 +24,6 @@ import {
   changeAppNetInfo,
   orientationInfoChanged,
 } from '../actions/app_actions';
-import YZLoading from '../components/YZLoading';
 import {CodePushHandler} from '@yz1311/teaset-code-push';
 import {NavigationActions} from 'react-navigation';
 import * as navActions from '../actions/nav_actions';

@@ -19,7 +19,7 @@ import useImmer from 'dva-immer';
 import YZStateView from './components/YZStateCommonView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
-import {NavigationHelper, Theme} from '@yz1311/teaset';
+import {NavigationBar, NavigationHelper, Theme} from '@yz1311/teaset';
 import FitImage from 'react-native-fit-image';
 //@ts-ignore
 import models from './models';
@@ -27,6 +27,7 @@ import {ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Styles from './common/styles';
 import {createAppContainer} from 'react-navigation';
 import RequestUtils from "./utils/requestUtils";
+import Entypo from "react-native-vector-icons/Entypo";
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -187,6 +188,26 @@ class Root extends Component {
       navColor: '#0d7dfa',
       navTitleColor: '#fff',
     })
+    //@ts-ignore
+    NavigationBar.defaultProps = {
+      //@ts-ignore
+      ...NavigationBar.defaultProps,
+      leftView: (
+          <TouchableOpacity
+              activeOpacity={activeOpacity}
+              style={{
+                paddingLeft: 9,
+                paddingRight: 8,
+                alignSelf: 'stretch',
+                justifyContent: 'center',
+              }}
+              onPress={() => {
+                NavigationHelper.goBack();
+              }}>
+            <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF} />
+          </TouchableOpacity>
+      )
+    };
     // ScrollableTabBar.defaultProps = {
     //   ...(ScrollableTabBar.defaultProps || {}),
     //   activeTextColor: gColors.bgColorF,

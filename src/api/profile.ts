@@ -18,6 +18,18 @@ export type followingModel = {
   avatar: string
 }
 
+export type fullUserInfoModel = {
+  uuid: string,
+  name: string,
+  avatar: string,
+  link: string,
+  seniority: string,
+  follows: number,
+  stars: number,
+  nickName: string,
+  isStar: boolean
+};
+
 export const getPersonInfo = (data:RequestModel<{userAlias: string}>) => {
   const URL = `https://www.cnblogs.com/${
       data.request.userAlias
@@ -113,19 +125,23 @@ export const getUserAliasByUserName = (data: getUserAliasByUserNameRequest) => {
 };
 
 
-export const getUserInfo = (data:RequestModel<{userId:string}>) => {
+export const getFullUserInfo = (data:RequestModel<{userId:string}>) => {
   const URL = `https://home.cnblogs.com/u/${data.request.userId}/`;
-  return RequestUtils.get<{id: string,
-    avatar: string,
-    nickName: string,
-    link: string,}>(URL, {
+  return RequestUtils.get<fullUserInfoModel>(URL, {
       resolveResult: (result)=>{
         //Todo:完善信息
-        let user:any = {};
+        let user:Partial<fullUserInfoModel> = {};
         user.avatar = (result.match(/class=\"user_avatar[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
         if(user.avatar.indexOf('http')!==0) {
           user.avatar = 'https:'+user.avatar;
         }
+        user.uuid = ((result.match(/var currentUserId = \"[\s\S]+?(?=\")/) || [])[0]).replace(/[\s\S]+\"/,'');
+        user.seniority = ((result.match(/入园时间：[\s\S]+?(?=<\/span>)/) || [])[0]).replace(/[\s\S]+>/,'');
+        user.isStar = /id=\"followedPanel\"[\s\S]{2,10}\"display:block\">/.test(result);
+        user.link = ((result.match(/博客：[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'');
+        user.name = ((result.match(/display_name\"[\s\S]+?(?=<\/h1>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim();
+        user.stars = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followees\/\"[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim());
+        user.follows = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followers\/\"[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim());
         return user;
       }
   });
