@@ -218,9 +218,11 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
                 parentId: parseInt(this.props.item.id)
               }
             });
-            this.onRefresh();
             ToastUtils.showToast('删除成功!');
             DeviceEventEmitter.emit('reload_blog_info');
+            setTimeout(()=>{
+              this.onRefresh();
+            },500);
           } catch (e) {
 
           } finally {
