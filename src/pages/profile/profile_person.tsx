@@ -29,6 +29,7 @@ import YZBaseDataPage, {
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import BlogItem from '../blog/blog_item';
+import StatusItem from '../status/status_item';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {userInfoModel} from "../../api/login";
@@ -41,6 +42,8 @@ import YZStickyTabView from '../../components/YZStickyTabView';
 import {BlogTypes} from "../home/home_index";
 import {blogModel} from "../../api/blog";
 import ProfilePersonTab from './profile_person_tab';
+import {StatusTypes} from '../status/status_index';
+import {statusModel} from '../../api/status';
 
 const avatorRadius = 40;
 
@@ -57,7 +60,10 @@ interface IState {
   loadDataResult: ReducerResult,
   blogList: Array<blogModel>,
   loadBlogListResult: ReducerResult,
-  blogListNoMore: boolean
+  blogListNoMore: boolean,
+  statusList: Array<statusModel>,
+  loadStatusListResult: ReducerResult,
+  statusListNoMore: boolean
 }
 
 @(connect(
@@ -89,6 +95,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
   private stickyTabViewRef: YZStickyTabView;
   private selectedTab: number = 0;
   private blogPageIndex = 1;
+  private statusPageIndex = 1;
 
   constructor(props) {
     super(props);
@@ -99,7 +106,10 @@ export default class profile_person extends PureComponent<IProps, IState> {
       viewRef: null,
       blogList: [],
       loadBlogListResult: createReducerResult(),
-      blogListNoMore: false
+      blogListNoMore: false,
+      statusList: [],
+      loadStatusListResult: createReducerResult(),
+      statusListNoMore: false
     };
   }
 
@@ -308,7 +318,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
       let response = await Api.blog.getPersonalBlogList({
         request: {
           pageIndex: this.blogPageIndex,
-          pageSize: 10
+          pageSize: 10,
+          userId: this.props.userAlias
         }
       });
       let pagingResult = dataToPagingResult(this.state.blogList,response.data || [],this.blogPageIndex,10);
@@ -323,6 +334,30 @@ export default class profile_person extends PureComponent<IProps, IState> {
       this.setState({
         loadDataResult: dataToReducerResult(e)
       });
+    }
+  }
+
+  loadStatusData = async ()=>{
+    try {
+      let response = await Api.status.getOtherStatusList({
+        request: {
+          pageIndex: this.statusPageIndex,
+          pageSize: 30,
+          userId: this.props.userAlias
+        }
+      });
+      let pagingResult = dataToPagingResult(this.state.statusList,response.data || [],this.statusPageIndex,30);
+      this.setState({
+        statusList: pagingResult.dataList,
+        statusListNoMore: pagingResult.noMore,
+        loadStatusListResult: pagingResult.loadDataResult
+      });
+    } catch (e) {
+      this.setState({
+        loadStatusListResult: dataToReducerResult(e)
+      });
+    } finally {
+
     }
   }
 
@@ -341,8 +376,27 @@ export default class profile_person extends PureComponent<IProps, IState> {
           return (
               <BlogItem
                   item={item}
+                  canViewProfile={false}
                   navigation={NavigationHelper.navigation}
                   />
+          );
+        }
+      },
+      {
+        loadData: this.loadStatusData,
+        data: this.state.statusList,
+        noMore: this.state.statusListNoMore,
+        loadDataResult: this.state.loadStatusListResult,
+        onPageIndexChange: (pageIndex) => {
+          this.statusPageIndex = pageIndex
+        },
+        renderItem: ({item, index}) => {
+          return (
+            <StatusItem
+              item={item}
+              canViewProfile={false}
+              navigation={NavigationHelper.navigation}
+            />
           );
         }
       }
@@ -376,7 +430,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
                         style={{paddingTop: 10}}
                         activeTab={activeTab}
                         goToPage={goToPage}
-                        tabs={[`博客`]}
+                        tabs={[`博客`,'闪存']}
                         underlineStyle={{width: Theme.px2dp(35), height: Theme.px2dp(9), borderRadius: Theme.px2dp(4.5)}}
                     />
                   </View>

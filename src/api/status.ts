@@ -61,6 +61,19 @@ export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageInde
   });
 };
 
+
+export const getOtherStatusList = (data:RequestModel<{userId:string,pageIndex:number,pageSize:number}>) => {
+  const URL = `https://ing.cnblogs.com/u/${data.request.userId}/${data.request.pageIndex}`;
+  return RequestUtils.get<Array<questionModel>>(URL, {
+    headers: {
+      //必须要加这个，否则请求失败
+      "x-requested-with": 'XMLHttpRequest'
+    },
+    resolveResult: resolveStatusHtml
+  });
+};
+
+
 export const getSearchStatusList = (data: RequestModel<{Keywords: string,
   pageIndex: number,}&Partial<SearchParams>>) => {
   const URL = `https://zzk.cnblogs.com/s/ing?Keywords=${data.request.Keywords}&pageindex=${data.request.pageIndex}

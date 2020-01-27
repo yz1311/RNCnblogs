@@ -72,7 +72,6 @@ export default class question_index extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
   }
 

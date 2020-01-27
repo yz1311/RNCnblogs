@@ -58,8 +58,11 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
-export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number}>) => {
-  const URL = `${gServerPath}/blog/u/${gUserData.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
+export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number,userId?: string}>) => {
+  if(!data.request.userId) {
+    data.request.userId = gUserData.userId;
+  }
+  const URL = `${gServerPath}/blog/u/${data.request.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
   return RequestUtils.get(URL,{
     resolveResult: (result)=>{
       result.map(item=>{

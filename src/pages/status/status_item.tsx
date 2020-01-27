@@ -34,6 +34,8 @@ interface IProps extends IReduxProps {
   userId?: string;
   canDelete?: boolean;
   canModify?: boolean;
+  //是否点击头像查看详情
+  canViewProfile: boolean;
   navigation: NavigationScreenProp<NavigationState>;
 }
 
@@ -52,7 +54,9 @@ interface IState {}
 export default class status_item extends PureComponent<IProps, IState> {
   static defaultProps = {
     clickable: true,
+    canViewProfile: true
   };
+
   private overlayKey: any;
   private fromView: any;
 
@@ -160,11 +164,13 @@ export default class status_item extends PureComponent<IProps, IState> {
               <TouchableOpacity
                 activeOpacity={activeOpacity}
                 onPress={() => {
-                  ServiceUtils.viewProfileDetail(
-                    this.props.dispatch,
-                    item.author?.id,
-                    item.author?.avatar,
-                  );
+                  if(this.props.canViewProfile) {
+                    ServiceUtils.viewProfileDetail(
+                      this.props.dispatch,
+                      item.author?.id,
+                      item.author?.avatar,
+                    );
+                  }
                 }}
                 style={{
                   flexDirection: 'row',

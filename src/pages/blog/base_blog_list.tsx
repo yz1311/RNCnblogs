@@ -15,6 +15,7 @@ import {messageModel} from "../../api/message";
 export interface IProps {
   navigation: any,
   tabIndex: number,
+  loadData?: Function,
   blogType: BlogTypes,
   userInfo?: any,
   keyword?: string,
@@ -61,7 +62,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      'list_refresh',
+      ']',
       ({tabIndex}) => {
         if (tabIndex === this.props.tabIndex) {
           this._flatList._onRefresh();

@@ -47,7 +47,6 @@ export default class search_question_list extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.reloadListener.remove();
   }
 

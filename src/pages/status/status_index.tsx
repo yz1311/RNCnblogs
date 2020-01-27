@@ -108,7 +108,6 @@ export default class status_index extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
   }
 
