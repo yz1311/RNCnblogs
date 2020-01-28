@@ -38,6 +38,13 @@ export enum QuestionTypes {
   搜索 = 'search',
 }
 
+
+export enum MyQuestionTypes {
+  提问 = 'question',
+  回答 = 'answered',
+  被采纳 = 'bestanswer',
+}
+
 @(connect(
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin,

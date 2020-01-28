@@ -37,6 +37,7 @@ interface IProps extends IReduxProps {
   showAll?: boolean;
   clickable: boolean;
   selectable: boolean;
+  canViewProfile?: boolean,
   navigation: NavigationScreenProp<NavigationState>;
   canDelete?: any;
   canModify?: any;
@@ -65,6 +66,7 @@ export default class question_item extends PureComponent<IProps, any> {
   static defaultProps = {
     clickable: true,
     selectable: false,
+    canViewProfile: true
   };
 
   private overlayKey: any;
@@ -202,11 +204,13 @@ export default class question_item extends PureComponent<IProps, any> {
               <TouchableOpacity
                 activeOpacity={activeOpacity}
                 onPress={() => {
-                  ServiceUtils.viewProfileDetail(
-                    this.props.dispatch,
-                    item.author?.id,
-                    faceUrl,
-                  );
+                  if(this.props.canViewProfile) {
+                    ServiceUtils.viewProfileDetail(
+                      this.props.dispatch,
+                      item.author?.id,
+                      faceUrl,
+                    );
+                  }
                 }}
                 style={{
                   flexDirection: 'row',

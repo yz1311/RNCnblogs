@@ -26,7 +26,9 @@ export interface IProps {
     goToPage?: any,
     renderTab?: any,
     activeTab?: any,
-    tabs?: Array<string>
+    tabs?: Array<string>,
+    activeSubMenu: Array<number>,
+    onSubMenuPress?: (mainIndex, subIndex)=>void
 }
 
 interface IState {
@@ -75,7 +77,10 @@ export default class ProfilePersonTab extends Component<IProps,IState> {
     }
 
     render() {
+      const {onSubMenuPress} = this.props;
+        let activeSubMenu = this.props.activeSubMenu || Array.from({length:this.props.tabs.length},x=>0);
         return (
+          <View>
             <View style={{
                 flexDirection: 'row',
                 alignItems: 'flex-end',
@@ -89,7 +94,52 @@ export default class ProfilePersonTab extends Component<IProps,IState> {
                     return renderTab(name, page, isTabActive, this.props.goToPage);
                 })}
             </View>
+            {this.props.activeTab == 2 ?
+              <View style={{flexDirection: 'row',paddingLeft: 14}}>
+                {
+                  ['提问','回答','被采纳'].map((x,index)=>{
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={()=>{
+                          onSubMenuPress&&onSubMenuPress(2,index);
+                        }}
+                        style={[styles.subMenuContainer,index==activeSubMenu[2]&&styles.activeSubMenuContainer]}>
+                        <Text style={[styles.subMenuText,index==activeSubMenu[2]&&styles.activeSubMenuText]}>{x}</Text>
+                      </TouchableOpacity>
+                    );
+                  })
+                }
+              </View>
+              :
+              null
+            }
+          </View>
         );
     }
 
 }
+
+
+const styles = StyleSheet.create({
+  subMenuContainer: {
+    width: 80,
+    height: 30,
+    marginVertical: 10,
+    borderRadius: 15,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: gColors.borderColorE5,
+    marginRight: 9
+  },
+  activeSubMenuContainer: {
+    backgroundColor: '#94d6da'
+  },
+  subMenuText: {
+    fontSize: gFont.size13,
+    color: gColors.color333
+  },
+  activeSubMenuText: {
+    color: '#005344'
+  }
+})

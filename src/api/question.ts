@@ -1,7 +1,7 @@
 import {createOptions, requestWithTimeout} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from '../utils/requestUtils';
-import {QuestionTypes} from '../pages/question/question_index';
+import {MyQuestionTypes, QuestionTypes} from '../pages/question/question_index';
 import {SearchParams} from "../pages/home/home_search";
 import {resolveSearchNewsHtml} from "./news";
 
@@ -39,6 +39,14 @@ export const getQuestionList = (data:RequestModel<{questionType:QuestionTypes,pa
   const URL = `https://q.cnblogs.com/list/${data.request.questionType}?page=${data.request.pageIndex}`;
   return RequestUtils.post<Array<questionModel>>(URL,data.request, {
     resolveResult: [QuestionTypes.新回答,QuestionTypes.新评论].indexOf(data.request.questionType)>=0?resolveQuestion1Html:resolveQuestionHtml
+  });
+};
+
+
+export const getOtherQuestionList = (data:RequestModel<{myQuestionType:MyQuestionTypes,userId:string,pageIndex:number}>) => {
+  const URL = `https://q.cnblogs.com/u/${data.request.userId}/${data.request.myQuestionType}${data.request.pageIndex>1?('/'+data.request.pageIndex):''}`;
+  return RequestUtils.get<Array<questionModel>>(URL, {
+    resolveResult: resolveQuestionHtml
   });
 };
 
