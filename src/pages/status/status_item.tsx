@@ -6,7 +6,7 @@ import {
   Image,
   Text,
   Alert,
-  DeviceEventEmitter,
+  DeviceEventEmitter, InteractionManager,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
@@ -25,6 +25,8 @@ import {deleteStatus} from '../../actions/status/status_index_actions';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {statusModel} from "../../api/status";
+import ToastUtils from '../../utils/toastUtils';
+import {Api} from '../../api';
 
 interface IProps extends IReduxProps {
   item: statusModel;
@@ -60,6 +62,18 @@ export default class status_item extends PureComponent<IProps, IState> {
   private overlayKey: any;
   private fromView: any;
 
+  _onModify = () => {
+    Overlay.hide(this.overlayKey);
+    const {item} = this.props;
+    //必须要加这个，上面的隐藏操作会影响跳转
+    InteractionManager.runAfterInteractions(()=>{
+      NavigationHelper.push('StatusAdd', {
+        title: '修改闪存',
+        item: item
+      });
+    });
+  };
+
   _onDelete = () => {
     Overlay.hide(this.overlayKey);
     Alert.alert(
@@ -71,24 +85,30 @@ export default class status_item extends PureComponent<IProps, IState> {
         },
         {
           text: '删除',
-          onPress: () => {
+          onPress: async () => {
             const {deleteStatusFn, item} = this.props;
-            deleteStatusFn &&
-              deleteStatusFn({
+            ToastUtils.showLoading();
+            try {
+              let response = await Api.status.deleteStatus({
                 request: {
-                  statusId: item.id,
-                },
-                successAction: () => {
-                  //如果是在详情，则返回到列表界面
-                  if (
-                    NavigationHelper.navRouters[
-                      NavigationHelper.navRouters.length - 1
-                    ].routeName === 'StatusDetail'
-                  ) {
-                    NavigationHelper.goBack();
-                  }
-                },
+                  ingId: parseInt(item.id)
+                }
               });
+              //如果是在详情，则返回到列表界面
+              if (
+                NavigationHelper.navRouters[
+                NavigationHelper.navRouters.length - 1
+                  ].routeName === 'StatusDetail'
+              ) {
+                NavigationHelper.goBack();
+              }
+              //刷新所有列表
+              DeviceEventEmitter.emit('status_list_refresh',-1);
+            } catch (e) {
+
+            } finally {
+              ToastUtils.hideLoading();
+            }
           },
         },
       ],
@@ -98,8 +118,7 @@ export default class status_item extends PureComponent<IProps, IState> {
 
   showMenu = () => {
     const {userInfo, userId, canDelete} = this.props;
-    let canModify =
-      userInfo.SpaceUserID + '' === userId + '' && this.props.canModify;
+    let canModify = this.props.canModify;
     this.fromView.measureInWindow((x, y, width, height) => {
       let popoverStyle = {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -122,6 +141,13 @@ export default class status_item extends PureComponent<IProps, IState> {
             this.overlayKey = null;
           }}
           showArrow={true}>
+          {/*官方闪存不支持修改*/}
+          {/*<ListRow*/}
+          {/*  style={{backgroundColor: 'transparent', width: 100}}*/}
+          {/*  titleStyle={{color: gColors.bgColorF, textAlign: 'center'}}*/}
+          {/*  title="修改"*/}
+          {/*  onPress={this._onModify}*/}
+          {/*/>*/}
           <ListRow
             style={{backgroundColor: 'transparent', width: 100}}
             titleStyle={{color: gColors.colorRed, textAlign: 'center'}}
@@ -212,7 +238,7 @@ export default class status_item extends PureComponent<IProps, IState> {
               </View>
             ) : null}
           </View>
-          {item.author?.id === userInfo.SpaceUserID ? (
+          {item.author?.id === userInfo.id ? (
             <TouchableOpacity
               ref={ref => (this.fromView = ref)}
               activeOpacity={activeOpacity}

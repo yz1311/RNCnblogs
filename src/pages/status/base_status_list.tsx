@@ -23,12 +23,15 @@ import {blogCommentModel} from "../../api/blog";
 import {statusModel} from "../../api/status";
 import {SearchParams} from "../home/home_search";
 import {QuestionTypes} from "../question/question_index";
+import {ReduxState} from '../../models';
+import {userInfoModel} from '../../api/login';
 
 export interface IProps {
   tabLabel?: string;
   navigation: any;
   statusType: StatusTypes,
   keyword?: string,
+  userInfo?: userInfoModel,
   searchParams?: SearchParams
 }
 
@@ -38,6 +41,9 @@ interface IState {
   loadDataResult: ReducerResult;
 }
 
+@(connect((state:ReduxState)=>({
+  userInfo: state.loginIndex.userInfo
+})) as any)
 export default class base_status_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
   pageSize = 30;
@@ -58,7 +64,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.scrollListener = DeviceEventEmitter.addListener(
-      'list_scroll_to_top',
+      'status_list_scroll_to_top',
       ({tabIndex}) => {
         if (tabIndex === this.props.statusType) {
           this._flatList && this._flatList._scrollToTop();
@@ -66,9 +72,9 @@ export default class base_status_list extends PureComponent<IProps, IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      'list_refresh',
-      ({tabIndex}) => {
-        if (tabIndex === this.props.statusType) {
+      'status_list_refresh',
+      (tabIndex) => {
+        if(tabIndex==-1||tabIndex === this.props.statusType) {
           this._flatList && this._flatList._onRefresh();
         }
       },
@@ -118,7 +124,11 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   }
 
   _renderItem = ({item, index}) => {
-    return <StatusItem item={item} navigation={this.props.navigation} />;
+    const {userInfo} = this.props;
+    return <StatusItem item={item}
+                       canDelete={item.author?.id === userInfo.id}
+                       canModify={item.author?.id === userInfo.id}
+                       navigation={this.props.navigation} />;
   };
 
   _handleScroll = event => {

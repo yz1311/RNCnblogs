@@ -492,7 +492,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
             }}
             data={this.getDataFromState()}
         />
-        {/*<NavigationBar style={{backgroundColor:'transparent'}} title={'测试'}/>*/}
+        <NavigationBar title={'详情'}/>
       </View>
     );
   }

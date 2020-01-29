@@ -123,6 +123,7 @@ const AppNavigation = createStackNavigator(
         //   );
         // },
         headerLeft: leftView,
+        headerTitle: params?.headerTitle || params?.title || '',
         headerBackTitle: ' ', // 左上角返回键文字
         headerTitleAlign: 'center',  //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
         // header:null,

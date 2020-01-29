@@ -164,28 +164,19 @@ export const deleteStatusComment = data => {
   });
 };
 
-export const deleteStatus = data => {
-  const URL = `${gServerPath}/statuses/${data.request.statusId}`;
-  const options = createOptions(data, 'DELETE');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除闪存失败!',
-    actionType: types.STATUS_DELETE_STATUS,
-  });
+export const deleteStatus = (data:RequestModel<{ingId: number}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/del`;
+  let formData = new FormData();
+  formData.append('ingId',data.request.ingId);
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
-export const addStatus = data => {
-  const URL = `${gServerPath}/statuses`;
-  const options = createOptions(data);
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '发布闪存失败!',
-    actionType: types.STATUS_ADD_STATUS,
-  });
+export const addStatus = (data:RequestModel<{publicFlag: 1|0,content:string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/Publish`;
+  let formData = new FormData();
+  formData.append('content',data.request.content);
+  formData.append('publicFlag',data.request.publicFlag);
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
 export const resolveStatusHtml = (result)=>{
