@@ -28,6 +28,7 @@ export type statusModel = {
   published: string,
   publishedDesc: string,
   hasGetComments: boolean;
+  isPrivate: boolean;
 };
 
 
@@ -221,6 +222,7 @@ export const resolveStatusHtml = (result)=>{
       item.commentCount = 0;
     }
     item.comments = [];
+    item.isPrivate = /title=\"私有闪存\"/.test(match);
     items.push(item);
   }
   return items;
@@ -246,6 +248,7 @@ export const resolveSearchStatusHtml = (result)=>{
     };
     item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.published = (match.match(/\"searchItem-time\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'')+':00';
+    item.isPrivate = /title=\"私有闪存\"/.test(match);
     items.push(item);
   }
   return items;

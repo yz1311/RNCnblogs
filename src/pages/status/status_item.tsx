@@ -218,6 +218,12 @@ export default class status_item extends PureComponent<IProps, IState> {
                 }}>
                 {item.published}
               </Text>
+              {item.isPrivate ?
+                <Image style={{width: 18, height: 18,marginLeft:7}} resizeMode={'contain'}
+                       source={{uri: 'https://common.cnblogs.com/images/ico_ing_self.gif'}}/>
+                :
+                null
+              }
             </View>
             <HTMLView
               containerStyle={{marginVertical: 7}}
