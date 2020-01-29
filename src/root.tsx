@@ -1,7 +1,7 @@
 import './common/constants';
 import './utils/globalStorage';
 import codePush from 'react-native-code-push';
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   View,
   Text,
@@ -151,7 +151,7 @@ const markdownRules = {
   },
 };
 
-class Root extends Component {
+class Root extends PureComponent {
   constructor(props) {
     super(props);
     //全局设置 禁止APP受系统字体放大缩小影响

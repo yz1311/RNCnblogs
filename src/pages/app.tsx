@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 
 import {
   View,
@@ -86,7 +86,7 @@ interface IState {
   showUpdateInfo: boolean;
 }
 @CodePushHandler({isDebugMode: false})
-export default class App extends Component<IProps, IState> {
+export default class App extends PureComponent<IProps, IState> {
   private reloadThemeListener: EmitterSubscription;
   private updateLogModal: any;
 

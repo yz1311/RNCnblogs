@@ -151,18 +151,11 @@ export const commentStatus = (data:RequestModel<{
   });
 };
 
-export const deleteStatusComment = data => {
-  const URL = `${gServerPath}/statuses/${data.request.statusId}/comments/${
-    data.request.commentId
-  }`;
-  const options = createOptions(data, 'DELETE');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除评论失败!',
-    actionType: types.STATUS_DELETE_COMMENT,
-  });
+export const deleteStatusComment = (data:RequestModel<{commentId: number}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/DeleteComment`;
+  let formData = new FormData();
+  formData.append('commentId',data.request.commentId);
+  return RequestUtils.post<{isSuccess:boolean,message:string}>(URL, formData);
 };
 
 export const deleteStatus = (data:RequestModel<{ingId: number}>) => {

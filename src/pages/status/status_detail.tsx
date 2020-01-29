@@ -191,8 +191,9 @@ export default class status_detail extends PureComponent<IProps, IState> {
         floor={item.Floor}
         content={item.summary}
         postDate={item.published}
+        //官方闪存评论无法修改
         canModify={false}
-        canDelete={item.author?.id === userInfo.SpaceUserID}
+        canDelete={item.author?.id === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -207,14 +208,15 @@ export default class status_detail extends PureComponent<IProps, IState> {
             },
           );
         }}
-        onDeleteCommentFn={() => {
-          const {deleteStatusCommentFn} = this.props;
-          deleteStatusCommentFn({
-            request: {
-              statusId: this.props.item.id,
-              commentId: item.id,
-            },
-            successAction: () => {
+        onDeleteCommentFn={async () => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.status.deleteStatusComment({
+              request: {
+                commentId: parseInt(item.id)
+              }
+            });
+            if(response.data.isSuccess) {
               //刷新当前列表
               this.pageIndex = 1;
               if (this._flatList) {
@@ -222,8 +224,14 @@ export default class status_detail extends PureComponent<IProps, IState> {
               } else {
                 this.loadData();
               }
-            },
-          });
+            } else {
+              ToastUtils.showToast(response.data.message);
+            }
+          } catch (e) {
+
+          } finally {
+            ToastUtils.hideLoading();
+          }
         }}
       />
     );
