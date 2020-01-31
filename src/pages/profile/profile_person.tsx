@@ -317,7 +317,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
       });
     } catch (e) {
       this.setState({
-        loadDataResult: dataToReducerResult(e)
+        loadBlogListResult: dataToReducerResult(e)
       });
     }
   }

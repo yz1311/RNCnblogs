@@ -188,6 +188,7 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
                 </TouchableOpacity>
             );
         }
+        //TODO：显示错误信息页面
         return (
             <TouchableOpacity
                 activeOpacity={0.9}
