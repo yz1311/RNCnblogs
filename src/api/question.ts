@@ -35,6 +35,27 @@ export type questionModel = {
   }
 };
 
+export type personQuestionIndex = {
+  userId: string,
+  integral: number,   //园豆
+  prestige: number,   //声望
+  rank: string,  //排名
+};
+
+export const getPersonQuestionIndex = (data:RequestModel<{userId: string}>) => {
+  const URL = `https://q.cnblogs.com/u/${data.request.userId}`;
+  return RequestUtils.get<personQuestionIndex>(URL, {
+    resolveResult: (result)=>{
+      let questionIndex = {} as Partial<personQuestionIndex>;
+      questionIndex.userId = '';
+      questionIndex.integral = parseInt((result.match(/class=\"my_rank\"[\s\S]+?园豆:\d+?(?=\D)/) || [])[0]?.replace(/^[\s\S]+:/,'') || '0');
+      questionIndex.prestige = parseInt((result.match(/class=\"my_rank\"[\s\S]+?声望:\d+?(?=<)/) || [])[0]?.replace(/^[\s\S]+:/,'') || '0');
+      questionIndex.rank = (result.match(/class=\"my_rank\"[\s\S]+?排名:[\s\S]+?(?=(\"|<))/) || [])[0]?.replace(/^[\s\S]+:/,'');
+      return questionIndex;
+    }
+  });
+};
+
 export const getQuestionList = (data:RequestModel<{questionType:QuestionTypes,pageIndex:number}>) => {
   const URL = `https://q.cnblogs.com/list/${data.request.questionType}?page=${data.request.pageIndex}`;
   return RequestUtils.post<Array<questionModel>>(URL,data.request, {
@@ -112,34 +133,39 @@ export const getQuestionAnswerList = data => {
   });
 };
 
-export const addQuestion = data => {
-  const URL = `${gServerPath}/questions`;
-  const options = createOptions(data);
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '提问失败!',
-    actionType: types.QUESTION_ADD_QUESTION,
+export const addQuestion = (data:RequestModel<{Title: string,Content: string,
+  Tags?: string,
+  PublishOption: boolean, //是否发布在博问首页 false:
+  SaveOption: boolean, // 是否存为草稿
+  FormatType: number, //2
+  Award: number  //悬赏的园豆
+  }>) => {
+  const URL = `https://q.cnblogs.com/q/AddQuestion`;
+  let formData = new FormData();
+  for (let key in data.request) {
+    formData.append(key,data.request[key]);
+  }
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
+};
+
+export const deleteQuestion = (data:RequestModel<{qid:number}>) => {
+  const URL = `https://q.cnblogs.com/q/DelQuestion`;
+  let formData = new FormData();
+  for (let key in data.request) {
+    formData.append(key,data.request[key]);
+  }
+  return RequestUtils.delete(URL, {
+    data: formData
   });
 };
 
-export const deleteQuestion = data => {
-  const URL = `${gServerPath}/questions/${data.request.questionId}`;
-  const options = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + gUserData.token,
-    },
-  };
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除提问失败!',
-    actionType: types.QUESTION_DELETE_QUESTION,
-  });
+export const closeQuestion = (data:RequestModel<{qid:number}>) => {
+  const URL = `https://q.cnblogs.com/q/NoProperAnswer`;
+  let formData = new FormData();
+  for (let key in data.request) {
+    formData.append(key,data.request[key]);
+  }
+  return RequestUtils.post(URL, formData);
 };
 
 //修改tag无效
