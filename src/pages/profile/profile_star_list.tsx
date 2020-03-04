@@ -12,6 +12,7 @@ import ToastUtils from '../../utils/toastUtils';
 import {connect} from "react-redux";
 import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export interface IProps {
   tabIndex?: number;
@@ -149,6 +150,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           />
           <Text style={[Styles.userName]}>{item?.name}</Text>
         </TouchableOpacity>
+        <View style={{flex:1}}/>
         {item.id === this.props.userInfo?.id ?
             <Button title={'取消关注'} onPress={() => {
               Alert.alert('', '是否取消关注?', [{
@@ -164,6 +166,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
             :
             null
         }
+        <Entypo name={'chevron-thin-right'} size={18} color={gColors.color999}/>
       </TouchableOpacity>
     );
   };
