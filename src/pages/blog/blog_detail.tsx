@@ -387,6 +387,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     try {
       let response = await Api.blog.commentBlog({
         request: {
+          userId: item.author?.id,
           postId: parseInt(this.state.postId),
           body: text
         }

@@ -132,9 +132,14 @@ export default class status_detail extends PureComponent<IProps, IState> {
       let imgRes = await Api.status.getStatusCommentList({
         request: {
           id: this.props.item.id,
-          userAlias: ''
+          userAlias: this.props.item.author?.id
         }
       });
+      DeviceEventEmitter.emit('update_status_comment_count',{
+        statusId: this.props.item.id,
+        commentCount:imgRes.data.length
+      });
+      //下面的长度就是评论数量
       this.setState({
         commentList: imgRes.data,
         getCommentListResult: dataToReducerResult(imgRes.data)
@@ -217,6 +222,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
               }
             });
             if(response.data.isSuccess) {
+              ToastUtils.showToast('删除成功!');
               //刷新当前列表
               this.pageIndex = 1;
               if (this._flatList) {
@@ -250,6 +256,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
          }
        });
        if(response.data.isSuccess) {
+         ToastUtils.showToast('评论成功!');
          callback && callback();
          //刷新当前列表
          this.pageIndex = 1;
@@ -271,7 +278,10 @@ export default class status_detail extends PureComponent<IProps, IState> {
     let headerComponent = (
       <View>
         <StatusItem
-          item={this.props.item}
+          item={{
+            ...this.props.item,
+            commentCount: this.state.commentList.length
+          }}
           clickable={false}
           navigation={this.props.navigation}
         />
@@ -351,7 +361,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={this.props.item.commentCount}
+              commentCount={this.state.commentList.length}
               serviceType={ServiceTypes.闪存}
               onClickCommentList={() => {
                 this._flatList &&

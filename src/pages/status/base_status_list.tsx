@@ -1,5 +1,6 @@
 import React, {Component, PureComponent} from 'react';
 import {
+  Animated,
   DeviceEventEmitter,
   EmitterSubscription,
   StyleSheet,
@@ -25,6 +26,8 @@ import {SearchParams} from "../home/home_search";
 import {QuestionTypes} from "../question/question_index";
 import {ReduxState} from '../../models';
 import {userInfoModel} from '../../api/login';
+import add = Animated.add;
+import produce from 'immer';
 
 export interface IProps {
   tabLabel?: string;
@@ -53,6 +56,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   protected mustLogin: boolean;
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
+  private updateCommentCountListener: EmitterSubscription;
   private _flatList: any;
 
   readonly state:IState = {
@@ -79,6 +83,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
         }
       },
     );
+    this.updateCommentCountListener = DeviceEventEmitter.addListener('update_status_comment_count',this.updateCommentCount);
   }
 
   componentDidMount(): void {
@@ -88,6 +93,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   componentWillUnmount() {
     this.scrollListener.remove();
     this.refreshListener.remove();
+    this.updateCommentCountListener.remove();
   }
 
   loadData = async ()=>{
@@ -121,6 +127,19 @@ export default class base_status_list extends PureComponent<IProps, IState> {
     } finally {
 
     }
+  }
+
+  updateCommentCount=({statusId,commentCount})=>{
+    let nextDataList = produce(this.state.dataList,draftState=>{
+      draftState.forEach(x=>{
+        if(x.id==statusId) {
+          x.commentCount = commentCount;
+        }
+      })
+    });
+    this.setState({
+      dataList: nextDataList
+    });
   }
 
   _renderItem = ({item, index}) => {

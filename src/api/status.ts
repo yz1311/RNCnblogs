@@ -100,7 +100,9 @@ export const getStatusDetail = data => {
 };
 
 export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:string}>) => {
-  const URL = `https://ing.cnblogs.com/ajax/ing/SingleIngComments?ingId=${data.request.id}`;
+  //直接接口多了会显示浏览更多
+  // const URL = `https://ing.cnblogs.com/ajax/ing/SingleIngComments?ingId=${data.request.id}`;
+  const URL = `https://ing.cnblogs.com/u/${data.request.userAlias}/status/${data.request.id}/`;
   return RequestUtils.get<Array<statusCommentModel>>(URL, {
     resolveResult: (result)=>{
       let matches = result.match(/<li id=\"comment_[\s\S]+?<\/li>/g) || [];
@@ -110,7 +112,7 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
         let comment = {} as Partial<statusCommentModel>;
         comment.title = '';
         comment.id = (match.match(/id=\"comment_[\s\S]+?(?=\")/)||[])[0]?.replace(/id=\"comment_/,'')?.trim(),
-        comment.summary = (match.match(/class=\"ing_comment\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+?ing_comment\">/,'')?.trim();
+        comment.summary = (match.match(/<bdo>[\s\S]+?(?=<\/bdo>)/)||[])[0]?.replace(/<bdo>/,'')?.trim();
         comment.author = {
           id: '',
           uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
@@ -119,7 +121,7 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
           no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
         };
         comment.author.id = comment.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
-        comment.published = (match.match(/class=\"ing_comment_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+        comment.published = (match.match(/title=\"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?=\")/)||[])[0]?.replace(/title=\"/,'');
         if(/^\d{2}:\d{2}$/.test(comment.published)) {
           comment.published =moment().format('YYYY-MM-DD ')+comment.published+':00';
         }

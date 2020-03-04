@@ -198,11 +198,11 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
   });
 }
 
-export const commentBlog = (data:RequestModel<{postId:number,body:string,parentCommentId?:number}>) => {
+export const commentBlog = (data:RequestModel<{userId:string,postId:number,body:string,parentCommentId?:number}>) => {
   if(data.request.parentCommentId==undefined) {
     data.request.parentCommentId = 0;
   }
-  const URL = `https://www.cnblogs.com/yz1311/ajax/PostComment/Add.aspx`;
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/PostComment/Add.aspx`;
   //message是一段html
   return RequestUtils.post<{isSuccess:boolean,message:string,duration:number}>(URL,data.request);
 };
