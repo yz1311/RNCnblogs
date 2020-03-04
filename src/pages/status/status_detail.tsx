@@ -250,10 +250,16 @@ export default class status_detail extends PureComponent<IProps, IState> {
                 this.loadData();
               }
             } else {
-              ToastUtils.showToast(response.data.message);
+              ToastUtils.showToast(response.data.message, {
+                position: ToastUtils.positions.CENTER,
+                type: ToastUtils.types.error
+              });
             }
           } catch (e) {
-
+            ToastUtils.showToast(e.message, {
+              position: ToastUtils.positions.CENTER,
+              type: ToastUtils.types.error
+            });
           } finally {
             ToastUtils.hideLoading();
           }
@@ -285,10 +291,16 @@ export default class status_detail extends PureComponent<IProps, IState> {
            this.loadData();
          }
        } else {
-         ToastUtils.showToast(response.data.message);
+         ToastUtils.showToast(response.data.message, {
+           position: ToastUtils.positions.CENTER,
+           type: ToastUtils.types.error
+         });
        }
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     }
   };
 
