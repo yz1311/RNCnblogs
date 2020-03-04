@@ -94,6 +94,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
   private _commentInput: any;
   private _flatList: any;
   private pageIndex: number;
+  private userIdAvatarMap = new Map();
 
   constructor(props) {
     super(props);
@@ -157,12 +158,30 @@ export default class status_detail extends PureComponent<IProps, IState> {
     for (let index in this.state.commentList) {
       let item = this.state.commentList[index];
       if(!item.author?.avatar || item.author?.avatar=='') {
+        if(this.userIdAvatarMap.has((item as statusCommentModel).author?.id)) {
+          let nextDateList = [
+            ...this.state.commentList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: this.userIdAvatarMap.get((item as statusCommentModel).author?.id)
+              }
+            },
+            ...this.state.commentList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            commentList: nextDateList
+          })
+          continue;
+        }
         try {
           let imgRes = await Api.profile.getUserAvatar({
             request: {
               userId: (item as statusCommentModel).author?.id
             }
           });
+          this.userIdAvatarMap.set((item as statusCommentModel).author?.id,imgRes.data.avatar);
           let nextDateList = [
             ...this.state.commentList.slice(0,parseInt(index)),
             {
