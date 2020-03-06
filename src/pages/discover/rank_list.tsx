@@ -1,9 +1,14 @@
 import React, {PureComponent} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View, Text} from 'react-native';
 import {Styles} from '../../common/styles';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import {createReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {createReducerResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {Api} from '../../api';
+import {rankModel} from '../../api/home';
+import Entypo from 'react-native-vector-icons/Entypo';
+import {Theme} from '@yz1311/teaset';
+import ServiceUtils from '../../utils/serviceUtils';
 
 
 interface IProps {
@@ -24,16 +29,50 @@ export default class RankList extends PureComponent<IProps,IState>{
 
   private _flatList:YZFlatList;
 
-  loadData = async ()=>{
-
+  componentDidMount(): void {
+    this.loadData();
   }
 
-  _renderItem = ({item,index})=>{
+  loadData = async ()=>{
+    try {
+      let response = await Api.home.rankList({request: {}});
+      this.setState({
+        dataList: response.data,
+        loadDataResult: dataToReducerResult(response.data)
+      });
+    } catch (e) {
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
+
+  _renderItem = ({item,index}:{item:rankModel,index:number})=>{
     return (
       <TouchableOpacity
-
+        onPress={()=>{
+          ServiceUtils.viewProfileDetail(
+            gStore.dispatch,
+            item.id,
+            '',
+          );
+        }}
+        style={{flexDirection:'row',backgroundColor:gColors.bgColorF,
+          height: Theme.px2dp(110),alignItems:'center',
+          paddingHorizontal:Theme.px2dp(15)}}
         >
-
+        <Text style={{color: gColors.color666,fontSize:Theme.px2dp(30),marginRight:Theme.px2dp(20)}}>{item.index}</Text>
+        <View>
+          <Text style={{color: gColors.color333,fontSize:Theme.px2dp(28),fontWeight:'600'}}>{item.name}</Text>
+          <View style={{flexDirection:'row',alignItems:'center',marginTop: Theme.px2dp(18),}}>
+            <Text style={{width:Theme.px2dp(180),color:gColors.color666,fontSize:Theme.px2dp(22)}}>文章数: <Text style={{color:Theme.primaryColor}}>{item.blogCount}</Text></Text>
+            <Text style={{color:gColors.color666,fontSize:Theme.px2dp(22)}}>最后更新: <Text style={{color:Theme.primaryColor}}>{item.lastUpdate}</Text></Text>
+          </View>
+        </View>
+        <View style={{flex:1}}/>
+        <Entypo name={'chevron-thin-right'} size={18} color={gColors.color999}/>
       </TouchableOpacity>
     );
   }
@@ -54,7 +93,7 @@ export default class RankList extends PureComponent<IProps,IState>{
             initialNumToRender={20}
             loadData={this.loadData}
             ItemSeparatorComponent={() => (
-              <View style={{height: 10, backgroundColor: 'transparent'}} />
+              <View style={{height: Theme.onePix*2, backgroundColor: gColors.borderColorE5}} />
             )}
           />
         </YZStateView>
