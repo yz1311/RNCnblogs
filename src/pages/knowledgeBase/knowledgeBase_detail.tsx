@@ -30,11 +30,6 @@ import {
   getKnowledgeBaseDetail,
   clearKnowledgeBaseDetail,
 } from '../../actions/knowledgeBase/knowledgeBase_index_actions';
-import {
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-  clearBlogIsFav,
-} from '../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import {setBlogScrollPosition} from '../../actions/blog/blog_index_actions';
@@ -49,7 +44,6 @@ export interface IProps extends IBaseDataPageProps {
   commentList_noMore?: any;
   getCommentListResult?: any;
   item?: any;
-  clearBlogIsFavFn?: any;
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
@@ -69,9 +63,6 @@ export interface IProps extends IBaseDataPageProps {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getKnowledgeBaseDetail(data)),
     clearDataFn: data => dispatch(clearKnowledgeBaseDetail(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
-    setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
@@ -124,8 +115,6 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
 
   componentWillUnmount() {
     super.componentWillUnmount();
-    //清空isFav属性
-    this.props.clearBlogIsFavFn();
     //设置滚动位置
     const {item} = this.props;
     if (this.scrollPosition > 0) {

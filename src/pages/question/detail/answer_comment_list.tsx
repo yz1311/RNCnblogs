@@ -34,11 +34,6 @@ import {
   modifyAnswerComment,
 } from '../../../actions/question/question_detail_actions';
 import AnswerItem from './answer_item';
-import {
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-} from '../../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../../actions/app_actions';
 import StringUtils from '../../../utils/stringUtils';
 import CommentItem from '../../blog/comment_item';
@@ -47,8 +42,6 @@ import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
-  setBlogIsFavFn: any;
-  clearBlogIsFavFn: any;
   clearQuestionAnswerListFn: any;
   commentAswerFn: any;
   deleteAnswerCommentFn: any;
@@ -79,8 +72,6 @@ interface IState {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getAnswerCommentList(data)),
     clearDataFn: data => dispatch(clearAnswerCommentList(data)),
-    setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     clearQuestionAnswerListFn: data => dispatch(clearQuestionAnswerList(data)),
     commentAswerFn: data => dispatch(commentAswer(data)),
     deleteAnswerCommentFn: data => dispatch(deleteAnswerComment(data)),

@@ -34,10 +34,6 @@ import {
   deleteStatusComment,
 } from '../../actions/status/status_index_actions';
 import StatusItem from './status_item';
-import {
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-} from '../../actions/bookmark/bookmark_index_actions';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
@@ -50,7 +46,6 @@ import ToastUtils from "../../utils/toastUtils";
 interface IProps extends IBaseDataPageProps {
   clearStatusCommentListFn?: any;
   userInfo?: any;
-  clearBlogIsFavFn?: any;
   item: statusModel;
   deleteStatusCommentFn?: any;
   isFav?: boolean;
@@ -78,7 +73,6 @@ interface IState {
     loadDataFn: data => dispatch(getStatusDetail(data)),
     clearDataFn: data => dispatch(clearStatusDetail(data)),
     clearStatusCommentListFn: data => dispatch(clearStatusCommentList(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     commentStatusFn: data => dispatch(commentStatus(data)),
     deleteStatusCommentFn: data => dispatch(deleteStatusComment(data)),
   }),

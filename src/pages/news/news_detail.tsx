@@ -32,11 +32,6 @@ import {
   clearNewsCommentList,
   setNewsScrollPosition,
 } from '../../actions/news/news_index_actions';
-import {
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-} from '../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
@@ -51,7 +46,6 @@ import ToastUtils from "../../utils/toastUtils";
 
 export interface IProps {
   item?: newsModel;
-  clearBlogIsFavFn?: any;
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
   navigation: any,
@@ -77,7 +71,6 @@ interface IState {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getNewsDetail(data)),
     clearDataFn: data => dispatch(clearNewsDetail(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     clearNewsCommentListFn: data => dispatch(clearNewsCommentList(data)),
     setNewsScrollPositionFn: data => dispatch(setNewsScrollPosition(data)),
   }),
@@ -140,7 +133,6 @@ export default class news_detail extends PureComponent<IProps, IState> {
 
   componentWillUnmount() {
     //清空isFav属性
-    // this.props.clearBlogIsFavFn();
     // this.props.clearNewsCommentListFn();
     //设置滚动位置
     // const {item} = this.props;

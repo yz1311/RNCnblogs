@@ -33,11 +33,6 @@ import {
   setBlogScrollPosition,
   setSelectedBlog,
 } from '../../actions/blog/blog_index_actions';
-import {
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-  clearBlogIsFav,
-} from '../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
@@ -97,8 +92,6 @@ interface IState {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getBlogDetail(data)),
     clearDataFn: data => dispatch(clearBlogDetail(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     clearBlogCommentListFn: data => dispatch(clearBlogCommentList(data)),
     setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
@@ -161,9 +154,6 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    //清空isFav属性
-    // this.props.clearBlogIsFavFn();
-    // this.props.clearBlogCommentListFn();
     //设置滚动位置
     // const {item} = this.props;
     // if (this.scrollPosition > 0) {

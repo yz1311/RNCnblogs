@@ -36,6 +36,8 @@ export default class RankList extends PureComponent<IProps,IState>{
   loadData = async ()=>{
     try {
       let response = await Api.home.rankList({request: {}});
+      //暂时只显示300条
+      response.data = response.data.slice(0,300);
       this.setState({
         dataList: response.data,
         loadDataResult: dataToReducerResult(response.data)
