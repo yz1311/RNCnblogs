@@ -34,6 +34,8 @@ import ProfilePerson from '../pages/profile/profile_person';
 import MessageIndex from '../pages/message/message_index';
 import StarList from '../pages/profile/profile_star_list';
 import FollowerList from '../pages/profile/profile_follower_list';
+import NewsIndex from '../pages/news/news_index';
+import RankList from '../pages/discover/rank_list';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 
 const AppNavigation = createStackNavigator(
@@ -75,6 +77,8 @@ const AppNavigation = createStackNavigator(
     ProfileAbout: {screen: withMappedNavigationProps(ProfileAbout)},
     ProfileFontSize: {screen: withMappedNavigationProps(ProfileFontSize)},
     ProfilePerson: {screen: withMappedNavigationProps(ProfilePerson)},
+    NewsIndex: {screen: withMappedNavigationProps(NewsIndex),navigationOptions: {headerTitle: '新闻频道'}},
+    RankList: {screen: withMappedNavigationProps(RankList),navigationOptions: {headerTitle: '排行榜'}},
     StarList: {screen: withMappedNavigationProps(StarList), navigationOptions: {headerTitle: '关注'}},
     FollowerList: {screen: withMappedNavigationProps(FollowerList), navigationOptions: {headerTitle: '粉丝'}},
     MessageIndex: {screen: withMappedNavigationProps(MessageIndex),navigationOptions: {headerTitle: '消息中心'}},

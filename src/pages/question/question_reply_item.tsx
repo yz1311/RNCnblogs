@@ -4,7 +4,7 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {questionModel} from '../../api/question';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ServiceUtils from '../../utils/serviceUtils';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Markdown from 'react-native-markdown-renderer';
 import {Theme} from '@yz1311/teaset';

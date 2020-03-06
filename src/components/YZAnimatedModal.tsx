@@ -11,7 +11,7 @@ import {
   BackHandler,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Styles from '../common/styles';
+import {Styles} from '../common/styles';
 
 export interface IProps {
   //标题的元素

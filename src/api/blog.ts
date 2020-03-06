@@ -154,8 +154,8 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
   //# endregion
 };
 
-export const getBlogCommentCount = (data: RequestModel<{postId: string}>) => {
-  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
+export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:string}>) => {
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
   return RequestUtils.get<number>(URL);
 }
 
@@ -166,8 +166,8 @@ export const getBlogViewCount = (data: RequestModel<{postId: string}>) => {
 
 
 //获取文章的分类和标签
-export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:string}>)=>{
-  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/CategoriesTags.aspx?blogId=${data.request.blogId}&postId=${data.request.postId}`;
+export const getBlogCategoryAndTags = (data:RequestModel<{userId:string,postId: string,blogId:string}>)=>{
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/CategoriesTags.aspx?blogId=${data.request.blogId}&postId=${data.request.postId}`;
   return RequestUtils.get<{category:string,
     categoryUrl: string,
     tags: [
@@ -288,7 +288,7 @@ export const resolveBlogCommentHtml = (result)=>{
     let item:Partial<blogCommentModel> = {};
     item.title = '';
     item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
-    item.content = (match.match(/class=\"blog_comment_body\"[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.content = (match.match(/class=\"blog_comment_body[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
       id: '',
       uri: (match.match(/id=\"a_comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),

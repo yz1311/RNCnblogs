@@ -20,7 +20,7 @@ import YZBaseDataPage, {
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow} from '@yz1311/teaset';

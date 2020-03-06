@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';

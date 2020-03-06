@@ -22,7 +22,7 @@ import YZBaseDataPage, {
 } from '../../../components/YZBaseDataPage';
 import YZCommentInput from '../../../components/YZCommentInput';
 import YZCommonActionMenu from '../../../components/YZCommonActionMenu';
-import Styles from '../../../common/styles';
+import {Styles} from '../../../common/styles';
 import PropTypes from 'prop-types';
 import {
   getQuestionDetail,
@@ -347,7 +347,7 @@ const QuestionDetail: FC<{
     `;
   return (
     <AutoHeightWebView
-      customScript={`document.body.style.background = 'white';window.onload = function(){  
+      customScript={`document.body.style.background = 'white';window.onload = function(){
                         var imgs = document.getElementsByTagName("img");
                         for (let i=0;i<imgs.length;i++) {
                             imgs[i].onclick = function(){
@@ -373,7 +373,7 @@ const QuestionDetail: FC<{
                     font-size: ${toPx(14)}px;
                 }
                 img {
-                    height: auto; 
+                    height: auto;
                     width: auto;
                     max-width: 100%;
                 }

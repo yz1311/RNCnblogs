@@ -15,7 +15,7 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import {showToast} from '../../actions/app_actions';
 import {
   clearBlogDetail,

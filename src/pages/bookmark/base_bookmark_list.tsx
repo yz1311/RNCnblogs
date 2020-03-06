@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import BookmarkItem from './bookmark_item';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';

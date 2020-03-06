@@ -12,7 +12,7 @@ import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';

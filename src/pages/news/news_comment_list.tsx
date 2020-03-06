@@ -16,7 +16,7 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import {showToast} from '../../actions/app_actions';
 import {

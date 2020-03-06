@@ -19,7 +19,7 @@ import YZBaseDataPage, {
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
@@ -383,7 +383,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
       for (let comment of visibleCommentList) {
         commentHtml += `
                     <div style="display: flex; flex-direction: row;padding-top: 10px;">
-                        <img 
+                        <img
                         style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
                         src="${comment.author?.avatar ||
                           'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
@@ -407,7 +407,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
       }
       commentHtml += `</div>`;
       if (showMoreButton) {
-        commentHtml += `<div 
+        commentHtml += `<div
                                 onclick="window['ReactNativeWebView'].postMessage(JSON.stringify({
                                     type: 'loadMore'
                                 }))"
@@ -423,7 +423,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                 <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
                 <style type="text/css">
                     img {
-                        height: auto; 
+                        height: auto;
                         width: 100%;
                         max-width: 100%;
                     }
@@ -439,7 +439,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                     }
                 </style>
                 <script>
-                    window.onload = function(){  
+                    window.onload = function(){
                         var imgs = document.getElementsByTagName("img");
                         for (let i=0;i<imgs.length;i++) {
                             imgs[i].onclick = function(){
@@ -468,7 +468,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                                 value: scrollPos
                                 }));
                             } catch (error) {
-                                
+
                             }
                         }
                         if(${data.scrollPosition} > 0)

@@ -24,7 +24,7 @@ import FitImage from 'react-native-fit-image';
 //@ts-ignore
 import models from './models';
 import {ScrollableTabBar} from 'react-native-scrollable-tab-view';
-import Styles from './common/styles';
+import {Styles} from './common/styles';
 import {createAppContainer} from 'react-navigation';
 import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -184,8 +184,8 @@ class Root extends PureComponent {
       ...Styles.text4Pie,
     };
     Theme.set({
-      primaryColor: '#0d7dfa',
-      navColor: '#0d7dfa',
+      primaryColor: '#746bfa',
+      navColor: '#746bfa',
       navTitleColor: '#fff',
     })
     //@ts-ignore

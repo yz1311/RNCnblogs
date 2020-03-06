@@ -19,6 +19,7 @@ import Home from './home/home_index';
 import News from './news/news_index';
 import Question from './question/question_index';
 import Status from './status/status_index';
+import DiscoverIndex from './discover/discover_index';
 import Profile from './profile/profile_index';
 import SplashScreen from 'react-native-splash-screen';
 import {showToast} from '../actions/app_actions';
@@ -87,7 +88,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      tabNames: ['博客', '新闻', '博问', '闪存', '我'],
+      tabNames: ['博客', '博问', '闪存','发现', '我'],
       tabIconNames: [
         // require('../resources/tab/Home.png'),
         // require('../resources/tab/Warning.png'),
@@ -250,9 +251,9 @@ export default class YZTabBarView extends Component<IProps, IState> {
           locked={true}
           onChangeTab={this._onChangeTab}>
           <Home navigation={this.props.navigation} tabIndex={0} />
-          <News navigation={this.props.navigation} tabIndex={1} />
-          <Question navigation={this.props.navigation} tabIndex={2} />
-          <Status navigation={this.props.navigation} tabIndex={3} />
+          <Question navigation={this.props.navigation} tabIndex={1} />
+          <Status navigation={this.props.navigation} tabIndex={2} />
+          <DiscoverIndex  tabIndex={3} />
           <Profile navigation={this.props.navigation} tabIndex={4} />
         </ScrollableTabView>
         <Modal

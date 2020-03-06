@@ -20,7 +20,7 @@ import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
@@ -302,6 +302,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogCategoryAndTags({
             request: {
+              userId: this.props.item.author?.id,
               //Todo:搜索列表，还没有blogapp
               blogId: this.props.item.blogapp,
               postId: postId
@@ -318,6 +319,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogCommentCount({
             request: {
+              userId: this.props.item.author?.id,
               postId: postId
             }
           });

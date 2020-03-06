@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import QuestionItem from './question_item';
 import QuestionReplyItem from './question_reply_item';
 import CommonUtils from '../../utils/commonUtils';

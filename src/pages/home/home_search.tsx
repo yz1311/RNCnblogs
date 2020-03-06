@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Alert, DeviceEventEmitter, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {IBaseDataPageProps,} from '../../components/YZBaseDataPage';

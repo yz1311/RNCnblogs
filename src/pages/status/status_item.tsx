@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';

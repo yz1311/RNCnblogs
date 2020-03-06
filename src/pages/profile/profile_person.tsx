@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {findNodeHandle, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';

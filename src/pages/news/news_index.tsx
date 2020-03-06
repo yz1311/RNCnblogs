@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import BaseNewsList from './base_news_list';
@@ -56,12 +56,6 @@ export default class news_index extends Component<IProps, IState> {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
-        <View
-          style={{
-            height: Theme.statusBarHeight,
-            backgroundColor: Theme.navColor,
-          }}
-        />
         <ScrollableTabView
           renderTabBar={() => (
             <HomeTabBar
