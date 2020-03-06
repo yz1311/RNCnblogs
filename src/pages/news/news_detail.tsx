@@ -14,9 +14,6 @@ import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
@@ -25,13 +22,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {
-  getNewsDetail,
-  clearNewsDetail,
-  commentNews,
-  clearNewsCommentList,
-  setNewsScrollPosition,
-} from '../../actions/news/news_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
@@ -46,8 +36,6 @@ import ToastUtils from "../../utils/toastUtils";
 
 export interface IProps {
   item?: newsModel;
-  clearNewsCommentListFn?: any;
-  setNewsScrollPositionFn?: any;
   navigation: any,
   isLogin?: boolean
 }
@@ -69,10 +57,6 @@ interface IState {
   dispatch => ({
     dispatch,
     showToastFn: data => dispatch(showToast(data)),
-    loadDataFn: data => dispatch(getNewsDetail(data)),
-    clearDataFn: data => dispatch(clearNewsDetail(data)),
-    clearNewsCommentListFn: data => dispatch(clearNewsCommentList(data)),
-    setNewsScrollPositionFn: data => dispatch(setNewsScrollPosition(data)),
   }),
 ) as any)
 //@ts-ignore
@@ -132,8 +116,6 @@ export default class news_detail extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    //清空isFav属性
-    // this.props.clearNewsCommentListFn();
     //设置滚动位置
     // const {item} = this.props;
     // if (this.scrollPosition > 0) {

@@ -17,7 +17,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {addStatus} from '../../actions/status/status_index_actions';
 import {showToast} from '../../actions/app_actions';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Api} from '../../api';
@@ -29,7 +28,6 @@ interface IProps extends IReduxProps {
   item: statusModel;
   clickable: boolean;
   navigation: NavigationScreenProp<NavigationState>;
-  addStatusFn?: any;
 }
 
 interface IState {
@@ -41,7 +39,6 @@ interface IState {
   state => ({}),
   dispatch => ({
     showToastFn: data => dispatch(showToast(data)),
-    addStatusFn: data => dispatch(addStatus(data)),
   }),
 ) as any)
 export default class status_add extends PureComponent<IProps, IState> {

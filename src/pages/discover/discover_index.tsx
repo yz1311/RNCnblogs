@@ -33,7 +33,6 @@ export default class DiscoverIndex extends PureComponent<IProps,IState>{
   render () {
     return (
       <View style={[Styles.container]}>
-        <StatusBar barStyle={'dark-content'} />
         <View style={{height: Theme.statusBarHeight,backgroundColor:gColors.bgColorF}}/>
         <View style={{flexDirection:'row',alignItems:'center',
           justifyContent:'space-between',

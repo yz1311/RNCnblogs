@@ -31,8 +31,6 @@ import {
   clearKnowledgeBaseDetail,
 } from '../../actions/knowledgeBase/knowledgeBase_index_actions';
 import {showToast} from '../../actions/app_actions';
-import StringUtils from '../../utils/stringUtils';
-import {setBlogScrollPosition} from '../../actions/blog/blog_index_actions';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
@@ -45,7 +43,6 @@ export interface IProps extends IBaseDataPageProps {
   getCommentListResult?: any;
   item?: any;
   clearBlogCommentListFn?: any;
-  setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
   isLogin?: boolean
 }
@@ -63,7 +60,6 @@ export interface IProps extends IBaseDataPageProps {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getKnowledgeBaseDetail(data)),
     clearDataFn: data => dispatch(clearKnowledgeBaseDetail(data)),
-    setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
 //@ts-ignore
@@ -118,10 +114,10 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
     //设置滚动位置
     const {item} = this.props;
     if (this.scrollPosition > 0) {
-      this.props.setBlogScrollPositionFn({
-        id: item.Id,
-        value: this.scrollPosition,
-      });
+      // this.props.setBlogScrollPositionFn({
+      //   id: item.Id,
+      //   value: this.scrollPosition,
+      // });
     }
   }
 

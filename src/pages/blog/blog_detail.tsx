@@ -26,13 +26,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {
-  getBlogDetail,
-  clearBlogDetail,
-  clearBlogCommentList,
-  setBlogScrollPosition,
-  setSelectedBlog,
-} from '../../actions/blog/blog_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
@@ -42,7 +35,6 @@ import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog'
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
-import {spawn} from "redux-saga/effects";
 import {ServiceTypes} from "../YZTabBarView";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
@@ -64,8 +56,6 @@ export interface IProps {
   // data?: any,
   // loadDataResult?: any,
   item?: blogModel;
-  clearBlogIsFavFn?: any;
-  clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   navigation?: any;
   isLogin?: boolean,
@@ -90,10 +80,6 @@ interface IState {
   dispatch => ({
     dispatch,
     showToastFn: data => dispatch(showToast(data)),
-    loadDataFn: data => dispatch(getBlogDetail(data)),
-    clearDataFn: data => dispatch(clearBlogDetail(data)),
-    clearBlogCommentListFn: data => dispatch(clearBlogCommentList(data)),
-    setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
 // @ts-ignore

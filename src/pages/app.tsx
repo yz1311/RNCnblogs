@@ -26,7 +26,6 @@ import {
 } from '../actions/app_actions';
 import {CodePushHandler} from '@yz1311/teaset-code-push';
 import {NavigationActions} from 'react-navigation';
-import * as navActions from '../actions/nav_actions';
 import codePush from 'react-native-code-push';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';

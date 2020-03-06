@@ -34,7 +34,6 @@ interface IProps extends IReduxProps {
   item: questionModel;
   clickable: boolean;
   navigation: NavigationScreenProp<NavigationState>;
-  addQuestionFn?: any;
   modifyQuestionFn?: any;
   userInfo?: any;
 }
@@ -55,7 +54,6 @@ interface IState {
     userInfo: state.loginIndex.userInfo,
   }),
   dispatch => ({
-    addQuestionFn: data => dispatch(addQuestion(data)),
     modifyQuestionFn: data => dispatch(modifyQuestion(data)),
   }),
 ) as any)
@@ -141,7 +139,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
 
   _rightAction = async () => {
     if (this.state.canSubmit) {
-      const {addQuestionFn, item, modifyQuestionFn} = this.props;
+      const { item, modifyQuestionFn} = this.props;
       ToastUtils.showLoading();
       //修改
       if (item?.title) {

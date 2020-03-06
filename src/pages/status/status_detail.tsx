@@ -21,18 +21,6 @@ import YZBaseDataPage, {
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow} from '@yz1311/teaset';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import {
-  getStatusDetail,
-  clearStatusDetail,
-  clearStatusCommentList,
-  commentStatus,
-  deleteStatusComment,
-} from '../../actions/status/status_index_actions';
 import StatusItem from './status_item';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
@@ -40,14 +28,11 @@ import {ServiceTypes} from "../YZTabBarView";
 import {Api} from "../../api";
 import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {blogCommentModel} from "../../api/blog";
 import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
-  clearStatusCommentListFn?: any;
   userInfo?: any;
   item: statusModel;
-  deleteStatusCommentFn?: any;
   isFav?: boolean;
   data?: any;
   commentStatusFn?: any;
@@ -70,11 +55,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    loadDataFn: data => dispatch(getStatusDetail(data)),
-    clearDataFn: data => dispatch(clearStatusDetail(data)),
-    clearStatusCommentListFn: data => dispatch(clearStatusCommentList(data)),
-    commentStatusFn: data => dispatch(commentStatus(data)),
-    deleteStatusCommentFn: data => dispatch(deleteStatusComment(data)),
   }),
 ) as any)
 export default class status_detail extends PureComponent<IProps, IState> {

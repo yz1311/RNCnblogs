@@ -19,15 +19,7 @@ import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import {showToast} from '../../actions/app_actions';
-import {
-  getNewsCommentList,
-  clearNewsCommentList,
-  modifyNewsComment,
-  deleteNewsComment,
-  commentNews,
-} from '../../actions/news/news_index_actions';
 import PropTypes from 'prop-types';
-import StringUtils from '../../utils/stringUtils';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
 import {blogCommentModel, getBlogCommentListRequest} from "../../api/blog";
@@ -39,8 +31,6 @@ import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
-  modifyNewsCommentFn?: any;
-  deleteNewsCommentFn?: any;
   userInfo?: userInfoModel;
   item: newsModel,
   isLogin?: boolean
@@ -62,10 +52,6 @@ interface IState {
   dispatch => ({
     dispatch,
     showToastFn: data => dispatch(showToast(data)),
-    loadDataFn: data => dispatch(getNewsCommentList(data)),
-    clearDataFn: data => dispatch(clearNewsCommentList(data)),
-    modifyNewsCommentFn: data => dispatch(modifyNewsComment(data)),
-    deleteNewsCommentFn: data => dispatch(deleteNewsComment(data)),
   }),
 ) as any)
 export default class news_comment_list extends Component<IProps, IState> {

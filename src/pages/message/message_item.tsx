@@ -7,7 +7,6 @@ import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
-import {setSelectedDetail} from '../../actions/news/news_index_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {newsModel} from "../../api/news";

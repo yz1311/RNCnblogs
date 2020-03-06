@@ -16,21 +16,9 @@ import YZFlatList from '../../components/YZFlatList';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
-import {showToast} from '../../actions/app_actions';
-import {
-  clearBlogDetail,
-  commentBlog,
-  getBlogDetail,
-  getBlogCommentList,
-  clearBlogCommentList,
-} from '../../actions/blog/blog_index_actions';
-import PropTypes from 'prop-types';
-import StringUtils from '../../utils/stringUtils';
-import CommonUtils from '../../utils/commonUtils';
 import CommentItem from './comment_item';
 import {blogCommentModel, blogModel, getBlogCommentListRequest} from '../../api/blog';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {APP_CHANGE_NET_INFO} from "../../actions/actionTypes";
 import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
@@ -41,7 +29,6 @@ interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
   userInfo?: userInfoModel;
   item: blogModel;
-  commentBlogFn?: any;
   isLogin?: boolean
 }
 
@@ -60,9 +47,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    loadDataFn: data => dispatch(getBlogCommentList(data)),
-    clearDataFn: data => dispatch(clearBlogCommentList(data)),
-    commentBlogFn: data => dispatch(commentBlog(data)),
   }),
 ) as any)
 export default class blog_comment_list extends PureComponent<IProps, IState> {

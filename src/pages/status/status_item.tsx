@@ -9,19 +9,13 @@ import {
   DeviceEventEmitter, InteractionManager,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Overlay} from '@yz1311/teaset';
-import PropTypes from 'prop-types';
-import StringUtils from '../../utils/stringUtils';
 import ServiceUtils from '../../utils/serviceUtils';
 import HTMLView from 'react-native-render-html';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {showToast} from '../../actions/app_actions';
-import {deleteStatus} from '../../actions/status/status_index_actions';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {statusModel} from "../../api/status";
@@ -31,7 +25,6 @@ import {Api} from '../../api';
 interface IProps extends IReduxProps {
   item: statusModel;
   clickable: boolean;
-  deleteStatusFn?: any;
   userInfo?: any;
   userId?: string;
   canDelete?: boolean;
@@ -50,7 +43,6 @@ interface IState {}
   dispatch => ({
     dispatch,
     showToastFn: data => dispatch(showToast(data)),
-    deleteStatusFn: data => dispatch(deleteStatus(data)),
   }),
 ) as any)
 export default class status_item extends PureComponent<IProps, IState> {
@@ -86,7 +78,7 @@ export default class status_item extends PureComponent<IProps, IState> {
         {
           text: '删除',
           onPress: async () => {
-            const {deleteStatusFn, item} = this.props;
+            const {item} = this.props;
             ToastUtils.showLoading();
             try {
               let response = await Api.status.deleteStatus({
