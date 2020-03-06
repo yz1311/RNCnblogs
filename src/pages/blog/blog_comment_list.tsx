@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert, DeviceEventEmitter,
+  Alert, DeviceEventEmitter, EmitterSubscription,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZBaseDataPage, {
@@ -77,6 +77,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   private _commentInput: any;
   private _flatList: any;
+  private updateCountListener:EmitterSubscription;
 
   constructor(props) {
     super(props);
@@ -99,10 +100,16 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
   componentDidMount() {
     this.loadData();
     this.setTitle();
+    this.updateCountListener = DeviceEventEmitter.addListener('update_blog_comment_count',count=>{
+      this.props.navigation.setParams({
+        title: count,
+      });
+    });
   }
 
   componentWillUnmount() {
     //退出不用清空列表
+    this.updateCountListener&&this.updateCountListener.remove();
   }
 
   setTitle = (nextProps:IProps = null) => {
@@ -268,17 +275,27 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
           body: text
         }
       });
-      callback && callback();
-      //刷新当前列表
-      this.pageIndex = 1;
-      if (this._flatList) {
-        this._flatList && this._flatList._onRefresh();
+      if(response.data.isSuccess) {
+        callback && callback();
+        //刷新当前列表
+        this.pageIndex = 1;
+        if (this._flatList) {
+          this._flatList && this._flatList._onRefresh();
+        } else {
+          this.loadData();
+        }
+        DeviceEventEmitter.emit('reload_blog_info');
       } else {
-        this.loadData();
+        ToastUtils.showToast(response.data.message, {
+          position: ToastUtils.positions.CENTER,
+          type: ToastUtils.types.error
+        });
       }
-      DeviceEventEmitter.emit('reload_blog_info');
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     } finally {
       ToastUtils.hideLoading();
     }

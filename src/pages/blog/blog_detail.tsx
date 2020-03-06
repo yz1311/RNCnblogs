@@ -326,6 +326,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           this.setState({
             commentCount: response.data
           });
+          DeviceEventEmitter.emit('update_blog_comment_count',response.data);
         } catch (e) {
 
         } finally {
@@ -346,7 +347,10 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       case 'loadMore':
         NavigationHelper.push('BlogCommentList', {
           pageIndex: 1,
-          item: item,
+          item: {
+            ...item,
+            comments: this.state.commentCount
+          },
         });
         break;
       case 'img_click':
@@ -399,10 +403,16 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         //刷新当前列表
         this.loadData();
       } else {
-        ToastUtils.showToast(response.data.message);
+        ToastUtils.showToast(response.data.message, {
+          position: ToastUtils.positions.CENTER,
+          type: ToastUtils.types.error
+        });
       }
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     } finally {
       ToastUtils.hideLoading();
     }
