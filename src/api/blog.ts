@@ -288,7 +288,7 @@ export const resolveBlogCommentHtml = (result)=>{
     let item:Partial<blogCommentModel> = {};
     item.title = '';
     item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
-    item.content = (match.match(/class=\"blog_comment_body[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.content = (match.match(/class=\"blog_comment_body[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+?\>/,'').trim();
     item.author = {
       id: '',
       uri: (match.match(/id=\"a_comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
