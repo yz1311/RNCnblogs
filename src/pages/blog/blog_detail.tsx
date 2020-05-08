@@ -20,24 +20,12 @@ import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {
-  getBlogDetail,
-  clearBlogDetail,
-  clearBlogCommentList,
-  setBlogScrollPosition,
-  setSelectedBlog,
-} from '../../actions/blog/blog_index_actions';
-import {
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-  clearBlogIsFav,
-} from '../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
@@ -47,7 +35,6 @@ import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog'
 import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
-import {spawn} from "redux-saga/effects";
 import {ServiceTypes} from "../YZTabBarView";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
@@ -69,8 +56,6 @@ export interface IProps {
   // data?: any,
   // loadDataResult?: any,
   item?: blogModel;
-  clearBlogIsFavFn?: any;
-  clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   navigation?: any;
   route?: any;
@@ -96,12 +81,6 @@ interface IState {
   dispatch => ({
     dispatch,
     showToastFn: data => dispatch(showToast(data)),
-    loadDataFn: data => dispatch(getBlogDetail(data)),
-    clearDataFn: data => dispatch(clearBlogDetail(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    clearBlogCommentListFn: data => dispatch(clearBlogCommentList(data)),
-    setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
 // @ts-ignore
@@ -163,9 +142,6 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    //清空isFav属性
-    // this.props.clearBlogIsFavFn();
-    // this.props.clearBlogCommentListFn();
     //设置滚动位置
     // const {item} = this.props;
     // if (this.scrollPosition > 0) {
@@ -304,6 +280,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogCategoryAndTags({
             request: {
+              userId: this.props.item.author?.id,
               //Todo:搜索列表，还没有blogapp
               blogId: this.props.item.blogapp,
               postId: postId
@@ -320,12 +297,14 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         try {
           let response = await Api.blog.getBlogCommentCount({
             request: {
+              userId: this.props.item.author?.id,
               postId: postId
             }
           });
           this.setState({
             commentCount: response.data
           });
+          DeviceEventEmitter.emit('update_blog_comment_count',response.data);
         } catch (e) {
 
         } finally {
@@ -346,7 +325,10 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       case 'loadMore':
         NavigationHelper.push('BlogCommentList', {
           pageIndex: 1,
-          item: item,
+          item: {
+            ...item,
+            comments: this.state.commentCount
+          },
         });
         break;
       case 'img_click':
@@ -389,6 +371,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     try {
       let response = await Api.blog.commentBlog({
         request: {
+          userId: item.author?.id,
           postId: parseInt(this.state.postId),
           body: text
         }
@@ -398,10 +381,16 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         //刷新当前列表
         this.loadData();
       } else {
-        ToastUtils.showToast(response.data.message);
+        ToastUtils.showToast(response.data.message, {
+          position: ToastUtils.positions.CENTER,
+          type: ToastUtils.types.error
+        });
       }
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     } finally {
       ToastUtils.hideLoading();
     }

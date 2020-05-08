@@ -13,14 +13,6 @@ import {
 import PropTypes from 'prop-types';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
-import {
-  addBookmark,
-  checkIsBookmark,
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-} from '../actions/bookmark/bookmark_index_actions';
-import {showToast} from '../actions/app_actions';
 // import LottieView from 'lottie-react-native';
 import moment from 'moment';
 import {ReduxState} from '../reducers';
@@ -44,9 +36,6 @@ export interface IProps extends IReduxProps {
   showShareButton: boolean;
   isLogin?: boolean;
   title?: string,
-  deleteBookmarkByUrlFn?: any;
-  setBlogIsFavFn?: any;
-  addBookmarkFn?: any;
   serviceType: ServiceTypes;
 }
 
@@ -61,10 +50,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
-    addBookmarkFn: data => dispatch(addBookmark(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
   }),
 ) as any)
 export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
@@ -181,47 +166,6 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
       } finally {
         ToastUtils.hideLoading();
       }
-    }
-
-    return;
-    if (this.state.isFav) {
-      Alert.alert('', '是否删除该条收藏?', [
-        {
-          text: '取消',
-        },
-        {
-          text: '删除',
-          onPress: () => {
-            //由于参数一致，直接统一在本页面操作
-            const {deleteBookmarkByUrlFn, data} = this.props;
-            deleteBookmarkByUrlFn({
-              request: {
-                url: (data.Url || '').replace('http:', 'https:'),
-              },
-              successAction: () => {
-                this.props.setBlogIsFavFn(false);
-              },
-            });
-          },
-        },
-      ]);
-    } else {
-      const {data} = this.props;
-      NavigationHelper.navigation.navigate('BookmarkModify', {
-        item: {
-          Title: data.Title,
-          //这个接口url返回的是http协议，影响检查是否收藏接口(收藏的链接都是https),所以这个同意改为https
-          LinkUrl: (data.Url || '').replace('http:', 'https:'),
-        },
-        isModify: false,
-        title: '添加收藏',
-        successAction: () => {
-          //返回上一级，并刷新状态
-          this.props.setBlogIsFavFn(true);
-          // this.props.navigation.goBack();
-          NavigationHelper.goBack();
-        },
-      });
     }
   };
 

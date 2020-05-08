@@ -1,6 +1,6 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View} from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Theme} from '@yz1311/teaset';
 import BookmarkItem from './bookmark_item';

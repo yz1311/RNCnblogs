@@ -2,13 +2,14 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';
 import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
 import {Alert, Button, Theme} from '@yz1311/teaset';
 import ToastUtils from '../../utils/toastUtils';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export interface IProps {
   tabIndex?: number;
@@ -96,7 +97,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
           onPress={() => {
             ServiceUtils.viewProfileDetail(
               gStore.dispatch,
-              this.props.userId,
+              item.id,
               item.avatar,
             );
           }}
@@ -104,6 +105,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
             flexDirection: 'row',
             alignSelf: 'stretch',
             alignItems: 'center',
+            flex:1
           }}>
           <Image
             style={[Styles.avator]}
@@ -111,6 +113,8 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
             source={{uri: item?.avatar}}
           />
           <Text style={[Styles.userName]}>{item?.name}</Text>
+          <View style={{flex:1}}/>
+          <Entypo name={'chevron-thin-right'} size={18} color={gColors.color999}/>
         </TouchableOpacity>
       </View>
     );

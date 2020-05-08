@@ -22,7 +22,7 @@ import YZBaseDataPage, {
 } from '../../../components/YZBaseDataPage';
 import YZCommentInput from '../../../components/YZCommentInput';
 import YZCommonActionMenu from '../../../components/YZCommonActionMenu';
-import Styles from '../../../common/styles';
+import {Styles} from '../../../common/styles';
 import PropTypes from 'prop-types';
 import {
   getQuestionDetail,
@@ -33,11 +33,6 @@ import {
 } from '../../../actions/question/question_detail_actions';
 import QuestionItem from '../question_item';
 import AnswerItem from './answer_item';
-import {
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-} from '../../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
 import AutoHeightWebView from 'react-native-autoheight-webview';
@@ -45,9 +40,6 @@ import {ServiceTypes} from "../../YZTabBarView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
-  clearBlogIsFavFn?: any;
-  clearQuestionAnswerListFn?: any;
-  deleteBookmarkByUrlFn?: any;
   answerQuestionFn?: any;
   answerList?: Array<any>;
   getAnswerListResult?: any;
@@ -71,9 +63,7 @@ interface IProps extends IBaseDataPageProps {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getQuestionDetail(data)),
     clearDataFn: data => dispatch(clearQuestionDetail(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
     clearQuestionAnswerListFn: data => dispatch(clearQuestionAnswerList(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
     answerQuestionFn: data => dispatch(answerQuestion(data)),
   }),
 ) as any)
@@ -117,9 +107,6 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
 
   componentWillUnmount() {
     super.componentWillUnmount();
-    this.props.clearQuestionAnswerListFn();
-    //清空isFav属性
-    this.props.clearBlogIsFavFn();
     this.reloadListener && this.reloadListener.remove();
   }
 
@@ -347,7 +334,7 @@ const QuestionDetail: FC<{
     `;
   return (
     <AutoHeightWebView
-      customScript={`document.body.style.background = 'white';window.onload = function(){  
+      customScript={`document.body.style.background = 'white';window.onload = function(){
                         var imgs = document.getElementsByTagName("img");
                         for (let i=0;i<imgs.length;i++) {
                             imgs[i].onclick = function(){
@@ -373,7 +360,7 @@ const QuestionDetail: FC<{
                     font-size: ${toPx(14)}px;
                 }
                 img {
-                    height: auto; 
+                    height: auto;
                     width: auto;
                     max-width: 100%;
                 }

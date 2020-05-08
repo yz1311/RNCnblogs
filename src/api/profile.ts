@@ -143,13 +143,14 @@ export const getFullUserInfo = (data:RequestModel<{userId:string}>) => {
             user.avatar = avatar;
           }
         }
-        user.uuid = ((result.match(/var currentUserId = \"[\s\S]+?(?=\")/) || [])[0]).replace(/[\s\S]+\"/,'');
-        user.seniority = ((result.match(/入园时间：[\s\S]+?(?=<\/span>)/) || [])[0]).replace(/[\s\S]+>/,'');
+        user.uuid = ((result.match(/var currentUserId = \"[\s\S]+?(?=\")/) || [])[0])?.replace(/[\s\S]+\"/,'');
+        user.seniority = ((result.match(/入园时间：[\s\S]+?(?=<\/span>)/) || [])[0])?.replace(/[\s\S]+>/,'');
         user.isStar = /id=\"followedPanel\"[\s\S]{2,10}\"display:block\">/.test(result);
-        user.link = ((result.match(/博客：[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'');
-        user.name = ((result.match(/display_name\"[\s\S]+?(?=<\/h1>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim();
-        user.stars = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followees\/\"[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim());
-        user.follows = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followers\/\"[\s\S]+?(?=<\/a>)/) || [])[0]).replace(/[\s\S]+>/,'')?.trim());
+        //可能
+        user.link = ((result.match(/博客：[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'');
+        user.name = ((result.match(/display_name\"[\s\S]+?(?=<\/h1>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim();
+        user.stars = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followees\/\"[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim());
+        user.follows = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followers\/\"[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim());
         return user;
       }
   });

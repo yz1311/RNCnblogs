@@ -20,39 +20,19 @@ import YZBaseDataPage, {
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow} from '@yz1311/teaset';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import {
-  getStatusDetail,
-  clearStatusDetail,
-  clearStatusCommentList,
-  commentStatus,
-  deleteStatusComment,
-} from '../../actions/status/status_index_actions';
+import {Styles} from '../../common/styles';
 import StatusItem from './status_item';
-import {
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-} from '../../actions/bookmark/bookmark_index_actions';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
 import {Api} from "../../api";
 import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {blogCommentModel} from "../../api/blog";
 import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IBaseDataPageProps {
-  clearStatusCommentListFn?: any;
   userInfo?: any;
-  clearBlogIsFavFn?: any;
   item: statusModel;
-  deleteStatusCommentFn?: any;
   isFav?: boolean;
   data?: any;
   commentStatusFn?: any;
@@ -75,12 +55,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    loadDataFn: data => dispatch(getStatusDetail(data)),
-    clearDataFn: data => dispatch(clearStatusDetail(data)),
-    clearStatusCommentListFn: data => dispatch(clearStatusCommentList(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    commentStatusFn: data => dispatch(commentStatus(data)),
-    deleteStatusCommentFn: data => dispatch(deleteStatusComment(data)),
   }),
 ) as any)
 export default class status_detail extends PureComponent<IProps, IState> {
@@ -94,6 +68,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
   private _commentInput: any;
   private _flatList: any;
   private pageIndex: number;
+  private userIdAvatarMap = new Map();
 
   constructor(props) {
     super(props);
@@ -132,9 +107,14 @@ export default class status_detail extends PureComponent<IProps, IState> {
       let imgRes = await Api.status.getStatusCommentList({
         request: {
           id: this.props.item.id,
-          userAlias: ''
+          userAlias: this.props.item.author?.id
         }
       });
+      DeviceEventEmitter.emit('update_status_comment_count',{
+        statusId: this.props.item.id,
+        commentCount:imgRes.data.length
+      });
+      //下面的长度就是评论数量
       this.setState({
         commentList: imgRes.data,
         getCommentListResult: dataToReducerResult(imgRes.data)
@@ -152,12 +132,30 @@ export default class status_detail extends PureComponent<IProps, IState> {
     for (let index in this.state.commentList) {
       let item = this.state.commentList[index];
       if(!item.author?.avatar || item.author?.avatar=='') {
+        if(this.userIdAvatarMap.has((item as statusCommentModel).author?.id)) {
+          let nextDateList = [
+            ...this.state.commentList.slice(0,parseInt(index)),
+            {
+              ...item,
+              author: {
+                ...item.author,
+                avatar: this.userIdAvatarMap.get((item as statusCommentModel).author?.id)
+              }
+            },
+            ...this.state.commentList.slice(parseInt(index)+1),
+          ];
+          this.setState({
+            commentList: nextDateList
+          })
+          continue;
+        }
         try {
           let imgRes = await Api.profile.getUserAvatar({
             request: {
               userId: (item as statusCommentModel).author?.id
             }
           });
+          this.userIdAvatarMap.set((item as statusCommentModel).author?.id,imgRes.data.avatar);
           let nextDateList = [
             ...this.state.commentList.slice(0,parseInt(index)),
             {
@@ -191,8 +189,9 @@ export default class status_detail extends PureComponent<IProps, IState> {
         floor={item.Floor}
         content={item.summary}
         postDate={item.published}
+        //官方闪存评论无法修改
         canModify={false}
-        canDelete={item.author?.id === userInfo.SpaceUserID}
+        canDelete={item.author?.id === userInfo.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -207,14 +206,16 @@ export default class status_detail extends PureComponent<IProps, IState> {
             },
           );
         }}
-        onDeleteCommentFn={() => {
-          const {deleteStatusCommentFn} = this.props;
-          deleteStatusCommentFn({
-            request: {
-              statusId: this.props.item.id,
-              commentId: item.id,
-            },
-            successAction: () => {
+        onDeleteCommentFn={async () => {
+          ToastUtils.showLoading();
+          try {
+            let response = await Api.status.deleteStatusComment({
+              request: {
+                commentId: parseInt(item.id)
+              }
+            });
+            if(response.data.isSuccess) {
+              ToastUtils.showToast('删除成功!');
               //刷新当前列表
               this.pageIndex = 1;
               if (this._flatList) {
@@ -222,8 +223,20 @@ export default class status_detail extends PureComponent<IProps, IState> {
               } else {
                 this.loadData();
               }
-            },
-          });
+            } else {
+              ToastUtils.showToast(response.data.message, {
+                position: ToastUtils.positions.CENTER,
+                type: ToastUtils.types.error
+              });
+            }
+          } catch (e) {
+            ToastUtils.showToast(e.message, {
+              position: ToastUtils.positions.CENTER,
+              type: ToastUtils.types.error
+            });
+          } finally {
+            ToastUtils.hideLoading();
+          }
         }}
       />
     );
@@ -242,6 +255,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
          }
        });
        if(response.data.isSuccess) {
+         ToastUtils.showToast('评论成功!');
          callback && callback();
          //刷新当前列表
          this.pageIndex = 1;
@@ -251,10 +265,16 @@ export default class status_detail extends PureComponent<IProps, IState> {
            this.loadData();
          }
        } else {
-         ToastUtils.showToast(response.data.message);
+         ToastUtils.showToast(response.data.message, {
+           position: ToastUtils.positions.CENTER,
+           type: ToastUtils.types.error
+         });
        }
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     }
   };
 
@@ -263,7 +283,10 @@ export default class status_detail extends PureComponent<IProps, IState> {
     let headerComponent = (
       <View>
         <StatusItem
-          item={this.props.item}
+          item={{
+            ...this.props.item,
+            commentCount: this.state.commentList.length
+          }}
           clickable={false}
           navigation={this.props.navigation}
         />
@@ -343,7 +366,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}
-              commentCount={this.props.item.commentCount}
+              commentCount={this.state.commentList.length}
               serviceType={ServiceTypes.闪存}
               onClickCommentList={() => {
                 this._flatList &&

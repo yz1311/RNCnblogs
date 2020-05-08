@@ -1,5 +1,6 @@
 import React, {Component, PureComponent} from 'react';
 import {
+  Animated,
   DeviceEventEmitter,
   EmitterSubscription,
   StyleSheet,
@@ -11,7 +12,7 @@ import YZBaseDataPage, {
 } from '../../components/YZBaseDataPage';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import StatusItem from './status_item';
@@ -23,12 +24,17 @@ import {blogCommentModel} from "../../api/blog";
 import {statusModel} from "../../api/status";
 import {SearchParams} from "../home/home_search";
 import {QuestionTypes} from "../question/question_index";
+import {ReduxState} from '../../models';
+import {userInfoModel} from '../../api/login';
+import add = Animated.add;
+import produce from 'immer';
 
 export interface IProps {
   tabLabel?: string;
   navigation: any;
   statusType: StatusTypes,
   keyword?: string,
+  userInfo?: userInfoModel,
   searchParams?: SearchParams
 }
 
@@ -38,6 +44,9 @@ interface IState {
   loadDataResult: ReducerResult;
 }
 
+@(connect((state:ReduxState)=>({
+  userInfo: state.loginIndex.userInfo
+})) as any)
 export default class base_status_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
   pageSize = 30;
@@ -47,6 +56,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   protected mustLogin: boolean;
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
+  private updateCommentCountListener: EmitterSubscription;
   private _flatList: any;
 
   readonly state:IState = {
@@ -58,7 +68,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   constructor(props) {
     super(props);
     this.scrollListener = DeviceEventEmitter.addListener(
-      'list_scroll_to_top',
+      'status_list_scroll_to_top',
       ({tabIndex}) => {
         if (tabIndex === this.props.statusType) {
           this._flatList && this._flatList._scrollToTop();
@@ -66,13 +76,14 @@ export default class base_status_list extends PureComponent<IProps, IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      'list_refresh',
-      ({tabIndex}) => {
-        if (tabIndex === this.props.statusType) {
+      'status_list_refresh',
+      (tabIndex) => {
+        if(tabIndex==-1||tabIndex === this.props.statusType) {
           this._flatList && this._flatList._onRefresh();
         }
       },
     );
+    this.updateCommentCountListener = DeviceEventEmitter.addListener('update_status_comment_count',this.updateCommentCount);
   }
 
   componentDidMount(): void {
@@ -82,6 +93,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   componentWillUnmount() {
     this.scrollListener.remove();
     this.refreshListener.remove();
+    this.updateCommentCountListener.remove();
   }
 
   loadData = async ()=>{
@@ -117,8 +129,25 @@ export default class base_status_list extends PureComponent<IProps, IState> {
     }
   }
 
+  updateCommentCount=({statusId,commentCount})=>{
+    let nextDataList = produce(this.state.dataList,draftState=>{
+      draftState.forEach(x=>{
+        if(x.id==statusId) {
+          x.commentCount = commentCount;
+        }
+      })
+    });
+    this.setState({
+      dataList: nextDataList
+    });
+  }
+
   _renderItem = ({item, index}) => {
-    return <StatusItem item={item} navigation={this.props.navigation} />;
+    const {userInfo} = this.props;
+    return <StatusItem item={item}
+                       canDelete={item.author?.id === userInfo.id}
+                       canModify={item.author?.id === userInfo.id}
+                       navigation={this.props.navigation} />;
   };
 
   _handleScroll = event => {

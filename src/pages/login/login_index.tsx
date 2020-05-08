@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, View, ActivityIndicator, Text, Platform} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {setLoginCode} from '../../actions/login/login_index_actions';
 import moment from 'moment';

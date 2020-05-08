@@ -9,7 +9,7 @@ import {
   Alert,
   DeviceEventEmitter,
 } from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import YZHeader from './profile_index';
 import {ListRow} from '@yz1311/teaset';
 import {connect} from 'react-redux';

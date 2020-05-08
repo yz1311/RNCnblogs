@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import ScrollableTabView, {
   ScrollableTabBar,
@@ -108,7 +108,6 @@ export default class status_index extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
   }
 

@@ -14,7 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import moment from 'moment';
 import StringUtils from '../../utils/stringUtils';
 import ServiceUtils from '../../utils/serviceUtils';

@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import {Alert, DeviceEventEmitter, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {IBaseDataPageProps,} from '../../components/YZBaseDataPage';
-import {clearSearchData, searchData,} from '../../actions/home/home_index_actions';
 import {connect} from 'react-redux';
 import HomeTabBar from './home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
@@ -73,8 +72,6 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({}),
   dispatch => ({
-    loadDataFn: data => dispatch(searchData(data)),
-    clearDataFn: data => dispatch(clearSearchData(data)),
   }),
 ) as any)
 export default class home_search extends Component<IProps, IState> {

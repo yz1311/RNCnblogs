@@ -20,7 +20,7 @@ import YZBaseDataPage, {
 } from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay} from '@yz1311/teaset';
@@ -30,14 +30,7 @@ import {
   getKnowledgeBaseDetail,
   clearKnowledgeBaseDetail,
 } from '../../actions/knowledgeBase/knowledgeBase_index_actions';
-import {
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-  clearBlogIsFav,
-} from '../../actions/bookmark/bookmark_index_actions';
 import {showToast} from '../../actions/app_actions';
-import StringUtils from '../../utils/stringUtils';
-import {setBlogScrollPosition} from '../../actions/blog/blog_index_actions';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
@@ -49,9 +42,7 @@ export interface IProps extends IBaseDataPageProps {
   commentList_noMore?: any;
   getCommentListResult?: any;
   item?: any;
-  clearBlogIsFavFn?: any;
   clearBlogCommentListFn?: any;
-  setBlogScrollPositionFn?: any;
   commentBlogFn?: any;
   isLogin?: boolean
 }
@@ -69,10 +60,6 @@ export interface IProps extends IBaseDataPageProps {
     showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getKnowledgeBaseDetail(data)),
     clearDataFn: data => dispatch(clearKnowledgeBaseDetail(data)),
-    deleteBookmarkByUrlFn: data => dispatch(deleteBookmarkByUrl(data)),
-    setBlogIsFavFn: data => dispatch(setBlogIsFav(data)),
-    clearBlogIsFavFn: data => dispatch(clearBlogIsFav(data)),
-    setBlogScrollPositionFn: data => dispatch(setBlogScrollPosition(data)),
   }),
 ) as any)
 //@ts-ignore
@@ -124,15 +111,13 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
 
   componentWillUnmount() {
     super.componentWillUnmount();
-    //清空isFav属性
-    this.props.clearBlogIsFavFn();
     //设置滚动位置
     const {item} = this.props;
     if (this.scrollPosition > 0) {
-      this.props.setBlogScrollPositionFn({
-        id: item.Id,
-        value: this.scrollPosition,
-      });
+      // this.props.setBlogScrollPositionFn({
+      //   id: item.Id,
+      //   value: this.scrollPosition,
+      // });
     }
   }
 
@@ -273,7 +258,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
                 <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
                 <style type="text/css">
                     img {
-                        height: auto; 
+                        height: auto;
                         width: 100%;
                         max-width: 100%;
                     }
@@ -289,7 +274,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
                     }
                 </style>
                 <script>
-                    window.onload = function(){  
+                    window.onload = function(){
                         var imgs = document.getElementsByTagName("img");
                         for (let i=0;i<imgs.length;i++) {
                             imgs[i].onclick = function(){
@@ -318,7 +303,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
                                 value: scrollPos
                                 }));
                             } catch (error) {
-                                
+
                             }
                         }
                         if(${data.scrollPosition} > 0)

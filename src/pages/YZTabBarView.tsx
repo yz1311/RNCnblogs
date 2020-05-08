@@ -16,14 +16,11 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 import YZTabBar from '../components/YZTabBar';
 import YZBackHandler from '../components/YZBackHandler';
 import Home from './home/home_index';
-import News from './news/news_index';
 import Question from './question/question_index';
 import Status from './status/status_index';
+import DiscoverIndex from './discover/discover_index';
 import Profile from './profile/profile_index';
 import SplashScreen from 'react-native-splash-screen';
-import {showToast} from '../actions/app_actions';
-import {getToken} from '../actions/login/login_index_actions';
-import {refreshDataTime} from '../actions/home/home_index_actions';
 import * as actionTypes from '../actions/actionTypes';
 import moment from 'moment';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -58,12 +55,7 @@ let lastClickTime = 0;
 @(connect(
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin,
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-    refreshDataTimeFn: data => dispatch(refreshDataTime(data)),
-  }),
+  })
 ) as any)
 //@ts-ignore
 @YZBackHandler
@@ -87,7 +79,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      tabNames: ['博客', '新闻', '博问', '闪存', '我'],
+      tabNames: ['博客', '博问', '闪存','发现', '我'],
       tabIconNames: [
         // require('../resources/tab/Home.png'),
         // require('../resources/tab/Warning.png'),
@@ -197,8 +189,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
           NavigationHelper.resetTo('Login');
         }
       }
-      //刷新时间
-      this.props.refreshDataTimeFn();
+      //Todo:刷新时间(所有列表中的时间)
     }
   };
 
@@ -249,9 +240,9 @@ export default class YZTabBarView extends Component<IProps, IState> {
           locked={true}
           onChangeTab={this._onChangeTab}>
           <Home navigation={this.props.navigation} tabIndex={0} />
-          <News navigation={this.props.navigation} tabIndex={1} />
-          <Question navigation={this.props.navigation} tabIndex={2} />
-          <Status navigation={this.props.navigation} tabIndex={3} />
+          <Question navigation={this.props.navigation} tabIndex={1} />
+          <Status navigation={this.props.navigation} tabIndex={2} />
+          <DiscoverIndex  tabIndex={3} />
           <Profile navigation={this.props.navigation} tabIndex={4} />
         </ScrollableTabView>
         <Modal

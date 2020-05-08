@@ -16,12 +16,6 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {connect} from 'react-redux';
 // import YZLottieView from '../components/YZLottieView';
 import {showToast} from '../actions/app_actions';
-import {
-  addBookmark,
-  clearBlogIsFav,
-  deleteBookmarkByUrl,
-  setBlogIsFav,
-} from '../actions/bookmark/bookmark_index_actions';
 import {ReduxState} from '../reducers';
 
 export interface IProps {

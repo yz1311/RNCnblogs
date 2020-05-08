@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PropTypes from 'prop-types';
-import Styles from '../../../common/styles';
+import {Styles} from '../../../common/styles';
 import {
   deleteQuestionAnswer,
   modifyQuestionAnswer,

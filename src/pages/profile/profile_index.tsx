@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {ListRow, NavigationBar} from '@yz1311/teaset';
 import {logout} from '../../actions/login/login_index_actions';
@@ -44,6 +44,7 @@ export default class profile_index extends Component<IProps, IState> {
       <View style={[Styles.container]}>
         <NavigationBar
             style={{position:"relative"}}
+            leftView={null}
             title={'我'}
             />
         <ScrollView style={{flex: 1}}>

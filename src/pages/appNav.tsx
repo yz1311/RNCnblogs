@@ -32,6 +32,8 @@ import ProfilePerson from '../pages/profile/profile_person';
 import MessageIndex from '../pages/message/message_index';
 import StarList from '../pages/profile/profile_star_list';
 import FollowerList from '../pages/profile/profile_follower_list';
+import NewsIndex from '../pages/news/news_index';
+import RankList from '../pages/discover/rank_list';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 
@@ -188,6 +190,14 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="ProfilePerson"
                     component={withMappedNavigationParams()(ProfilePerson)}
+                />
+                <Stack.Screen
+                    name="NewsIndex"
+                    component={withMappedNavigationParams()(NewsIndex)}
+                />
+                <Stack.Screen
+                    name="RankList"
+                    component={withMappedNavigationParams()(RankList)}
                 />
                 <Stack.Screen
                     name="StarList"

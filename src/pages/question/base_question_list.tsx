@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import QuestionItem from './question_item';
 import QuestionReplyItem from './question_reply_item';
 import CommonUtils from '../../utils/commonUtils';
@@ -13,11 +13,16 @@ import {questionModel} from '../../api/question';
 import {SearchParams} from "../home/home_search";
 import {BlogTypes} from "../home/home_index";
 import {messageModel} from "../../api/message";
+import CommentItem from '../blog/comment_item';
+import {userInfoModel} from '../../api/login';
+import {connect} from 'react-redux';
+import {ReduxState} from '../../models';
 
 export interface IProps {
   questionType: QuestionTypes;
   navigation?: any;
   keyword?: string,
+  userInfo?: userInfoModel,
   searchParams?: SearchParams
 }
 
@@ -27,6 +32,9 @@ interface IState {
   loadDataResult: ReducerResult;
 }
 
+@(connect((state:ReduxState)=>({
+  userInfo: state.loginIndex.userInfo
+})) as any)
 export default class base_question_list extends PureComponent<IProps,IState> {
   pageIndex = 1;
   lastScrollY: number = 0;
@@ -52,9 +60,9 @@ export default class base_question_list extends PureComponent<IProps,IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      'list_refresh',
+      'question_list_refresh',
       ({tabIndex}) => {
-        if (tabIndex === this.props.questionType) {
+        if (tabIndex==-1 || tabIndex === this.props.questionType) {
           this._flatList && this._flatList._onRefresh();
         }
       },
@@ -139,10 +147,19 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   }
 
   _renderItem = ({item, index}:{item:questionModel,index:number}) => {
+    const {userInfo} = this.props;
+    let canDelete = (item.author?.id+'') === userInfo.id;
     if([QuestionTypes.新评论,QuestionTypes.新回答].indexOf(this.props.questionType)>=0) {
-      return <QuestionReplyItem item={item} navigation={this.props.navigation} clickable={true} selectable={true}/>;
+      return <QuestionReplyItem item={item} navigation={this.props.navigation}
+                                canDelete={canDelete}
+                                canModify={canDelete}
+                                clickable={true}
+                                selectable={true}/>;
     }
-    return <QuestionItem item={item} navigation={this.props.navigation} />;
+    return <QuestionItem item={item}
+                         canDelete={canDelete}
+                         canModify={canDelete}
+                         navigation={this.props.navigation} />;
   };
 
   _handleScroll = event => {

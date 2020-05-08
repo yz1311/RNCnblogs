@@ -1,7 +1,7 @@
 import './common/constants';
 import './utils/globalStorage';
 import codePush from 'react-native-code-push';
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   View,
   Text,
@@ -22,7 +22,7 @@ import {NavigationBar, Theme} from '@yz1311/teaset';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import FitImage from 'react-native-fit-image';
 import models from './models';
-import Styles from './common/styles';
+import {Styles} from './common/styles';
 import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
 
@@ -148,7 +148,7 @@ const markdownRules = {
   },
 };
 
-class Root extends Component {
+class Root extends PureComponent {
   constructor(props) {
     super(props);
     //全局设置 禁止APP受系统字体放大缩小影响

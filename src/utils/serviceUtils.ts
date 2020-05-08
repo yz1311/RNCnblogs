@@ -72,23 +72,10 @@ export default class serviceUtils {
 
   static viewProfileDetail(dispatch, alias, iconUrl) {
     if (alias) {
-      dispatch(
-        getPersonInfo({
-          request: {
-            userAlias: alias,
-          },
-          showLoading: true,
-          successAction: () => {
-            NavigationHelper.push('ProfilePerson', {
-              userAlias: alias,
-              avatorUrl: iconUrl,
-            });
-          },
-          failAction: () => {
-            dispatch(showToast('该用户暂时没有博客!'));
-          },
-        }),
-      );
+      NavigationHelper.navigate('ProfilePerson', {
+        userAlias: alias,
+        avatorUrl: iconUrl,
+      });
       return true;
     } else {
       Alert.alert('', '暂不支持查看该园友', [{text: '知道了'}]);

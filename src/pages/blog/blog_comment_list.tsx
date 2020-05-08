@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert, DeviceEventEmitter,
+  Alert, DeviceEventEmitter, EmitterSubscription,
 } from 'react-native';
 import {connect} from 'react-redux';
 import YZBaseDataPage, {
@@ -15,22 +15,10 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import Styles from '../../common/styles';
-import {showToast} from '../../actions/app_actions';
-import {
-  clearBlogDetail,
-  commentBlog,
-  getBlogDetail,
-  getBlogCommentList,
-  clearBlogCommentList,
-} from '../../actions/blog/blog_index_actions';
-import PropTypes from 'prop-types';
-import StringUtils from '../../utils/stringUtils';
-import CommonUtils from '../../utils/commonUtils';
+import {Styles} from '../../common/styles';
 import CommentItem from './comment_item';
 import {blogCommentModel, blogModel, getBlogCommentListRequest} from '../../api/blog';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {APP_CHANGE_NET_INFO} from "../../actions/actionTypes";
 import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
@@ -41,7 +29,6 @@ interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
   userInfo?: userInfoModel;
   item: blogModel;
-  commentBlogFn?: any;
   isLogin?: boolean
 }
 
@@ -60,9 +47,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    loadDataFn: data => dispatch(getBlogCommentList(data)),
-    clearDataFn: data => dispatch(clearBlogCommentList(data)),
-    commentBlogFn: data => dispatch(commentBlog(data)),
   }),
 ) as any)
 export default class blog_comment_list extends PureComponent<IProps, IState> {
@@ -77,6 +61,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   private _commentInput: any;
   private _flatList: any;
+  private updateCountListener:EmitterSubscription;
 
   constructor(props) {
     super(props);
@@ -99,10 +84,16 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
   componentDidMount() {
     this.loadData();
     this.setTitle();
+    this.updateCountListener = DeviceEventEmitter.addListener('update_blog_comment_count',count=>{
+      this.props.navigation.setParams({
+        title: count,
+      });
+    });
   }
 
   componentWillUnmount() {
     //退出不用清空列表
+    this.updateCountListener&&this.updateCountListener.remove();
   }
 
   setTitle = (nextProps:IProps = null) => {
@@ -263,21 +254,32 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     try {
       let response = await Api.blog.commentBlog({
         request: {
+          userId: item.author?.id,
           postId: parseInt(item.id),
           body: text
         }
       });
-      callback && callback();
-      //刷新当前列表
-      this.pageIndex = 1;
-      if (this._flatList) {
-        this._flatList && this._flatList._onRefresh();
+      if(response.data.isSuccess) {
+        callback && callback();
+        //刷新当前列表
+        this.pageIndex = 1;
+        if (this._flatList) {
+          this._flatList && this._flatList._onRefresh();
+        } else {
+          this.loadData();
+        }
+        DeviceEventEmitter.emit('reload_blog_info');
       } else {
-        this.loadData();
+        ToastUtils.showToast(response.data.message, {
+          position: ToastUtils.positions.CENTER,
+          type: ToastUtils.types.error
+        });
       }
-      DeviceEventEmitter.emit('reload_blog_info');
     } catch (e) {
-
+      ToastUtils.showToast(e.message, {
+        position: ToastUtils.positions.CENTER,
+        type: ToastUtils.types.error
+      });
     } finally {
       ToastUtils.hideLoading();
     }

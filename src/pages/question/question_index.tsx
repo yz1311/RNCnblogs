@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
@@ -36,6 +36,13 @@ export enum QuestionTypes {
   零回答 = 'noanswer',
   已解决 = 'solved',
   搜索 = 'search',
+}
+
+
+export enum MyQuestionTypes {
+  提问 = 'question',
+  回答 = 'answered',
+  被采纳 = 'bestanswer',
 }
 
 @(connect(
@@ -72,7 +79,6 @@ export default class question_index extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
   }
 

@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';
@@ -29,6 +29,8 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ServiceUtils from '../../utils/serviceUtils';
 import {questionModel} from '../../api/question';
 import HTMLView from 'react-native-render-html';
+import {Api} from '../../api';
+import ToastUtils from '../../utils/toastUtils';
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
@@ -37,6 +39,7 @@ interface IProps extends IReduxProps {
   showAll?: boolean;
   clickable: boolean;
   selectable: boolean;
+  canViewProfile?: boolean,
   navigation: NavigationScreenProp<NavigationState>;
   canDelete?: any;
   canModify?: any;
@@ -65,6 +68,7 @@ export default class question_item extends PureComponent<IProps, any> {
   static defaultProps = {
     clickable: true,
     selectable: false,
+    canViewProfile: true
   };
 
   private overlayKey: any;
@@ -90,24 +94,28 @@ export default class question_item extends PureComponent<IProps, any> {
         },
         {
           text: '删除',
-          onPress: () => {
+          onPress: async () => {
+            ToastUtils.showLoading();
             const {deleteQuestionFn, item} = this.props;
-            deleteQuestionFn &&
-              deleteQuestionFn({
+            try {
+              let response = await Api.question.deleteQuestion({
                 request: {
-                  questionId: item.id,
-                },
-                successAction: () => {
-                  //如果是在详情，则返回到列表界面
-                  if (
-                    NavigationHelper.navRouters[
-                      NavigationHelper.navRouters.length - 1
-                    ].routeName === 'QuestionDetail'
-                  ) {
-                    NavigationHelper.goBack();
-                  }
-                },
+                  qid: parseInt(item.id)
+                }
               });
+              //如果是在详情，则返回到列表界面
+              if (
+                NavigationHelper.navRouters[
+                NavigationHelper.navRouters.length - 1
+                  ].routeName === 'QuestionDetail'
+              ) {
+                NavigationHelper.goBack();
+              }
+            } catch (e) {
+
+            } finally {
+              ToastUtils.hideLoading();
+            }
           },
         },
       ],
@@ -202,11 +210,13 @@ export default class question_item extends PureComponent<IProps, any> {
               <TouchableOpacity
                 activeOpacity={activeOpacity}
                 onPress={() => {
-                  ServiceUtils.viewProfileDetail(
-                    this.props.dispatch,
-                    item.author?.id,
-                    faceUrl,
-                  );
+                  if(this.props.canViewProfile) {
+                    ServiceUtils.viewProfileDetail(
+                      this.props.dispatch,
+                      item.author?.id,
+                      faceUrl,
+                    );
+                  }
                 }}
                 style={{
                   flexDirection: 'row',

@@ -8,18 +8,9 @@ import {
   Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {ListRow, Input} from '@yz1311/teaset';
-import BookmarkItem, {bookmark} from './bookmark_item';
-import {
-  getBookmarkList,
-  clearBookmarkList,
-  deleteBookmark,
-  addBookmark,
-  modifyBookmark,
-} from '../../actions/bookmark/bookmark_index_actions';
-import moment from 'moment';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
 import {bookmarkModel} from '../../api/bookmark';

@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-native';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import BlogItem from './blog_item';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import {BlogTypes} from "../home/home_index";
@@ -15,6 +15,7 @@ import {messageModel} from "../../api/message";
 export interface IProps {
   navigation: any,
   tabIndex: number,
+  loadData?: Function,
   blogType: BlogTypes,
   userInfo?: any,
   keyword?: string,
@@ -61,7 +62,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      'list_refresh',
+      ']',
       ({tabIndex}) => {
         if (tabIndex === this.props.tabIndex) {
           this._flatList._onRefresh();

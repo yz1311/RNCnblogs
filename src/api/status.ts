@@ -28,6 +28,7 @@ export type statusModel = {
   published: string,
   publishedDesc: string,
   hasGetComments: boolean;
+  isPrivate: boolean;
 };
 
 
@@ -61,6 +62,19 @@ export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageInde
   });
 };
 
+
+export const getOtherStatusList = (data:RequestModel<{userId:string,pageIndex:number,pageSize:number}>) => {
+  const URL = `https://ing.cnblogs.com/u/${data.request.userId}/${data.request.pageIndex}`;
+  return RequestUtils.get<Array<questionModel>>(URL, {
+    headers: {
+      //必须要加这个，否则请求失败
+      "x-requested-with": 'XMLHttpRequest'
+    },
+    resolveResult: resolveStatusHtml
+  });
+};
+
+
 export const getSearchStatusList = (data: RequestModel<{Keywords: string,
   pageIndex: number,}&Partial<SearchParams>>) => {
   const URL = `https://zzk.cnblogs.com/s/ing?Keywords=${data.request.Keywords}&pageindex=${data.request.pageIndex}
@@ -86,7 +100,9 @@ export const getStatusDetail = data => {
 };
 
 export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:string}>) => {
-  const URL = `https://ing.cnblogs.com/ajax/ing/SingleIngComments?ingId=${data.request.id}`;
+  //直接接口多了会显示浏览更多
+  // const URL = `https://ing.cnblogs.com/ajax/ing/SingleIngComments?ingId=${data.request.id}`;
+  const URL = `https://ing.cnblogs.com/u/${data.request.userAlias}/status/${data.request.id}/`;
   return RequestUtils.get<Array<statusCommentModel>>(URL, {
     resolveResult: (result)=>{
       let matches = result.match(/<li id=\"comment_[\s\S]+?<\/li>/g) || [];
@@ -96,7 +112,7 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
         let comment = {} as Partial<statusCommentModel>;
         comment.title = '';
         comment.id = (match.match(/id=\"comment_[\s\S]+?(?=\")/)||[])[0]?.replace(/id=\"comment_/,'')?.trim(),
-        comment.summary = (match.match(/class=\"ing_comment\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+?ing_comment\">/,'')?.trim();
+        comment.summary = (match.match(/<bdo>[\s\S]+?(?=<\/bdo>)/)||[])[0]?.replace(/<bdo>/,'')?.trim();
         comment.author = {
           id: '',
           uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
@@ -105,7 +121,7 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
           no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
         };
         comment.author.id = comment.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
-        comment.published = (match.match(/class=\"ing_comment_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+        comment.published = (match.match(/title=\"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?=\")/)||[])[0]?.replace(/title=\"/,'');
         if(/^\d{2}:\d{2}$/.test(comment.published)) {
           comment.published =moment().format('YYYY-MM-DD ')+comment.published+':00';
         }
@@ -137,42 +153,26 @@ export const commentStatus = (data:RequestModel<{
   });
 };
 
-export const deleteStatusComment = data => {
-  const URL = `${gServerPath}/statuses/${data.request.statusId}/comments/${
-    data.request.commentId
-  }`;
-  const options = createOptions(data, 'DELETE');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除评论失败!',
-    actionType: types.STATUS_DELETE_COMMENT,
-  });
+export const deleteStatusComment = (data:RequestModel<{commentId: number}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/DeleteComment`;
+  let formData = new FormData();
+  formData.append('commentId',data.request.commentId);
+  return RequestUtils.post<{isSuccess:boolean,message:string}>(URL, formData);
 };
 
-export const deleteStatus = data => {
-  const URL = `${gServerPath}/statuses/${data.request.statusId}`;
-  const options = createOptions(data, 'DELETE');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '删除闪存失败!',
-    actionType: types.STATUS_DELETE_STATUS,
-  });
+export const deleteStatus = (data:RequestModel<{ingId: number}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/del`;
+  let formData = new FormData();
+  formData.append('ingId',data.request.ingId);
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
-export const addStatus = data => {
-  const URL = `${gServerPath}/statuses`;
-  const options = createOptions(data);
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '发布闪存失败!',
-    actionType: types.STATUS_ADD_STATUS,
-  });
+export const addStatus = (data:RequestModel<{publicFlag: 1|0,content:string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/Publish`;
+  let formData = new FormData();
+  formData.append('content',data.request.content);
+  formData.append('publicFlag',data.request.publicFlag);
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
 export const resolveStatusHtml = (result)=>{
@@ -193,7 +193,7 @@ export const resolveStatusHtml = (result)=>{
       avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"ing-author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
-      no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
+      no: (match.match(/showCommentBox[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
     };
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
@@ -217,6 +217,7 @@ export const resolveStatusHtml = (result)=>{
       item.commentCount = 0;
     }
     item.comments = [];
+    item.isPrivate = /title=\"私有闪存\"/.test(match);
     items.push(item);
   }
   return items;
@@ -242,6 +243,7 @@ export const resolveSearchStatusHtml = (result)=>{
     };
     item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.published = (match.match(/\"searchItem-time\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'')+':00';
+    item.isPrivate = /title=\"私有闪存\"/.test(match);
     items.push(item);
   }
   return items;

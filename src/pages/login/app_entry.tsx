@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, ActivityIndicator, Text, Alert} from 'react-native';
 import {connect} from 'react-redux';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import {getToken} from '../../actions/login/login_index_actions';
 
 interface IProps {

@@ -1,46 +1,25 @@
-import React, {Component, PureComponent} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Alert,
-  DeviceEventEmitter,
-  InteractionManager,
-  RefreshControl, findNodeHandle,
-} from 'react-native';
-import Styles from '../../common/styles';
-import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
+import React, {PureComponent} from 'react';
+import {findNodeHandle, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Styles} from '../../common/styles';
+import {NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
-import {
-  getPersonInfo,
-  clearPersonInfo,
-  getPersonSignature,
-  getPersonBlogList,
-  clearPersonBlogList,
-} from '../../actions/profile/profile_index_actions';
-import Entypo from 'react-native-vector-icons/Entypo';
 import PropTypes from 'prop-types';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
 import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import BlogItem from '../blog/blog_item';
-import CommonUtils from '../../utils/commonUtils';
+import StatusItem from '../status/status_item';
+import QuestionItem from '../question/question_item';
 import {ReduxState} from '../../reducers';
-import {userInfoModel} from "../../api/login";
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import {Api} from "../../api";
-import {fullUserInfoModel} from "../../api/profile";
-import { BlurView } from "react-native-blur";
-import ToastUtils from "../../utils/toastUtils";
+import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {Api} from '../../api';
+import {fullUserInfoModel} from '../../api/profile';
+import {BlurView} from 'react-native-blur';
+import ToastUtils from '../../utils/toastUtils';
 import YZStickyTabView from '../../components/YZStickyTabView';
-import {BlogTypes} from "../home/home_index";
-import {blogModel} from "../../api/blog";
+import {blogModel} from '../../api/blog';
 import ProfilePersonTab from './profile_person_tab';
+import {statusModel} from '../../api/status';
+import {questionModel} from '../../api/question';
+import {MyQuestionTypes} from '../question/question_index';
 
 const avatorRadius = 40;
 
@@ -57,7 +36,14 @@ interface IState {
   loadDataResult: ReducerResult,
   blogList: Array<blogModel>,
   loadBlogListResult: ReducerResult,
-  blogListNoMore: boolean
+  blogListNoMore: boolean,
+  statusList: Array<statusModel>,
+  loadStatusListResult: ReducerResult,
+  statusListNoMore: boolean,
+  questionList: Array<questionModel>,
+  loadQuestionListResult: ReducerResult,
+  questionListNoMore: boolean,
+  activeSubMenu: Array<number>
 }
 
 @(connect(
@@ -89,6 +75,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
   private stickyTabViewRef: YZStickyTabView;
   private selectedTab: number = 0;
   private blogPageIndex = 1;
+  private statusPageIndex = 1;
+  private questionPageIndex = 1;
 
   constructor(props) {
     super(props);
@@ -99,7 +87,14 @@ export default class profile_person extends PureComponent<IProps, IState> {
       viewRef: null,
       blogList: [],
       loadBlogListResult: createReducerResult(),
-      blogListNoMore: false
+      blogListNoMore: false,
+      statusList: [],
+      loadStatusListResult: createReducerResult(),
+      statusListNoMore: false,
+      questionList: [],
+      loadQuestionListResult: createReducerResult(),
+      questionListNoMore: false,
+      activeSubMenu: [0,0,0]
     };
   }
 
@@ -308,7 +303,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
       let response = await Api.blog.getPersonalBlogList({
         request: {
           pageIndex: this.blogPageIndex,
-          pageSize: 10
+          pageSize: 10,
+          userId: this.props.userAlias
         }
       });
       let pagingResult = dataToPagingResult(this.state.blogList,response.data || [],this.blogPageIndex,10);
@@ -321,11 +317,70 @@ export default class profile_person extends PureComponent<IProps, IState> {
       });
     } catch (e) {
       this.setState({
-        loadDataResult: dataToReducerResult(e)
+        loadBlogListResult: dataToReducerResult(e)
       });
     }
   }
 
+  loadStatusData = async ()=>{
+    try {
+      let response = await Api.status.getOtherStatusList({
+        request: {
+          pageIndex: this.statusPageIndex,
+          pageSize: 30,
+          userId: this.props.userAlias
+        }
+      });
+      let pagingResult = dataToPagingResult(this.state.statusList,response.data || [],this.statusPageIndex,30);
+      this.setState({
+        statusList: pagingResult.dataList,
+        statusListNoMore: pagingResult.noMore,
+        loadStatusListResult: pagingResult.loadDataResult
+      });
+    } catch (e) {
+      this.setState({
+        loadStatusListResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
+
+  loadQuestionData = async ()=>{
+    let myQuestionType = MyQuestionTypes.提问;
+    switch (this.state.activeSubMenu[2]) {
+      case 0:
+        myQuestionType = MyQuestionTypes.提问;
+        break;
+      case 1:
+        myQuestionType = MyQuestionTypes.回答;
+        break;
+      case 2:
+        myQuestionType = MyQuestionTypes.被采纳;
+        break;
+    }
+    try {
+      let response = await Api.question.getOtherQuestionList({
+        request: {
+          pageIndex: this.questionPageIndex,
+          userId: this.props.userAlias,
+          myQuestionType: myQuestionType
+        }
+      });
+      let pagingResult = dataToPagingResult(this.state.statusList,response.data || [],this.questionPageIndex,25);
+      this.setState({
+        questionList: pagingResult.dataList,
+        questionListNoMore: pagingResult.noMore,
+        loadQuestionListResult: pagingResult.loadDataResult
+      });
+    } catch (e) {
+      this.setState({
+        loadQuestionListResult: dataToReducerResult(e)
+      });
+    } finally {
+
+    }
+  }
 
   getDataFromState = () => {
     return [
@@ -341,8 +396,45 @@ export default class profile_person extends PureComponent<IProps, IState> {
           return (
               <BlogItem
                   item={item}
+                  canViewProfile={false}
                   navigation={NavigationHelper.navigation}
                   />
+          );
+        }
+      },
+      {
+        loadData: this.loadStatusData,
+        data: this.state.statusList,
+        noMore: this.state.statusListNoMore,
+        loadDataResult: this.state.loadStatusListResult,
+        onPageIndexChange: (pageIndex) => {
+          this.statusPageIndex = pageIndex
+        },
+        renderItem: ({item, index}) => {
+          return (
+            <StatusItem
+              item={item}
+              canViewProfile={false}
+              navigation={NavigationHelper.navigation}
+            />
+          );
+        }
+      },
+      {
+        loadData: this.loadQuestionData,
+        data: this.state.questionList,
+        noMore: this.state.questionListNoMore,
+        loadDataResult: this.state.loadQuestionListResult,
+        onPageIndexChange: (pageIndex) => {
+          this.questionPageIndex = pageIndex
+        },
+        renderItem: ({item, index}) => {
+          return (
+            <QuestionItem
+              item={item}
+              canViewProfile={false}
+              navigation={NavigationHelper.navigation}
+            />
           );
         }
       }
@@ -376,7 +468,23 @@ export default class profile_person extends PureComponent<IProps, IState> {
                         style={{paddingTop: 10}}
                         activeTab={activeTab}
                         goToPage={goToPage}
-                        tabs={[`博客`]}
+                        tabs={[`博客`,'闪存','博问']}
+                        activeSubMenu={this.state.activeSubMenu}
+                        onSubMenuPress={(mainIndex, subIndex)=>{
+                          let next = [...this.state.activeSubMenu];
+                          next[mainIndex] = subIndex;
+                          this.setState({
+                            activeSubMenu: next
+                          },()=>{
+                            if(mainIndex==2) {
+                              this.questionPageIndex = 1;
+                              this.setState({
+                                loadQuestionListResult:createReducerResult()
+                              });
+                              this.loadQuestionData();
+                            }
+                          })
+                        }}
                         underlineStyle={{width: Theme.px2dp(35), height: Theme.px2dp(9), borderRadius: Theme.px2dp(4.5)}}
                     />
                   </View>
@@ -384,7 +492,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
             }}
             data={this.getDataFromState()}
         />
-        {/*<NavigationBar style={{backgroundColor:'transparent'}} title={'测试'}/>*/}
+        <NavigationBar title={'详情'}/>
       </View>
     );
   }

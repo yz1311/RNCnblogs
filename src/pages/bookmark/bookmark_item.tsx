@@ -10,7 +10,7 @@ import {
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
@@ -18,7 +18,6 @@ import moment from 'moment';
 import {Overlay, Label, ListRow, Theme} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
-import {setSelectedDetail} from '../../actions/news/news_index_actions';
 import {blogSchema, newsSchema, tables} from '../../common/database';
 // import Realm from 'realm';
 const Realm = {};
@@ -32,7 +31,6 @@ interface IProps {
   userInfo?: any;
   dispatch?: any;
   setSelectedQuestionFn?: any;
-  setSelectedDetailFn?: any;
   navigation: NavigationScreenProp<NavigationState>;
   item: bookmarkModel;
   clickable?: boolean;
@@ -58,7 +56,6 @@ export interface bookmark {
   dispatch => ({
     dispatch,
     setSelectedQuestionFn: data => dispatch(setSelectedQuestion(data)),
-    setSelectedDetailFn: data => dispatch(setSelectedDetail(data)),
   }),
 ) as any)
 export default class bookmark_item extends PureComponent<IProps, {}> {
@@ -231,7 +228,6 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
           realm.close();
         }
       }
-      this.props.setSelectedDetailFn(selectedItem);
       this.props.navigation.navigate('NewsDetail', {
         item: selectedItem
       });

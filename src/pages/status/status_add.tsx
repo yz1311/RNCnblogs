@@ -12,29 +12,33 @@ import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {addStatus} from '../../actions/status/status_index_actions';
 import {showToast} from '../../actions/app_actions';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {Api} from '../../api';
+import ToastUtils from '../../utils/toastUtils';
+import {StatusTypes} from './status_index';
+import {statusModel} from '../../api/status';
 
 interface IProps extends IReduxProps {
-  item: any;
+  item: statusModel;
   clickable: boolean;
   navigation: NavigationScreenProp<NavigationState>;
-  addStatusFn?: any;
 }
 
-interface IState {}
+interface IState {
+  value: string,
+  isPrivate: boolean
+}
 
 @(connect(
   state => ({}),
   dispatch => ({
     showToastFn: data => dispatch(showToast(data)),
-    addStatusFn: data => dispatch(addStatus(data)),
   }),
 ) as any)
 export default class status_add extends PureComponent<IProps, IState> {
@@ -67,10 +71,19 @@ export default class status_add extends PureComponent<IProps, IState> {
     };
   };
 
-  state = {
-    value: '',
-    isPrivate: false,
-  };
+  constructor(props:IProps) {
+    super(props);
+    this.state = {
+      value: '',
+      isPrivate: false,
+    };
+    if(props?.item) {
+      this.state = {
+        ...this.state,
+        value: props?.item.summary
+      };
+    }
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -78,25 +91,33 @@ export default class status_add extends PureComponent<IProps, IState> {
     });
   }
 
-  _rightAction = () => {
+  _rightAction = async () => {
     if (!this.state.value) {
       this.props.showToastFn('请填写内容');
       return;
     }
-    const {addStatusFn} = this.props;
-    addStatusFn({
-      request: {
-        Content: this.state.value,
-        IsPrivate: this.state.isPrivate,
-      },
-      successAction: () => {
+    ToastUtils.showLoading();
+    try {
+      let response = await Api.status.addStatus({
+        request: {
+          publicFlag: this.state.isPrivate==false?1:0,
+          content: this.state.value
+        }
+      });
+      if(response.data.isSuccess) {
         //返回到上一级，并刷新所有的列表
         this.props.navigation.goBack();
         //刷新‘全站’和‘我的'两个列表
-        DeviceEventEmitter.emit('reload_all_status_list');
-        DeviceEventEmitter.emit('reload_my_status_list');
-      },
-    });
+        DeviceEventEmitter.emit('status_list_refresh',StatusTypes.全站);
+        DeviceEventEmitter.emit('status_list_refresh',StatusTypes.我的);
+      } else {
+        ToastUtils.showToast(response.data.responseText);
+      }
+    } catch (e) {
+
+    } finally {
+      ToastUtils.hideLoading();
+    }
   };
 
   render() {

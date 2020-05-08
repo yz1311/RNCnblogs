@@ -12,12 +12,12 @@ import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
-import YZManagementProfile from '../../components/YZManagementProfile';
-import Styles from '../../common/styles';
+import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   addQuestion,
   modifyQuestion,
@@ -26,12 +26,14 @@ import {showToast} from '../../actions/app_actions';
 import Entypo from '../profile/profile_setting';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import {personQuestionIndex, questionModel} from '../../api/question';
+import {Api} from '../../api';
+import ToastUtils from '../../utils/toastUtils';
 
 interface IProps extends IReduxProps {
-  item: any;
+  item: questionModel;
   clickable: boolean;
   navigation: NavigationScreenProp<NavigationState>;
-  addQuestionFn?: any;
   modifyQuestionFn?: any;
   userInfo?: any;
 }
@@ -43,20 +45,19 @@ interface IState {
   tag: string;
   tagList: Array<any>;
   canSubmit: boolean;
+  questionData: Partial<personQuestionIndex>,
+  integral: string
 }
 
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
-    item: state.questionDetail.selectedQuestion,
   }),
   dispatch => ({
-    showToastFn: data => dispatch(showToast(data)),
-    addQuestionFn: data => dispatch(addQuestion(data)),
     modifyQuestionFn: data => dispatch(modifyQuestion(data)),
   }),
 ) as any)
-export default class status_add extends PureComponent<IProps, IState> {
+export default class QuestionAdd extends PureComponent<IProps, IState> {
   static propTypes = {
     item: PropTypes.object,
     clickable: PropTypes.bool,
@@ -89,7 +90,7 @@ export default class status_add extends PureComponent<IProps, IState> {
     };
   };
 
-  constructor(props) {
+  constructor(props:IProps) {
     super(props);
     this.state = {
       title: '',
@@ -98,32 +99,53 @@ export default class status_add extends PureComponent<IProps, IState> {
       tag: '',
       tagList: [],
       canSubmit: false,
+      questionData: {},
+      integral: '0'
     };
-    if (props.item.Title) {
+    if (props.item?.title) {
       this.state = {
         ...this.state,
-        title: props.item.Title,
-        value: props.item.Content,
-        tagList: (props.item.Tags || '').split(','),
+        title: props.item.title,
+        value: props.item.summary,
+        tagList: props.item.tags?.map(x=>x.name) || []
       };
     }
   }
 
   componentDidMount() {
     this.validate();
+    this.getMyQuestionData();
     this.props.navigation.setParams({
       rightAction: this._rightAction,
     });
   }
 
-  _rightAction = () => {
+  getMyQuestionData = async ()=>{
+    try {
+      let response = await Api.question.getPersonQuestionIndex({
+        request: {
+          userId: gUserData.userId
+        }
+      });
+      this.setState({
+        questionData: response.data
+      });
+    } catch (e) {
+
+    } finally {
+
+    }
+  }
+
+  _rightAction = async () => {
     if (this.state.canSubmit) {
-      const {addQuestionFn, item, modifyQuestionFn} = this.props;
+      const { item, modifyQuestionFn} = this.props;
+      ToastUtils.showLoading();
       //修改
-      if (item.Title) {
+      if (item?.title) {
         modifyQuestionFn({
           request: {
-            questionId: item.Qid,
+            questionId: item.id,
             Title: this.state.title,
             Content: this.state.value,
             Tags: this.state.tagList.join(','),
@@ -132,37 +154,39 @@ export default class status_add extends PureComponent<IProps, IState> {
           },
           successAction: () => {
             //返回到上一级，并刷新所有的列表
-            this.props.navigation.goBack();
+            NavigationHelper.goBack();
             //刷新‘待解决’和‘没有答案'、'我的问题'三个列表
-            DeviceEventEmitter.emit('reload_myquestion_list');
-            DeviceEventEmitter.emit('reload_unsolved_list');
-            DeviceEventEmitter.emit('reload_noanswer_list');
+            DeviceEventEmitter.emit('question_list_refresh',-1);
           },
         });
       }
       //新增
       else {
-        addQuestionFn({
-          request: {
-            Title: this.state.title,
-            Content: this.state.value,
-            Tags: this.state.tagList.join(','),
-            Flags: this.state.isPublishToTop ? '1' : '2',
-            UserID: this.props.userInfo.SpaceUserID,
-          },
-          successAction: () => {
-            //返回到上一级，并刷新所有的列表
-            this.props.navigation.goBack();
-            //刷新‘待解决’和‘没有答案'、'我的问题'三个列表
-            DeviceEventEmitter.emit('reload_myquestion_list');
-            DeviceEventEmitter.emit('reload_unsolved_list');
-            DeviceEventEmitter.emit('reload_noanswer_list');
-          },
-        });
+        try {
+          let response = await Api.question.addQuestion({
+            request: {
+              Title: this.state.title,
+              Content: this.state.value,
+              Tags: this.state.tagList.join(','),
+              PublishOption: this.state.isPublishToTop,
+              SaveOption: !this.state.isPublishToTop,
+              Award: parseInt(this.state.integral),
+              FormatType: 2
+            }
+          })
+          //返回到上一级，并刷新所有的列表
+          NavigationHelper.goBack();
+          //刷新‘待解决’和‘没有答案'、'我的问题'三个列表
+          DeviceEventEmitter.emit('question_list_refresh',-1);
+        } catch (e) {
+
+        } finally {
+          ToastUtils.hideLoading();
+        }
       }
     } else {
       const validateResult = this.validate();
-      this.props.showToastFn(validateResult[0]);
+      ToastUtils.showToast(validateResult[0]);
     }
   };
 
@@ -174,15 +198,12 @@ export default class status_add extends PureComponent<IProps, IState> {
     if (this.state.value.length < 20 || this.state.value.length > 100000) {
       errors.push('内容,20~100000字符');
     }
-    if (errors.length === 0) {
-      this.setState({
-        canSubmit: true,
-      });
-    } else {
-      this.setState({
-        canSubmit: false,
-      });
+    if(!(parseInt(this.state.integral)>=0&&parseInt(this.state.integral)<=this.state.questionData?.integral)) {
+      errors.push('悬赏值必须是0~'+this.state.questionData?.integral+'之间');
     }
+    this.setState({
+      canSubmit: errors.length === 0,
+    });
     return errors;
   };
 
@@ -190,167 +211,183 @@ export default class status_add extends PureComponent<IProps, IState> {
     const {item, clickable} = this.props;
     const canAddTag = this.state.tagList.length < 5;
     return (
-      <View style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
-        <YZManagementProfile
-          type="input"
-          title="标题"
-          placeholder="请输入标题"
-          detailStyle={{textAlign: 'left', marginLeft: 10}}
-          subTitle={this.state.title}
-          onChangeText={value => this.setState({title: value}, this.validate)}
-        />
-        <YZManagementProfile
-          type="custom"
-          title="标签"
-          placeholder="请输入标题"
-          detailStyle={{textAlign: 'left', marginLeft: 10}}
-          realName
-          extra={
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 10,
-              }}>
+      <KeyboardAwareScrollView style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
+        <View style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
+          <ListRow
+            title={'标题'}
+            detail={
               <TextInput
-                placeholder={'准确的Tag有助于专家高手发现问题'}
-                underlineColorAndroid="transparent"
-                style={[
-                  {
-                    padding: 8,
-                    fontSize: gFont.size15,
-                    color: gColors.color333,
-                    flex: 1,
-                  },
-                ]}
-                value={this.state.tag}
-                maxLength={30}
-                onChangeText={value => this.setState({tag: value})}
-              />
-              <TouchableOpacity
-                activeOpacity={activeOpacity}
-                onPress={() => {
-                  if (canAddTag) {
-                    this.setState(
-                      {
-                        tagList: this.state.tagList.concat([this.state.tag]),
-                        tag: '',
-                      },
-                      this.validate,
-                    );
-                  } else {
-                    this.props.showToastFn('最多添加5个tag');
-                  }
-                }}
+                style={[styles.input]}
+                value={this.state.title}
+                placeholder="请输入标题"
+                onChangeText={value => this.setState({title: value}, this.validate)}
+                />
+            }
+            />
+          <ListRow
+            title={'标签'}
+            detail={
+              <View
                 style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 7,
-                  backgroundColor: canAddTag
-                    ? gColors.themeColor
-                    : gColors.borderColor,
-                  borderRadius: 6,
+                  flex:1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 10,
                 }}>
-                <Text style={{color: gColors.bgColorF}}>添加</Text>
-              </TouchableOpacity>
-            </View>
-          }
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            paddingHorizontal: 6,
-            flexWrap: 'wrap',
-            paddingVertical: 7,
-            paddingBottom: 10,
-            borderBottomColor: gColors.borderColor,
-            borderBottomWidth: gScreen.onePix,
-          }}>
-          {this.state.tagList.map((x, xIndex) => {
-            return (
-              <Tag
-                key={xIndex}
-                index={xIndex}
-                item={x}
-                onDeleteTag={() => {
-                  this.setState({
-                    tagList: this.state.tagList.filter(n => n !== x),
-                  });
-                }}
+                <TextInput
+                  style={[styles.input,{flex:1}]}
+                  placeholder={'准确的Tag有助于专家高手发现问题'}
+                  value={this.state.tag}
+                  maxLength={30}
+                  onChangeText={value => this.setState({tag: value})}
+                />
+                <TouchableOpacity
+                  activeOpacity={activeOpacity}
+                  onPress={() => {
+                    if (canAddTag) {
+                      if(this.state.tag!='') {
+                        this.setState(
+                          {
+                            tagList: this.state.tagList.concat([this.state.tag]),
+                            tag: '',
+                          },
+                          this.validate,
+                        );
+                      }
+                    } else {
+                      ToastUtils.showToast('最多添加5个tag');
+                    }
+                  }}
+                  style={{
+                    paddingHorizontal: 14,
+                    paddingVertical: 7,
+                    backgroundColor: canAddTag
+                      ? gColors.themeColor
+                      : gColors.borderColor,
+                    borderRadius: 6,
+                  }}>
+                  <Text style={{color: Theme.primaryColor}}>添加</Text>
+                </TouchableOpacity>
+              </View>
+            }
+          />
+          <ListRow
+            title={
+              <View>
+                <Text style={{color:Theme.labelTextTitleColor,fontSize:Math.round(Theme.labelFontSizeMD * Theme.labelTitleScale)}}>
+                悬赏(您目前剩余
+                <Text style={{color:gColors.colorRed}}>{this.state.questionData?.integral||'--'}</Text>
+                园豆)</Text>
+                <Text style={{fontSize:Theme.labelFontSizeSM,color:gColors.color6e,marginTop:6}}>悬赏园豆越多，您的问题会越受关注，从而得到更佳答案。</Text>
+              </View>
+                }
+            detail={
+              <TextInput
+                style={[styles.input]}
+                value={this.state.integral}
+                keyboardType={'numeric'}
+                placeholder="请输入悬赏值"
+                onChangeText={value => this.setState({integral: value}, this.validate)}
               />
-            );
-          })}
-        </View>
-        <TextInput
-          placeholder={
-            '1.支持Markdown\n2.只允许发布IT技术相关问题\n3.认真清晰的提问，问题就解决了一半\n' +
-            '4.避免提问内容全部代码没有说明'
-          }
-          textAlignVertical="top"
-          underlineColorAndroid="transparent"
-          style={[
-            {
-              padding: 8,
-              fontSize: gFont.size15,
-              color: gColors.color333,
-              height: gScreen.height * 0.4,
-            },
-          ]}
-          value={this.state.value}
-          multiline={true}
-          onChangeText={value => this.setState({value}, this.validate)}
-        />
-        <View style={{height: 1, backgroundColor: gColors.borderColor}} />
-        <View
-          style={{
-            marginTop: 10,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            paddingRight: 10,
-          }}>
-          <TouchableOpacity
-            activeOpacity={activeOpacity}
-            onPress={() => {
-              this.setState({
-                isPublishToTop: true,
-              });
-            }}
-            style={{flexDirection: 'row', alignItems: 'center'}}>
-            <YZCheckbox
-              checked={this.state.isPublishToTop}
-              size={20}
+            }
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 6,
+              flexWrap: 'wrap',
+              paddingVertical: 7,
+              paddingBottom: 10,
+              borderBottomColor: gColors.borderColor,
+              borderBottomWidth: gScreen.onePix,
+            }}>
+            {this.state.tagList.map((x, xIndex) => {
+              return (
+                <Tag
+                  key={xIndex}
+                  index={xIndex}
+                  item={x}
+                  onDeleteTag={() => {
+                    this.setState({
+                      tagList: this.state.tagList.filter(n => n !== x),
+                    });
+                  }}
+                />
+              );
+            })}
+          </View>
+          <TextInput
+            placeholder={
+              '1、只允许发布IT技术相关问题\n2、认真清晰的提问，问题就解决了一半\n3、避免提问内容全部代码没有说明\n' +
+              '4、准确的Tag有助于专家高手发现问题\n'+'5、Tag最多5个，且单个长度不得大于30个字'+'6、悬赏园豆越多，您的问题会越受关注'
+            }
+            textAlignVertical="top"
+            underlineColorAndroid="transparent"
+            style={[
+              {
+                padding: 8,
+                fontSize: gFont.size15,
+                color: gColors.color333,
+                height: gScreen.height * 0.4,
+              },
+            ]}
+            value={this.state.value}
+            multiline={true}
+            onChangeText={value => this.setState({value}, this.validate)}
+          />
+          <View style={{height: 1, backgroundColor: gColors.borderColor}} />
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              paddingRight: 10,
+            }}>
+            <TouchableOpacity
+              activeOpacity={activeOpacity}
               onPress={() => {
                 this.setState({
                   isPublishToTop: true,
                 });
               }}
-            />
-            <Text style={{marginLeft: 4}}>发布至首页</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={activeOpacity}
-            onPress={() => {
-              this.setState({
-                isPublishToTop: false,
-              });
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginLeft: 18,
-            }}>
-            <YZCheckbox
-              checked={!this.state.isPublishToTop}
-              size={20}
+              style={{flexDirection: 'row', alignItems: 'center'}}>
+              <YZCheckbox
+                checked={this.state.isPublishToTop}
+                size={20}
+                onPress={() => {
+                  this.setState({
+                    isPublishToTop: true,
+                  });
+                }}
+              />
+              <Text style={{marginLeft: 4}}>发布至首页</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={activeOpacity}
               onPress={() => {
                 this.setState({
                   isPublishToTop: false,
                 });
               }}
-            />
-            <Text style={{marginLeft: 4}}>不发布至首页</Text>
-          </TouchableOpacity>
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 18,
+              }}>
+              <YZCheckbox
+                checked={!this.state.isPublishToTop}
+                size={20}
+                onPress={() => {
+                  this.setState({
+                    isPublishToTop: false,
+                  });
+                }}
+              />
+              <Text style={{marginLeft: 4}}>不发布至首页</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -417,4 +454,10 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
   },
+  input: {
+    // flex:1,
+    textAlign:'right',
+    marginLeft:10,
+    height:__ANDROID__?40:35
+  }
 });

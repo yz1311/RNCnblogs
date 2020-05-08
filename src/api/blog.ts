@@ -58,8 +58,11 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
-export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number}>) => {
-  const URL = `${gServerPath}/blog/u/${gUserData.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
+export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number,userId?: string}>) => {
+  if(!data.request.userId) {
+    data.request.userId = gUserData.userId;
+  }
+  const URL = `${gServerPath}/blog/u/${data.request.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
   return RequestUtils.get(URL,{
     resolveResult: (result)=>{
       result.map(item=>{
@@ -151,8 +154,8 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
   //# endregion
 };
 
-export const getBlogCommentCount = (data: RequestModel<{postId: string}>) => {
-  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
+export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:string}>) => {
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
   return RequestUtils.get<number>(URL);
 }
 
@@ -163,8 +166,8 @@ export const getBlogViewCount = (data: RequestModel<{postId: string}>) => {
 
 
 //获取文章的分类和标签
-export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:string}>)=>{
-  const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/CategoriesTags.aspx?blogId=${data.request.blogId}&postId=${data.request.postId}`;
+export const getBlogCategoryAndTags = (data:RequestModel<{userId:string,postId: string,blogId:string}>)=>{
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/CategoriesTags.aspx?blogId=${data.request.blogId}&postId=${data.request.postId}`;
   return RequestUtils.get<{category:string,
     categoryUrl: string,
     tags: [
@@ -195,11 +198,11 @@ export const getBlogCategoryAndTags = (data:RequestModel<{postId: string,blogId:
   });
 }
 
-export const commentBlog = (data:RequestModel<{postId:number,body:string,parentCommentId?:number}>) => {
+export const commentBlog = (data:RequestModel<{userId:string,postId:number,body:string,parentCommentId?:number}>) => {
   if(data.request.parentCommentId==undefined) {
     data.request.parentCommentId = 0;
   }
-  const URL = `https://www.cnblogs.com/yz1311/ajax/PostComment/Add.aspx`;
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/PostComment/Add.aspx`;
   //message是一段html
   return RequestUtils.post<{isSuccess:boolean,message:string,duration:number}>(URL,data.request);
 };
@@ -229,7 +232,7 @@ export const resolveBlogHtml = (result)=>{
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
     item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
-    item.blogapp = (match.match(/DiggPost\(([\s\S]+,){2}[\s\S]+?(?=,)/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
+    item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
     item.title = (match.match(/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.summary = (match.match(/post_item_summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
@@ -285,7 +288,7 @@ export const resolveBlogCommentHtml = (result)=>{
     let item:Partial<blogCommentModel> = {};
     item.title = '';
     item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
-    item.content = (match.match(/class=\"blog_comment_body\"[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.content = (match.match(/class=\"blog_comment_body[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+?\>/,'').trim();
     item.author = {
       id: '',
       uri: (match.match(/id=\"a_comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
