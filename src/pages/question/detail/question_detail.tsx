@@ -72,12 +72,6 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
     item: PropTypes.object,
   };
 
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '博问',
-    };
-  };
-
   private reloadListener: EmitterSubscription;
   private _flatList: any;
 

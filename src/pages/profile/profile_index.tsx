@@ -21,7 +21,7 @@ interface IProps extends IReduxProps {
   isLogin?: boolean;
   userInfo?: userInfoModel;
   logoutFn?: any;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   tabIndex: number;
 }
 

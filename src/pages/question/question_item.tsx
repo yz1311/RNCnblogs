@@ -40,7 +40,7 @@ interface IProps extends IReduxProps {
   clickable: boolean;
   selectable: boolean;
   canViewProfile?: boolean,
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   canDelete?: any;
   canModify?: any;
   userInfo?: any;

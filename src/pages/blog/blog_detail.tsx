@@ -91,19 +91,6 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     item: PropTypes.object,
   };
 
-  static navigationOptions = ({navigation}) => {
-    console.log('11123232')
-    const {state} = navigation;
-    const {title, headerRight} = (state || {}).params || {
-      title: undefined,
-      headerRight: undefined,
-    };
-    return {
-      title: title || '博文',
-      headerRight: headerRight,
-    };
-  };
-
   private fromView: any;
   private overlayKey: any;
   private webView: any;
@@ -125,8 +112,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
 
   componentDidMount() {
     this.loadData();
-    this.props.navigation.setParams({
-      headerRight: (
+    this.props.navigation.setOptions({
+      headerRight: () => (
         <TouchableOpacity
           activeOpacity={activeOpacity}
           style={{paddingHorizontal: 8}}
@@ -357,7 +344,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.title : '博文')) {
-          this.props.navigation.setParams({
+          this.props.navigation.setOptions({
             title: postedMessage.value >= 50 ? item.title : '博文',
           });
         }

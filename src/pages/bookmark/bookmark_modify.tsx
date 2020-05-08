@@ -21,7 +21,7 @@ interface IProps {
   deleteBookmarkFn: any;
   addBookmarkFn: any;
   modifyBookmarkFn: any;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   item: bookmarkModel;
   successAction: any;
 }
@@ -45,25 +45,6 @@ interface IState {
   }),
 ) as any)
 export default class bookmark_modify extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {rightAction} = state.params || {rightAction: undefined};
-    return {
-      title: navigation.state.params.title || '添加收藏',
-      headerRight: (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{
-            alignSelf: 'stretch',
-            justifyContent: 'center',
-            paddingHorizontal: 8,
-          }}
-          onPress={rightAction}>
-          <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    };
-  };
 
   constructor(props) {
     super(props);
@@ -92,7 +73,7 @@ export default class bookmark_modify extends Component<IProps, IState> {
       Tags: item.Tags,
       TagsDesc: ((item || {Tags: undefined}).Tags || []).join(','),
     });
-    this.props.navigation.setParams({
+    this.props.navigation.setOptions({
       rightAction: this.rightAction,
     });
   }

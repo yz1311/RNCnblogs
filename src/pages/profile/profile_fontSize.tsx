@@ -38,11 +38,6 @@ interface IState {
   }),
 ) as any)
 export default class profile_fontSize extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '字体设置',
-    };
-  };
 
   state = {
     value: fontSizeScaler,

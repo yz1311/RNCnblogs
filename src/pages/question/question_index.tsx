@@ -18,7 +18,7 @@ import {Theme} from '@yz1311/teaset';
 
 interface IProps extends IReduxProps {
   initialPage?: number;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   isLogin?: boolean;
   tabIndex?: number;
 }

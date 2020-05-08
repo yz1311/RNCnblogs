@@ -27,7 +27,7 @@ import {statusModel} from '../../api/status';
 interface IProps extends IReduxProps {
   item: statusModel;
   clickable: boolean;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
 }
 
 interface IState {
@@ -51,26 +51,6 @@ export default class status_add extends PureComponent<IProps, IState> {
     clickable: true,
   };
 
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {rightAction} = state.params || {rightAction: undefined};
-    return {
-      title: '发布闪存',
-      headerRight: (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{
-            alignSelf: 'stretch',
-            justifyContent: 'center',
-            paddingHorizontal: 8,
-          }}
-          onPress={rightAction}>
-          <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    };
-  };
-
   constructor(props:IProps) {
     super(props);
     this.state = {
@@ -86,7 +66,7 @@ export default class status_add extends PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({
+    this.props.navigation.setOptions({
       rightAction: this._rightAction,
     });
   }

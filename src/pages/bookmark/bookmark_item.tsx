@@ -31,7 +31,7 @@ interface IProps {
   userInfo?: any;
   dispatch?: any;
   setSelectedQuestionFn?: any;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   item: bookmarkModel;
   clickable?: boolean;
   bookmarkType: string

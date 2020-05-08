@@ -12,7 +12,7 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 
 interface IProps {
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   setSelectedDetailFn?: any;
   item: knowledge;
 }

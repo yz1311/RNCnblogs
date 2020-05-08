@@ -36,6 +36,8 @@ import NewsIndex from '../pages/news/news_index';
 import RankList from '../pages/discover/rank_list';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Stack = createStackNavigator();
 
@@ -44,16 +46,18 @@ export default class AppNavigation extends Component {
         return (
             <Stack.Navigator
                 initialRouteName="AppEntry"
-                screenOptions={({navigation}) => {
+                screenOptions={({navigation, route}) => {
                     NavigationHelper.navigation = navigation;
-                    let params = navigation.route?.params;
-                    let leftTitle, leftAction;
+                    let params = route?.params as any;
+                    let title, leftTitle, leftAction;
                     if (params) {
+                        title = params.title;
                         leftTitle = params.leftTitle;
                         leftAction = params.leftAction;
                     }
                     return {
                         // header: () => null,
+                        title: title || '',
                         headerLeft: (props: any) => (
                             <TouchableOpacity
                                 activeOpacity={activeOpacity}
@@ -107,10 +111,16 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="Login"
                     component={withMappedNavigationParams()(Login)}
+                    options={{
+                        title: '登录',
+                    }}
                 />
                 <Stack.Screen
                     name="AppEntry"
                     component={withMappedNavigationParams()(AppEntry)}
+                    options={{
+                        headerShown: false,
+                    }}
                 />
                 <Stack.Screen
                     name="HomeSearch"
@@ -122,74 +132,213 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="BlogDetail"
                     component={withMappedNavigationParams()(BlogDetail)}
+                    options={({route}) => {
+                        const {title} = route?.params || {} as any;
+                        return {
+                            title: title || '博文'
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="BlogCommentList"
                     component={withMappedNavigationParams()(BlogCommentList)}
+                    options={({route}) => {
+                        const {title} = route?.params || {} as any;
+                        return {
+                            title: `${title ? title + '条' : ''}评论`,
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="BaseBlogList"
                     component={withMappedNavigationParams()(BaseBlogList)}
+                    options={({route}) => {
+                        const {title} = route?.params || {} as any;
+                        return {
+                            headerShown: title!=undefined,
+                            title: title || ''
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="NewsDetail"
                     component={withMappedNavigationParams()(NewsDetail)}
+                    options={({route}) => {
+                        const {title} = route?.params || {} as any;
+                        return {
+                            title: title || '新闻'
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="NewsCommentList"
                     component={withMappedNavigationParams()(NewsCommentList)}
+                    options={({route}) => {
+                        const {title} = route?.params || {} as any;
+                        return {
+                            title: `${title ? title + '条' : ''}评论`,
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="Status"
                     component={withMappedNavigationParams()(Status)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: '闪存',
+                            headerRight: () => (
+                                <TouchableOpacity
+                                    activeOpacity={activeOpacity}
+                                    style={{
+                                        alignSelf: 'stretch',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: 8,
+                                    }}
+                                    onPress={rightAction}>
+                                    <Ionicons name="md-add" size={30} color={gColors.bgColorF} />
+                                </TouchableOpacity>
+                            ),
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="StatusDetail"
                     component={withMappedNavigationParams()(StatusDetail)}
+                    options={{
+                        title: '闪存'
+                    }}
                 />
                 <Stack.Screen
                     name="StatusAdd"
                     component={withMappedNavigationParams()(StatusAdd)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: '发布闪存',
+                            headerRight: () => (
+                                <TouchableOpacity
+                                    activeOpacity={activeOpacity}
+                                    style={{
+                                        alignSelf: 'stretch',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: 8,
+                                    }}
+                                    onPress={rightAction}>
+                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
+                                </TouchableOpacity>
+                            ),
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="Bookmark"
                     component={withMappedNavigationParams()(Bookmark)}
+                    options={{
+                        title: '收藏',
+                    }}
                 />
                 <Stack.Screen
                     name="BookmarkModify"
                     component={withMappedNavigationParams()(BookmarkModify)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: title || '添加收藏',
+                            headerRight: () => (
+                                <TouchableOpacity
+                                    activeOpacity={activeOpacity}
+                                    style={{
+                                        alignSelf: 'stretch',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: 8,
+                                    }}
+                                    onPress={rightAction}>
+                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
+                                </TouchableOpacity>
+                            ),
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="QuestionDetail"
                     component={withMappedNavigationParams()(QuestionDetail)}
+                    options={{
+                        title: '博问',
+                    }}
                 />
                 <Stack.Screen
                     name="QuestionAdd"
                     component={withMappedNavigationParams()(QuestionAdd)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: title || '提问',
+                            headerRight: () => (
+                                <TouchableOpacity
+                                    activeOpacity={activeOpacity}
+                                    style={{
+                                        alignSelf: 'stretch',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: 8,
+                                    }}
+                                    onPress={rightAction}>
+                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
+                                </TouchableOpacity>
+                            ),
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="AnswerCommentList"
                     component={withMappedNavigationParams()(AnswerCommentList)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: `${title ? title + '条' : ''}评论`,
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="KnowledgeBaseDetail"
                     component={withMappedNavigationParams()(KnowledgeBaseDetail)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: title || '知识库',
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="ProfileSetting"
                     component={withMappedNavigationParams()(ProfileSetting)}
+                    options={({route}) => {
+                        const {title, rightAction} = route?.params || {} as any;
+                        return {
+                            title: '设置',
+                        };
+                    }}
                 />
                 <Stack.Screen
                     name="ProfileAbout"
                     component={withMappedNavigationParams()(ProfileAbout)}
+                    options={{
+                        title: '关于',
+                    }}
                 />
                 <Stack.Screen
                     name="ProfileFontSize"
                     component={withMappedNavigationParams()(ProfileFontSize)}
+                    options={{
+                        title: '字体设置',
+                    }}
                 />
                 <Stack.Screen
                     name="ProfilePerson"
                     component={withMappedNavigationParams()(ProfilePerson)}
+                    options={{
+                        headerShown: false
+                    }}
                 />
                 <Stack.Screen
                     name="NewsIndex"
@@ -198,6 +347,9 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="RankList"
                     component={withMappedNavigationParams()(RankList)}
+                    options={{
+                        title: '排行榜'
+                    }}
                 />
                 <Stack.Screen
                     name="StarList"

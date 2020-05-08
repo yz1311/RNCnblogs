@@ -17,7 +17,7 @@ interface IProps {
   showAll?: boolean;
   clickable: boolean;
   selectable: boolean;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   canDelete?: any;
   canModify?: any;
   userInfo?: any;

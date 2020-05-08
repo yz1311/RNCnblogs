@@ -13,7 +13,7 @@ import moment from "moment";
 import HTMLView from 'react-native-render-html';
 
 interface IProps {
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   item: newsModel;
 }
 

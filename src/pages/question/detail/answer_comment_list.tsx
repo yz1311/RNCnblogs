@@ -86,14 +86,6 @@ export default class answer_comment_list extends YZBaseDataPage<
     item: PropTypes.object,
   };
 
-  static navigationOptions = ({navigation}) => {
-    let {title} = (navigation.state || {params: undefined}).params || {
-      title: undefined,
-    };
-    return {
-      title: `${title ? title + '条' : ''}评论`,
-    };
-  };
   private reloadListener: EmitterSubscription;
   private pageIndex: number;
   private _flatList: any;

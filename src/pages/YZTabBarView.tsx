@@ -29,7 +29,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   refreshDataTimeFn?: any;
   initialPage: number;
 }

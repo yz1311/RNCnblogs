@@ -29,11 +29,6 @@ interface IState {
   isLogin: state.loginIndex.isLogin
 })) as any)
 export default class login_index extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '登录',
-    };
-  };
 
   hasInvoked = false;
 

@@ -20,7 +20,7 @@ interface IProps {
   //是否点击头像查看详情
   canViewProfile: boolean;
   isLandscape?: boolean;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
 }
 
 interface IState {}

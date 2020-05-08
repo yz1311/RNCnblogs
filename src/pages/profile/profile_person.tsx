@@ -61,14 +61,6 @@ export default class profile_person extends PureComponent<IProps, IState> {
     avatorUrl: PropTypes.string.isRequired,
   };
 
-  static navigationOptions = ({navigation}) => {
-    let {title} = (navigation.state || {}).params || {title: undefined};
-    return {
-      // title: title || '园友',
-      headerShown: false
-    };
-  };
-
   pageIndex = 1;
   private namePositionY;
   private backgroundImage:any;
@@ -285,14 +277,14 @@ export default class profile_person extends PureComponent<IProps, IState> {
       .params || {title: undefined};
     title = title || '园友';
     if (curScrollY > this.namePositionY && title == '园友') {
-      this.props.navigation.setParams({
+      this.props.navigation.setOptions({
         title: personInfo.nickName,
       });
     } else if (
       curScrollY < this.namePositionY &&
       title == personInfo.nickName
     ) {
-      this.props.navigation.setParams({
+      this.props.navigation.setOptions({
         title: '园友',
       });
     }

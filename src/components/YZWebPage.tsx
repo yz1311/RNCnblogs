@@ -23,7 +23,7 @@ const injectedJsCode = `var headArr = document.getElementsByTagName('head');
 export interface IProps {
   uri: string;
   content: string;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
 }
 
 @(connect(
@@ -41,25 +41,13 @@ export default class YZWebPage extends Component<IProps, any> {
     title: PropTypes.string,
   };
 
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {title, headerRight} = state.params || {
-      headerRight: undefined,
-      title: undefined,
-    };
-    return {
-      title: title,
-      headerRight: headerRight,
-    };
-  };
-
   private fromView: any;
   private overlayKey: any;
   private webView: any;
 
   componentDidMount() {
-    this.props.navigation.setParams({
-      headerRight: (
+    this.props.navigation.setOptions({
+      headerRight: () => (
         <TouchableOpacity
           activeOpacity={activeOpacity}
           style={{paddingHorizontal: 8}}

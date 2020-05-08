@@ -66,13 +66,6 @@ export default class news_comment_list extends Component<IProps, IState> {
     pageIndex: 1,
   };
 
-  static navigationOptions = ({navigation}) => {
-    let {title} = (navigation.state || {}).params || {title: undefined};
-    return {
-      title: `${title ? title + '条' : ''}评论`,
-    };
-  };
-
   private reloadListener: EmitterSubscription;
   private _flatList: any;
   private _commentInput: any;

@@ -58,11 +58,6 @@ interface IState {
   }),
 ) as any)
 export default class status_detail extends PureComponent<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '闪存',
-    };
-  };
 
   private reloadListener: EmitterSubscription;
   private _commentInput: any;

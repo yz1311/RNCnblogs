@@ -10,7 +10,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 export interface IBaseDataPageProps extends IReduxProps {
   loadDataFn?: any;
   clearDataFn?: any;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   route: any,
   loadDataResult?: any;
   dispatch?: any;

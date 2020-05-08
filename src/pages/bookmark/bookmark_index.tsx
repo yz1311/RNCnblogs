@@ -24,11 +24,6 @@ interface IState {
 const initialDataList = ['热门','我的'];
 
 export default class bookmark_index extends PureComponent<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '收藏',
-    };
-  };
 
   readonly state:IState = {
     dataList: initialDataList

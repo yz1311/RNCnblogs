@@ -20,7 +20,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from "@yz1311/teaset";
 
 interface IProps extends IReduxProps {
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   initialPage?: number;
   tabNames?: Array<string>;
   isLogin?: boolean;
@@ -52,25 +52,6 @@ export enum StatusTypes {
   }),
 ) as any)
 export default class status_index extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {rightAction} = state.params || {rightAction: undefined};
-    return {
-      title: '闪存',
-      headerRight: (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{
-            alignSelf: 'stretch',
-            justifyContent: 'center',
-            paddingHorizontal: 8,
-          }}
-          onPress={rightAction}>
-          <Ionicons name="md-add" size={30} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    };
-  };
 
   private toggleActionButtonListener: EmitterSubscription;
   private tabBar: any;
@@ -100,7 +81,7 @@ export default class status_index extends Component<IProps, IState> {
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({
+    this.props.navigation.setOptions({
       rightAction: () => {
         this.props.navigation.navigate('StatusAdd');
       },

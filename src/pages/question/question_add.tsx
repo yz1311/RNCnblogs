@@ -33,7 +33,7 @@ import ToastUtils from '../../utils/toastUtils';
 interface IProps extends IReduxProps {
   item: questionModel;
   clickable: boolean;
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   modifyQuestionFn?: any;
   userInfo?: any;
 }
@@ -115,7 +115,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
   componentDidMount() {
     this.validate();
     this.getMyQuestionData();
-    this.props.navigation.setParams({
+    this.props.navigation.setOptions({
       rightAction: this._rightAction,
     });
   }

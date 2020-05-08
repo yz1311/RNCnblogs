@@ -52,13 +52,6 @@ interface IState {
 export default class blog_comment_list extends PureComponent<IProps, IState> {
   pageIndex = 1;
 
-  static navigationOptions = ({navigation}) => {
-    let {title} = (navigation.state || {}).params || {title: undefined};
-    return {
-      headerTitle: `${title ? title + '条' : ''}评论`,
-    };
-  };
-
   private _commentInput: any;
   private _flatList: any;
   private updateCountListener:EmitterSubscription;
@@ -85,7 +78,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     this.loadData();
     this.setTitle();
     this.updateCountListener = DeviceEventEmitter.addListener('update_blog_comment_count',count=>{
-      this.props.navigation.setParams({
+      this.props.navigation.setOptions({
         title: count,
       });
     });

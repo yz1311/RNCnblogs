@@ -12,11 +12,6 @@ interface IProps {
 }
 
 export default class app_entry extends Component<IProps, {}> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      headerShown: false,
-    };
-  };
 
   async componentDidMount() {
     let res = await gStorage.load('token');

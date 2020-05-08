@@ -69,17 +69,6 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
     item: PropTypes.object,
   };
 
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {title, headerRight} = (state || {}).params || {
-      title: undefined,
-      headerRight: undefined,
-    };
-    return {
-      title: title || '知识库',
-      headerRight: headerRight,
-    };
-  };
   private fromView: any;
   private scrollPosition: any;
   private overlayKey: any;
@@ -94,8 +83,8 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
 
   componentDidMount() {
     super.componentDidMount();
-    this.props.navigation.setParams({
-      headerRight: (
+    this.props.navigation.setOptions({
+      headerRight: () => (
         <TouchableOpacity
           activeOpacity={activeOpacity}
           style={{paddingHorizontal: 8}}
@@ -243,7 +232,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.Title : '知识库')) {
-          this.props.navigation.setParams({
+          this.props.navigation.setOptions({
             title: postedMessage.value >= 50 ? item.Title : '知识库',
           });
         }

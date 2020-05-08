@@ -9,7 +9,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from '@yz1311/teaset';
 
 interface IProps {
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   initialPage?: number;
   tabIndex: number;
 }

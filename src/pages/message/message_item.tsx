@@ -17,7 +17,7 @@ import Markdown from 'react-native-markdown-renderer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface IProps extends IReduxProps{
-  navigation: NavigationScreenProp<NavigationState>;
+  navigation: any;
   item: messageModel;
 }
 

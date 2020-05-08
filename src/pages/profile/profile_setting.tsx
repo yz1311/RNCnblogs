@@ -38,11 +38,6 @@ interface IState {}
   }),
 ) as any)
 export default class profile_setting extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '设置',
-    };
-  };
 
   private reloadThemeListener: any;
   private themeModal: any;

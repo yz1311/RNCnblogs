@@ -37,11 +37,6 @@ interface IState {
   }),
 ) as any)
 export default class profile_about extends Component<IProps, IState> {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '关于',
-    };
-  };
 
   showUpdateInfoDialog = async () => {
     //不要讲modal也放在这个组件，两个modal同时存在会报错，不知道咋回事
