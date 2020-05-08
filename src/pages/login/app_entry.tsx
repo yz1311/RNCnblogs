@@ -2,16 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, View, ActivityIndicator, Text, Alert} from 'react-native';
 import {connect} from 'react-redux';
 import Styles from '../../common/styles';
-import {
-  setLoginCode,
-  getUserInfo,
-} from '../../actions/login/login_index_actions';
-import moment from 'moment';
-import * as actionTypes from '../../actions/actionTypes';
 import {getToken} from '../../actions/login/login_index_actions';
-import ThemeUtils from '../../utils/themeUtils';
-import {ReduxState} from '../../reducers';
-import CookieManager from 'react-native-cookie-store';
 
 interface IProps {
   dispatch: any;

@@ -55,6 +55,7 @@ export interface IProps {
   clearNewsCommentListFn?: any;
   setNewsScrollPositionFn?: any;
   navigation: any,
+  route: any,
   isLogin?: boolean
 }
 
@@ -334,7 +335,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
         break;
       case 'scroll_position':
         this.scrollPosition = postedMessage.value;
-        let curTitle = this.props.navigation.state.params.title;
+        let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.title : '新闻')) {
           this.props.navigation.setParams({
             title: postedMessage.value >= 50 ? item.title : '新闻',

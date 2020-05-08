@@ -73,6 +73,7 @@ export interface IProps {
   clearBlogCommentListFn?: any;
   setBlogScrollPositionFn?: any;
   navigation?: any;
+  route?: any;
   isLogin?: boolean,
 }
 
@@ -112,6 +113,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   };
 
   static navigationOptions = ({navigation}) => {
+    console.log('11123232')
     const {state} = navigation;
     const {title, headerRight} = (state || {}).params || {
       title: undefined,
@@ -371,7 +373,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         break;
       case 'scroll_position':
         this.scrollPosition = postedMessage.value;
-        let curTitle = this.props.navigation.state.params.title;
+        let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.title : '博文')) {
           this.props.navigation.setParams({
             title: postedMessage.value >= 50 ? item.title : '博文',

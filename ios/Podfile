@@ -41,6 +41,15 @@ target 'RNCnblogs' do
     # Pods for testing
   end
 
+   permissions_path = '../node_modules/react-native-permissions/ios'
+    pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+    pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts.podspec"
+    pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways.podspec"
+    pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse.podspec"
+    pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
+    pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
+    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
+
   use_native_modules!
 end
 

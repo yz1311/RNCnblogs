@@ -11,6 +11,7 @@ export interface IBaseDataPageProps extends IReduxProps {
   loadDataFn?: any;
   clearDataFn?: any;
   navigation: NavigationScreenProp<NavigationState>;
+  route: any,
   loadDataResult?: any;
   dispatch?: any;
 }

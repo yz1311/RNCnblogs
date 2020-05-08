@@ -16,16 +16,13 @@ import {
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
 import useImmer from 'dva-immer';
-import YZStateView from './components/YZStateCommonView';
 import Markdown from 'react-native-markdown-renderer';
 import HtmlView from 'react-native-render-html';
-import {NavigationBar, NavigationHelper, Theme} from '@yz1311/teaset';
+import {NavigationBar, Theme} from '@yz1311/teaset';
+import {NavigationHelper} from '@yz1311/teaset-navigation';
 import FitImage from 'react-native-fit-image';
-//@ts-ignore
 import models from './models';
-import {ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Styles from './common/styles';
-import {createAppContainer} from 'react-navigation';
 import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
 
@@ -165,16 +162,6 @@ class Root extends Component {
       ...(TextInput.defaultProps || {}),
       allowFontScaling: false,
     };
-    // @ts-ignore
-    TextInput.defaultProps.underlineColorAndroid = 'transparent';
-    // @ts-ignore
-    // YZStateView.defaultProps.loadingView = (
-    //   <YZLottieView
-    //     style={{width: 120, height: 120}}
-    //     speed={2}
-    //     source={require('./resources/animation/trail_loading_2f97a7')}
-    //   />
-    // );
     Markdown.defaultProps.rules = markdownRules;
     Markdown.defaultProps.style = markdownStyles;
     HtmlView.defaultProps.allowFontScaling = false;
@@ -208,18 +195,6 @@ class Root extends Component {
           </TouchableOpacity>
       )
     };
-    // ScrollableTabBar.defaultProps = {
-    //   ...(ScrollableTabBar.defaultProps || {}),
-    //   activeTextColor: gColors.bgColorF,
-    //   inactiveTextColor: '#DBDBDB',
-    //   underlineStyle: {
-    //     backgroundColor: gColors.bgColorF,
-    //     height: 3,
-    //   },
-    //   style: {
-    //     backgroundColor: gColors.themeColor,
-    //   },
-    // };
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 
@@ -232,7 +207,7 @@ class Root extends Component {
       <View style={{flex: 1}}>
         <Provider store={store}>
           <App
-            AppNavigator={createAppContainer(require('./pages/appNav').default)}
+            AppNavigator={require('./pages/appNav').default}
           />
         </Provider>
       </View>

@@ -256,7 +256,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
         break;
       case 'scroll_position':
         this.scrollPosition = postedMessage.value;
-        let curTitle = this.props.navigation.state.params.title;
+        let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.Title : '知识库')) {
           this.props.navigation.setParams({
             title: postedMessage.value >= 50 ? item.Title : '知识库',

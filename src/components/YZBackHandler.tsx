@@ -23,7 +23,7 @@ const decorator = WrappedComponent =>
     constructor(props) {
       super(props);
       this._didFocusSubscription = props.navigation.addListener(
-        'didFocus',
+        'focus',
         payload =>
           BackHandler.addEventListener('hardwareBackPress', this.onBackPressed),
       );
@@ -31,7 +31,7 @@ const decorator = WrappedComponent =>
     componentDidMount() {
       super.componentDidMount && super.componentDidMount();
       this._willBlurSubscription = this.props.navigation.addListener(
-        'willBlur',
+        'blur',
         payload =>
           BackHandler.removeEventListener(
             'hardwareBackPress',
@@ -42,8 +42,8 @@ const decorator = WrappedComponent =>
 
     componentWillUnmount() {
       super.componentWillUnmount && super.componentWillUnmount();
-      this._didFocusSubscription && this._didFocusSubscription.remove();
-      this._willBlurSubscription && this._willBlurSubscription.remove();
+      this._didFocusSubscription && this._didFocusSubscription();
+      this._willBlurSubscription && this._willBlurSubscription();
       BackHandler.removeEventListener('hardwareBackPress', this.onBackPressed);
     }
 

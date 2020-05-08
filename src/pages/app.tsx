@@ -16,8 +16,11 @@ import {
   DeviceEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
-import {connect} from 'react-redux';
+import 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationState,
+} from '@react-navigation/routers';
 import {
   showToast,
   showLoading,
@@ -25,17 +28,13 @@ import {
   orientationInfoChanged,
 } from '../actions/app_actions';
 import {CodePushHandler} from '@yz1311/teaset-code-push';
-import {NavigationActions} from 'react-navigation';
-import * as navActions from '../actions/nav_actions';
 import codePush from 'react-native-code-push';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import UpdateLogModal from '../components/update_logModal';
-import moment, {unitOfTime} from 'moment';
 import Permissions from 'react-native-permissions';
-import {ReduxState} from '../reducers';
 import ToastUtils from "../utils/toastUtils";
-import {NavigationHelper} from "@yz1311/teaset";
+import {NavigationHelper} from '@yz1311/teaset-navigation';
 
 // See https://mydevice.io/devices/ for device dimensions
 const X_WIDTH = 375;
@@ -198,7 +197,6 @@ export default class App extends Component<IProps, IState> {
   render() {
     const {showUpdateInfo} = this.state;
     const AppNavigator = this.props.AppNavigator;
-    const addListener = this.props.addListener;
     return (
       <View style={{flex: 1}}>
         <StatusBar
@@ -207,20 +205,12 @@ export default class App extends Component<IProps, IState> {
           translucent={true}
           backgroundColor="transparent"
         />
-        {__ANDROID__ ? (
-          <View
-            style={{
-              height: gScreen.statusBarHeight,
-              backgroundColor: gColors.themeColor,
-            }}
-          />
-        ) : null}
-        <AppNavigator
-            onNavigationStateChange={(prevState, currentState, action) => {
-              //这个是跳转了才去回调，所以不能利用routes来判断路由栈
-              NavigationHelper.navRouters = currentState.routes;
-            }}
-        />
+        <NavigationContainer onStateChange={(state: NavigationState) => {
+          //这个是跳转了才去回调，所以不能利用routes来判断路由栈
+          NavigationHelper.navRouters = state.routes;
+        }}>
+          <AppNavigator />
+        </NavigationContainer>
         {isIphoneX ? <View style={{height: 34}} /> : null}
         {showUpdateInfo && (
           <UpdateInfoPromptView

@@ -229,7 +229,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
   };
 
   render() {
-    console.log('YZTabBarView reload');
     const {tabNames, tabIconNames, selectedTabIconNames} = this.state;
 
     return (

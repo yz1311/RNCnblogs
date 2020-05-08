@@ -37,7 +37,6 @@ export type ReduxState = {
 //用于给常规的redux使用
 export const getRootReducer = navReducer => {
   const rootReducer = combineReducers({
-    nav: navReducer,
     app,
     homeIndex,
     loginIndex,
@@ -56,7 +55,6 @@ export const getRootReducer = navReducer => {
 //用于传给rematch使用
 export const rootReducers = navReducer => {
   return {
-    nav: navReducer,
     app,
     homeIndex,
     loginIndex,

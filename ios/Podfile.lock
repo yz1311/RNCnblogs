@@ -27,8 +27,22 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - JWT (3.0.0-beta.11):
+  - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
+  - Permission-Camera (2.1.4):
+    - RNPermissions
+  - Permission-Contacts (2.1.4):
+    - RNPermissions
+  - Permission-LocationAlways (2.1.4):
+    - RNPermissions
+  - Permission-LocationWhenInUse (2.1.4):
+    - RNPermissions
+  - Permission-Microphone (2.1.4):
+    - RNPermissions
+  - Permission-Notifications (2.1.4):
+    - RNPermissions
+  - Permission-PhotoLibrary (2.1.4):
+    - RNPermissions
   - RCTRequired (0.61.5)
   - RCTTypeSafety (0.61.5):
     - FBLazyVector (= 0.61.5)
@@ -194,21 +208,21 @@ PODS:
   - React-jsinspector (0.61.5)
   - react-native-blur (0.8.0):
     - React
-  - react-native-cameraroll (1.3.0):
+  - react-native-cameraroll (1.6.0):
     - React
-  - react-native-cookie-store (3.4.1):
+  - react-native-cookie-store (3.4.2):
     - React
-  - react-native-netinfo (5.3.2):
+  - react-native-netinfo (5.8.0):
     - React
-  - react-native-safe-area-context (0.6.2):
+  - react-native-safe-area-context (0.7.3):
     - React
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-view-shot (3.0.2):
+  - react-native-view-shot (3.1.2):
     - React
   - react-native-viewpager (3.3.0):
     - React
-  - react-native-webview (8.0.3):
+  - react-native-webview (8.0.2):
     - React
   - React-RCTActionSheet (0.61.5):
     - React-Core/RCTActionSheetHeaders (= 0.61.5)
@@ -245,33 +259,33 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
     - ReactCommon/jscallinvoker (= 0.61.5)
-  - ReactNativeAutogrowTextinput (5.3.0):
+  - ReactNativeAutogrowTextinput (5.4.0):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNCAsyncStorage (1.7.1):
+  - RNCAsyncStorage (1.10.0):
     - React
-  - RNCMaskedView (0.1.5):
+  - RNCMaskedView (0.1.10):
     - React
-  - RNDeviceInfo (5.4.0):
+  - RNDeviceInfo (5.5.7):
     - React
-  - RNGestureHandler (1.5.3):
+  - RNGestureHandler (1.6.1):
     - React
   - RNHttpCache (0.3.1):
     - React
-  - RNPermissions (2.0.9):
+  - RNPermissions (2.1.4):
     - React
-  - RNReanimated (1.4.0):
+  - RNReanimated (1.8.0):
     - React
-  - RNScreens (2.0.0-alpha.22):
+  - RNScreens (2.7.0):
     - React
-  - RNSVG (10.0.0):
+  - RNSVG (12.1.0):
     - React
   - RNSyanImagePicker (0.4.6):
     - React
   - RNVectorIcons (6.6.0):
     - React
-  - SSZipArchive (2.2.2)
+  - SSZipArchive (2.2.3)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -282,6 +296,13 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
+  - Permission-Contacts (from `../node_modules/react-native-permissions/ios/Contacts.podspec`)
+  - Permission-LocationAlways (from `../node_modules/react-native-permissions/ios/LocationAlways.podspec`)
+  - Permission-LocationWhenInUse (from `../node_modules/react-native-permissions/ios/LocationWhenInUse.podspec`)
+  - Permission-Microphone (from `../node_modules/react-native-permissions/ios/Microphone.podspec`)
+  - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications.podspec`)
+  - Permission-PhotoLibrary (from `../node_modules/react-native-permissions/ios/PhotoLibrary.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -329,7 +350,7 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Base64
     - boost-for-react-native
     - JWT
@@ -350,6 +371,20 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
+  Permission-Contacts:
+    :path: "../node_modules/react-native-permissions/ios/Contacts.podspec"
+  Permission-LocationAlways:
+    :path: "../node_modules/react-native-permissions/ios/LocationAlways.podspec"
+  Permission-LocationWhenInUse:
+    :path: "../node_modules/react-native-permissions/ios/LocationWhenInUse.podspec"
+  Permission-Microphone:
+    :path: "../node_modules/react-native-permissions/ios/Microphone.podspec"
+  Permission-Notifications:
+    :path: "../node_modules/react-native-permissions/ios/Notifications.podspec"
+  Permission-PhotoLibrary:
+    :path: "../node_modules/react-native-permissions/ios/PhotoLibrary.podspec"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -445,7 +480,14 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 118d0d177724c2d67f08a59136eb29ef5943ec75
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  JWT: 05028b9624591bba9681bb57df2c5f95fa258bad
+  JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
+  Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85
+  Permission-Contacts: 546030b78788365b36c202b7ac5a8205f8c7efba
+  Permission-LocationAlways: 48085521ad224052f5b25c3fdc6d0e996d162428
+  Permission-LocationWhenInUse: 7449010ca36a26dbe6b10e69e9d6ebcab0222c42
+  Permission-Microphone: 84332821b494a0864867ae41c0b29f28002db47b
+  Permission-Notifications: d437cafc026900006d35981d35a2d694f883f44e
+  Permission-PhotoLibrary: d98d4dcf5da6bb811fac27abdd441e6a2facc53c
   RCTRequired: b153add4da6e7dbc44aebf93f3cf4fcae392ddf1
   RCTTypeSafety: 9aa1b91d7f9310fc6eadc3cf95126ffe818af320
   React: b6a59ef847b2b40bb6e0180a97d0ca716969ac78
@@ -456,14 +498,14 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-cameraroll: 463aff54e37cff27ea76eb792e6f1fa43b876320
-  react-native-cookie-store: e7f1bca89b320ca9355e1da0e88c8f5b5d84b7e1
-  react-native-netinfo: 817823a90f13ced48413875c0820df04c3aae28d
-  react-native-safe-area-context: 25260c5d0b9c53fd7aa88e569e2edae72af1f6a3
+  react-native-cameraroll: 02e60e9af9273a3cc3b641632bf651189830aaf8
+  react-native-cookie-store: da5439ecb7641e5f0ad1ca0a658790994a88be28
+  react-native-netinfo: b9650ab1b8b4362b3c455b1274e4bc48223cc957
+  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-view-shot: 5f80b8f4f9003c3da8c0c0013488e5b2db17b1e2
+  react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: a7b438ca32c57b2614ece2a123e7fe116f743131
-  react-native-webview: 57cdcf9981594a1a7de36ecfe7f079379543ef1f
+  react-native-webview: 99bdfd6c189772b0f15494f728430c23b18b93e4
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76
   React-RCTAnimation: 791a87558389c80908ed06cc5dfc5e7920dfa360
   React-RCTBlob: d89293cc0236d9cb0933d85e430b0bbe81ad1d72
@@ -474,22 +516,22 @@ SPEC CHECKSUMS:
   React-RCTText: 9ccc88273e9a3aacff5094d2175a605efa854dbe
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
-  ReactNativeAutogrowTextinput: 14bd6349ec4fed9231ca141ad3f1dbadf2f63e4c
+  ReactNativeAutogrowTextinput: 571f3260e200d91ea22fab160452f26d2fd5d55b
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
-  RNCMaskedView: dd13f9f7b146a9ad82f9b7eb6c9b5548fcf6e990
-  RNDeviceInfo: c7b1dc457611b9231bb780a882102e2c93edc7af
-  RNGestureHandler: 02905abe54e1f6e59c081a10b4bd689721e17aa6
+  RNCAsyncStorage: 6d99641f8e6f15d169d695d8ef184bf187903f11
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
+  RNDeviceInfo: e2102056bde3ad5d137fd029d8d431510a00486a
+  RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNHttpCache: a0678072cede68e78173e30958c1a07d32490110
-  RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
-  RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
-  RNScreens: 6adf01eb4080f44af6cca551207c6b0505066857
-  RNSVG: 9d45f03136ecc9b5497e12f6f20838b568acb9f4
+  RNPermissions: 3635b407c15f2fe591bd2101c8f20aa0912caba8
+  RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff
+  RNScreens: cf198f915f8a2bf163de94ca9f5bfc8d326c3706
+  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNSyanImagePicker: 695a60e84dc216be515ab115e3f626bf4d81189b
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
-  SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
+  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: e3cd0ad700e91a649549ad33f17e77836596f3b7
+PODFILE CHECKSUM: 5b61e59a0c46ad12181d31649d5b63254ec0729a
 
 COCOAPODS: 1.8.0.beta.2
