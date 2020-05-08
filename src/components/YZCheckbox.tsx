@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, ViewPropTypes} from 'react-native';
 import PropTypes from 'prop-types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export interface IProps {
   wrapperStyle?: any;
@@ -24,7 +25,7 @@ export default class YZCheckbox extends Component<IProps, {}> {
 
   static defaultProps = {
     disabled: false,
-    size: 26,
+    size: 27,
   };
 
   render() {
@@ -51,9 +52,9 @@ export default class YZCheckbox extends Component<IProps, {}> {
           }
         }}
         style={[{justifyContent: 'center'}, wrapperStyle]}>
-        <Ionicons
+        <MaterialCommunityIcons
           name={
-            checked ? 'ios-checkmark-circle' : 'ios-radio-button-off-outline'
+            checked ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'
           }
           color={color}
           size={size}

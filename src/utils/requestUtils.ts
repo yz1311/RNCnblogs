@@ -282,7 +282,7 @@ export default class RequestUtils {
                 //说明没有经过服务器
                 error.message = '网络连接失败!';
             }
-            console.log(error.config.method+'  '+error.config.url)
+            console.log(error.config?.method+'  '+error.config?.url)
             console.log(error.config.data)
             console.log(error.message)
             if(!((error.config as AxiosRequestConfigPatch).showErrorToast==false)) {

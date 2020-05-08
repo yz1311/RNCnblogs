@@ -17,15 +17,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   addQuestion,
   modifyQuestion,
 } from '../../actions/question/question_index_actions';
-import {showToast} from '../../actions/app_actions';
-import Entypo from '../profile/profile_setting';
 import {ReduxState} from '../../reducers';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {personQuestionIndex, questionModel} from '../../api/question';
 import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
