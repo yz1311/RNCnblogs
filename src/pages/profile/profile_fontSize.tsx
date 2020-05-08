@@ -39,7 +39,7 @@ interface IState {
 ) as any)
 export default class profile_fontSize extends Component<IProps, IState> {
 
-  state = {
+  readonly state = {
     value: fontSizeScaler,
   };
 

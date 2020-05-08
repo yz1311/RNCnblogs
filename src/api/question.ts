@@ -315,6 +315,7 @@ export const resolveQuestionHtml = (result)=>{
     }
     if(item.author.uri!=undefined&&item.author.uri!='') {
       item.author.uri = 'https://q.cnblogs.com/'+item.author.uri;
+      item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     }
     let tagMatches = match.match(/class=\"detail_tag\"[\s\S]+?(?=<\/a>)/g) || [];
     item.tags = [];

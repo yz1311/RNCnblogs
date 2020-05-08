@@ -8,6 +8,7 @@ import * as knowledge from './knowledge';
 import * as home from './home';
 import * as profile from './profile';
 import * as message from './message';
+import * as diary from './diary';
 
 export const Api =  {
   login,
@@ -19,7 +20,8 @@ export const Api =  {
   knowledge,
   home,
   profile,
-  message
+  message,
+  diary
 };
 
 //兼容以前的写法

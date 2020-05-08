@@ -117,7 +117,6 @@ export default class App extends PureComponent<IProps, IState> {
 
     //加载更新信息
     this.loadUpdateInfo();
-    console.log('componentDidMount');
     this.requestPermission();
   }
 

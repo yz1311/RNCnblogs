@@ -4,7 +4,6 @@ import axios, {AxiosProxyConfig, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import ToastUtils from "./toastUtils";
 import {parseString} from 'react-native-xml2js';
-import {err} from "react-native-svg/lib/typescript/xml";
 
 
 //拓展config，添加自定义参数
@@ -283,11 +282,11 @@ export default class RequestUtils {
                 error.message = '网络连接失败!';
             }
             console.log(error.config?.method+'  '+error.config?.url)
-            console.log(error.config.data)
+            console.log(error.config?.data)
             console.log(error.message)
-            if(!((error.config as AxiosRequestConfigPatch).showErrorToast==false)) {
+            if(!((error.config as AxiosRequestConfigPatch)?.showErrorToast==false)) {
                 ToastUtils.showToast(error.message ||
-                    (error.config as AxiosRequestConfigPatch).errorMessage ||
+                    (error.config as AxiosRequestConfigPatch)?.errorMessage ||
                     '调用接口失败');
             }
             return Promise.reject(error)

@@ -26,6 +26,7 @@ import moment from 'moment';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import {ReduxState} from '../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
+import ConfigServices from '../services/configServices';
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -111,7 +112,8 @@ export default class YZTabBarView extends Component<IProps, IState> {
     SplashScreen.hide();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    ConfigServices.getConfig(true);
     // this._handleAppStateChange('active');
     AppState.addEventListener('change', this._handleAppStateChange);
     this.showImgListListener = DeviceEventEmitter.addListener(
