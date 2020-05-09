@@ -1148,6 +1148,13 @@
     wcwidth "^1.0.1"
     ws "^1.1.0"
 
+"@react-native-community/cookies@^2.0.9":
+  version "2.0.9"
+  resolved "https://registry.npmjs.org/@react-native-community/cookies/-/cookies-2.0.9.tgz#97bb4f431ecf1307be5807ade47b991a99f224d3"
+  integrity sha512-gZvnLQjkpZX//4/CIOX4lOFdfOT2gQi/Ov1t+K6D2KZ0GyqY1CQ9xe0F1NsRSIGciTUkxOPTeway/LRWgwHsxQ==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native-community/eslint-config@^0.0.6":
   version "0.0.6"
   resolved "https://registry.npmjs.org/@react-native-community/eslint-config/-/eslint-config-0.0.6.tgz#9f1dffde994a14db7504a969f21cdf49f470eb34"
@@ -6574,6 +6581,13 @@ react-native@0.61.5:
     scheduler "0.15.0"
     stacktrace-parser "^0.1.3"
     whatwg-fetch "^3.0.0"
+
+react-navigation-collapsible@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.npmjs.org/react-navigation-collapsible/-/react-navigation-collapsible-5.6.0.tgz#d5c935e375b341985b129b201c80fd3f770d0e49"
+  integrity sha512-/2Lk6PVTwNVDloHMe1pEW6x+x5fTtflABBgOcz2UuXOau4IHBhnieHcSGg9KE3+bBhrcA1gk2HqR5WW2AWgnyw==
+  dependencies:
+    react-native-iphone-x-helper "^1.2.1"
 
 react-navigation-props-mapper@^2.0.0:
   version "2.0.0"

@@ -22,7 +22,6 @@ interface IProps {
   dispatch: any;
   isLogin: boolean;
   userInfo: any;
-  logoutFn: any;
 }
 
 interface IState {}
@@ -34,7 +33,6 @@ interface IState {}
   }),
   dispatch => ({
     dispatch,
-    logoutFn: data => dispatch(logout(data)),
   }),
 ) as any)
 export default class profile_setting extends Component<IProps, IState> {
@@ -121,10 +119,8 @@ export default class profile_setting extends Component<IProps, IState> {
                     {
                       text: '确认退出',
                       onPress: () => {
-                        this.props.logoutFn({
-                          successAction: () => {
-                            NavigationHelper.goBack();
-                          },
+                        this.props.dispatch({
+                          type: 'loginIndex/logout'
                         });
                       },
                     },

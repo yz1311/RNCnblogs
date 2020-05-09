@@ -58,21 +58,26 @@ export default class AppNavigation extends Component {
                     return {
                         // header: () => null,
                         title: title || '',
-                        headerLeft: (props: any) => (
-                            <TouchableOpacity
-                                activeOpacity={activeOpacity}
-                                style={{
-                                    paddingLeft: 9,
-                                    paddingRight: 8,
-                                    alignSelf: 'stretch',
-                                    justifyContent: 'center',
-                                }}
-                                onPress={() => {
-                                    leftAction ? leftAction() : navigation.goBack();
-                                }}>
-                                <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF}/>
-                            </TouchableOpacity>
-                        ),
+                        headerLeft: (props: any) => {
+                            if(!props.canGoBack) {
+                                return null;
+                            }
+                            return (
+                                <TouchableOpacity
+                                    activeOpacity={activeOpacity}
+                                    style={{
+                                        paddingLeft: 9,
+                                        paddingRight: 8,
+                                        alignSelf: 'stretch',
+                                        justifyContent: 'center',
+                                    }}
+                                    onPress={() => {
+                                        leftAction ? leftAction() : navigation.goBack();
+                                    }}>
+                                    <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF}/>
+                                </TouchableOpacity>
+                            )
+                        },
                         // headerTitle: params?.headerTitle || params?.title || '',
                         headerMode: 'screen',
                         headerBackTitle: ' ', // 左上角返回键文字

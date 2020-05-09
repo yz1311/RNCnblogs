@@ -8,7 +8,7 @@ import _buffer from 'buffer';
 import {Api} from "../api";
 import {userInfoModel} from "../api/login";
 import Model from 'dva-core';
-import CookieManager from 'react-native-cookie-store';
+import CookieManager from '@react-native-community/cookies';
 import state from "@react-native-community/netinfo/lib/typescript/src/internal/state";
 import {ReduxState} from "./index";
 

@@ -41,6 +41,7 @@ export default class DiscoverIndex extends PureComponent<IProps,IState>{
             ['排行榜','知识库','看新闻',''].map((x,index)=> {
               return (
                 <TouchableOpacity
+                  key={index}
                   onPress={()=>this.toTopMenu(index)}
                   style={{width: Theme.px2dp(140),alignItems:'center'}}
                 >

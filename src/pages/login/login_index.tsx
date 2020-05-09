@@ -8,7 +8,7 @@ import {setLoginCode} from '../../actions/login/login_index_actions';
 import moment from 'moment';
 import SplashScreen from 'react-native-splash-screen';
 import {ReduxState} from '../../reducers';
-import CookieManager from 'react-native-cookie-store';
+import CookieManager from '@react-native-community/cookies';
 import ToastUtils from "../../utils/toastUtils";
 
 interface IProps {
