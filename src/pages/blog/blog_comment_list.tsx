@@ -105,6 +105,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     try {
       const params: getBlogCommentListRequest = {
         request: {
+          userId: item.author?.id,
           postId: parseInt(item.id),
           pageIndex: this.pageIndex,
           pageSize: 50,

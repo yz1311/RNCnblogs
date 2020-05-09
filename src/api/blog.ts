@@ -53,6 +53,7 @@ export type getBlogDetailRequest = RequestModel<{
 
 export type getBlogCommentListRequest = RequestModel<{
   blogApp?: string;
+  userId?: string;
   postId: number;
   pageIndex: number;
   pageSize: number;
@@ -125,7 +126,7 @@ export const getBlogDetail = (data: getBlogDetailRequest) => {
 };
 
 export const getBlogCommentList = (data: getBlogCommentListRequest) => {
-  const URL = `https://www.cnblogs.com/yz1311/ajax/GetComments.aspx?postId=${data.request.postId}&pageIndex=${data.request.pageIndex}&anchorCommentId=0`
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/GetComments.aspx?postId=${data.request.postId}&pageIndex=${data.request.pageIndex}&anchorCommentId=0`
   return RequestUtils.get(URL,{
     resolveResult:(result)=>{
       let dataList = resolveBlogCommentHtml(result);

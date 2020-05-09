@@ -126,6 +126,7 @@ export default class AppNavigation extends Component {
                     name="HomeSearch"
                     component={withMappedNavigationParams()(HomeSearch)}
                     options={props => ({
+                        headerShown: false,
                         cardStyleInterpolator: (props) => StackViewStyleInterpolator.forVerticalIOS(props)
                     })}
                 />

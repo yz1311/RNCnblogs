@@ -248,6 +248,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             request: {
               pageIndex: 1,
               pageSize: 10,
+              userId: this.props.item.author?.id,
               postId: parseInt(postId)
             }
           });
