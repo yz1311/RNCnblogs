@@ -85,7 +85,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
       request: {
         blogApp: this.props.userInfo.BlogApp || 'yz1311',
         pageIndex: this.pageIndex,
-        pageSize: 10,
+        pageSize: 20,
       },
     };
     let action:any = ()=>{
@@ -94,7 +94,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
     switch (this.props.blogType) {
       case BlogTypes.首页:
         action = ()=>{
-          return Api.blog.getPickedBlogList({
+          return Api.blog.getHomeBlogList({
             request: {
               ParentCategoryId: 0,
               CategoryId: 808,
@@ -108,9 +108,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getFollowingBlogList({
             request: {
-              ParentCategoryId: 0,
-              CategoryId: -4,
-              CategoryType: 'MyFollowing',
+              CategoryType: 'following',
               PageIndex: this.pageIndex,
             }
           })
@@ -123,9 +121,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getPickedBlogList({
             request: {
-              ParentCategoryId: 0,
-              CategoryId: -2,
-              CategoryType: 'Picked',
+              CategoryType: 'pick',
               PageIndex: this.pageIndex,
             }
           })
@@ -135,9 +131,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getPickedBlogList({
             request: {
-              ParentCategoryId: 0,
-              CategoryId: 108697,
-              CategoryType: 'HomeCandidate',
+              CategoryType: 'candidate',
               PageIndex: this.pageIndex,
             }
           })
@@ -168,7 +162,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
     }
     try {
       let response = await action();
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,10);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,20);
       this.setState({
           ...pagingResult
       },()=>{

@@ -8,12 +8,9 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import YZAnimatedModal from '../../components/YZAnimatedModal';
-import {Styles} from '../../common/styles';
 import PropTypes from 'prop-types';
-import codePush from 'react-native-code-push';
 import Feather from 'react-native-vector-icons/Feather';
 import ThemeUtils from '../../utils/themeUtils';
-import {ReduxState} from '../../reducers';
 
 interface IProps {
   dispatch?: any;

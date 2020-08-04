@@ -1,16 +1,7 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
-import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
-import PropTypes from 'prop-types';
-import {showToast} from '../../actions/app_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
-import {ReduxState} from '../../reducers';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {blogModel} from '../../api/blog';
 import moment from "moment";
 import HTMLView from 'react-native-render-html';

@@ -58,6 +58,7 @@ export default class YZImagePicker extends Component<IProps, IState> {
       Animated.timing(this.state.animatedValue, {
         toValue: 1,
         duration: 200,
+        useNativeDriver: false
       }).start();
     });
   };
@@ -66,6 +67,7 @@ export default class YZImagePicker extends Component<IProps, IState> {
     Animated.timing(this.state.animatedValue, {
       toValue: 0,
       duration: 200,
+      useNativeDriver: false
     }).start(() => this.setState({isShow: false}));
   };
 
@@ -75,6 +77,7 @@ export default class YZImagePicker extends Component<IProps, IState> {
     Animated.timing(this.state.animatedValue, {
       toValue: 0,
       duration: 200,
+      useNativeDriver: false
     }).start(() => {
       this.setState({isShow: false});
       const options = {
@@ -99,6 +102,7 @@ export default class YZImagePicker extends Component<IProps, IState> {
     Animated.timing(this.state.animatedValue, {
       toValue: 0,
       duration: 200,
+      useNativeDriver: false
     }).start(() => {
       this.setState({isShow: false});
       // 拍照

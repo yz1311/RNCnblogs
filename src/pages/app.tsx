@@ -28,66 +28,24 @@ import {
   orientationInfoChanged,
 } from '../actions/app_actions';
 import {CodePushHandler} from '@yz1311/teaset-code-push';
-import codePush from 'react-native-code-push';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import UpdateLogModal from '../components/update_logModal';
 import Permissions from 'react-native-permissions';
 import ToastUtils from "../utils/toastUtils";
 import {NavigationHelper} from '@yz1311/teaset-navigation';
-
-// See https://mydevice.io/devices/ for device dimensions
-const X_WIDTH = 375;
-const X_HEIGHT = 812;
-const XSMAX_WIDTH = 414;
-const XSMAX_HEIGHT = 896;
-const PAD_WIDTH = 768;
-const PAD_HEIGHT = 1024;
-
-const {height: D_HEIGHT, width: D_WIDTH} = Dimensions.get('window');
-
-const isIphoneXFunc = () => {
-  if (Platform.OS === 'web') return false;
-
-  return (
-    (Platform.OS === 'ios' &&
-      ((D_HEIGHT === X_HEIGHT && D_WIDTH === X_WIDTH) ||
-        (D_HEIGHT === X_WIDTH && D_WIDTH === X_HEIGHT))) ||
-    ((D_HEIGHT === XSMAX_HEIGHT && D_WIDTH === XSMAX_WIDTH) ||
-      (D_HEIGHT === XSMAX_WIDTH && D_WIDTH === XSMAX_HEIGHT))
-  );
-};
-global.isIphoneX = isIphoneXFunc();
-let androidStatusBarHeight = 0;
-//API19版本以上才支持沉浸式状态栏
-if (Platform.OS === 'android' && Platform.Version >= 19) {
-  androidStatusBarHeight = StatusBar.currentHeight;
-} else {
-  gScreen.isTranslucent = false;
-}
-gScreen.statusBarHeight =
-  Platform.OS === 'android' ? androidStatusBarHeight : isIphoneX ? 44 : 20;
-gScreen.headerHeight = gScreen.navigationBarHeight + gScreen.statusBarHeight;
+import {Theme} from "@yz1311/teaset";
 
 let lastClickTime = 0;
 
 interface IProps extends IReduxProps {
   AppNavigator: any;
-  addListener?: any;
-  nav?: any;
-  barStyle?: any;
-  isFetching?: boolean;
-  loadingTitle?: string;
-  isConnected?: boolean;
 }
 
-interface IState {
-  showUpdateInfo: boolean;
-}
+interface IState {}
+
 @CodePushHandler({isDebugMode: false})
-export default class App extends PureComponent<IProps, IState> {
+export default class App extends Component<IProps, IState> {
   private reloadThemeListener: EmitterSubscription;
-  private updateLogModal: any;
 
   constructor(props) {
     super(props);
@@ -97,10 +55,6 @@ export default class App extends PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    DeviceEventEmitter.addListener(
-      'showUpdateInfoDialog',
-      this.showUpdateInfoDialog,
-    );
     this.reloadThemeListener = DeviceEventEmitter.addListener(
       'reloadTheme',
       () => {
@@ -115,9 +69,18 @@ export default class App extends PureComponent<IProps, IState> {
     __ANDROID__ &&
       BackHandler.addEventListener('hardwareBackPress', this._onBackAndroid);
 
-    //加载更新信息
-    this.loadUpdateInfo();
     this.requestPermission();
+  }
+
+  shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
+    if(this.props !== nextProps) {
+      //优化CodePussHandler导致的重复刷新的问题
+      if(this.props.AppNavigator !== nextProps.AppNavigator) {
+        return true;
+      }
+      return false;
+    }
+    return true;
   }
 
   requestPermission = () => {
@@ -132,17 +95,9 @@ export default class App extends PureComponent<IProps, IState> {
   };
 
   componentWillUnmount() {
-    // NetInfo.removeEventListener(
-    //   'connectionChange',
-    //   this._handleConnectivityChange,
-    // );
     Dimensions.removeEventListener('change', this.handleOrientationChange);
     __ANDROID__ &&
       BackHandler.removeEventListener('hardwareBackPress', this._onBackAndroid);
-    DeviceEventEmitter.removeListener(
-      'showUpdateInfoDialog',
-      this.showUpdateInfoDialog,
-    );
     this.reloadThemeListener && this.reloadThemeListener.remove();
   }
 
@@ -152,74 +107,46 @@ export default class App extends PureComponent<IProps, IState> {
 
   _onBackAndroid = () => {
     //初始页时,navRouters为空,需要判断
-    if (NavigationHelper.navRouters&&NavigationHelper.navRouters.length > 1) {
+    if (
+        NavigationHelper.navRouters &&
+        NavigationHelper.navRouters.length > 1
+    ) {
       // 默认行为： 退出当前界面。
       NavigationHelper.goBack();
       return true;
     }
 
     let now = new Date().getTime();
-    if (now - lastClickTime < 2500) return false;
+    if (now - lastClickTime < 2500) {
+      return false;
+    }
 
     lastClickTime = now;
     ToastUtils.showToast('再按一次退出' + appName);
     return true;
   };
 
-  loadUpdateInfo = async () => {
-    let runningPackage = await gStorage.load('CODEPUSH_PACKAGE_RUNNING');
-    let latestPackage = await gStorage.load('CODEPUSH_PACKAGE_LATEST');
-    if (latestPackage) {
-      //可能为空的，说明app是新安装的
-      if (!runningPackage) {
-        this.setState({
-          showUpdateInfo: true,
-        });
-      } else {
-        let running_uuid;
-        let lastest_uuid;
-        try {
-          running_uuid = JSON.parse(runningPackage.description).uuid;
-          lastest_uuid = JSON.parse(latestPackage.description).uuid;
-        } catch (e) {
-          //eslint-disable-line
-        }
-        if (!(running_uuid && lastest_uuid && running_uuid === lastest_uuid)) {
-          this.setState({
-            showUpdateInfo: true,
-          });
-        }
-      }
-    }
-  };
-
   render() {
-    const {showUpdateInfo} = this.state;
     const AppNavigator = this.props.AppNavigator;
     return (
       <View style={{flex: 1}}>
-        <StatusBar
-          barStyle={'light-content'}
-          animated={true}
-          translucent={true}
-          backgroundColor="transparent"
-        />
         <NavigationContainer onStateChange={(state: NavigationState) => {
           //这个是跳转了才去回调，所以不能利用routes来判断路由栈
           NavigationHelper.navRouters = state.routes;
         }}>
           <AppNavigator />
         </NavigationContainer>
-        {isIphoneX ? <View style={{height: 34}} /> : null}
-        {showUpdateInfo && (
-          <UpdateInfoPromptView
-            onPress={this.showUpdateInfoDialog}
-            onClose={this.closeUpdateInfoView}
-          />
-        )}
-        <UpdateLogModal
-          ref={ref => (this.updateLogModal = ref)}
-          message="更新日志"
+        {Theme.isIPhoneX ? (
+            <View
+                style={{height: 34, backgroundColor: Theme.navColor}}
+            />
+        ) : null}
+        {/*由于NavigationContainer有针对StatusBar的处理，覆盖需要放在后面*/}
+        <StatusBar
+            barStyle="light-content"
+            animated={true}
+            translucent={true}
+            backgroundColor="transparent"
         />
       </View>
     );
@@ -231,77 +158,6 @@ export default class App extends PureComponent<IProps, IState> {
     dispatch(changeAppNetInfo(connectionInfo));
   };
 
-  showUpdateInfoDialog = async () => {
-    this.props.dispatch(
-      showLoading({
-        isFetching: true,
-      }),
-    );
-    //防止更新日志被修改，所以实时获取最新的
-    //不知道是不是缓存的原因，还是获取到的是老的数据
-    codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then(update => {
-      if (update) {
-        let desc = update.description;
-        let uuid = '0';
-        //兼容老版本
-        try {
-          desc = JSON.parse(update.description).description;
-        } catch (e) {
-          console.log(e.message);
-        }
-        try {
-          uuid = JSON.parse(update.description).uuid;
-        } catch (e) {}
-        let version;
-        // if(gScreen.isAndroid)
-        // {
-        //     version = gBaseConfig.BuildVersion+'_'+update.label;
-        // }
-        // else
-        // {
-        //     version = gBaseConfig.BuildVersion+'_'+update.label;
-        // }
-        version =
-          gBaseConfig.BuildVersion +
-          '_V' +
-          uuid +
-          (update.isPending ? '(未生效)' : '');
-        this.updateLogModal.show({
-          version: version,
-          isPending: update.isPending,
-          description: desc,
-        });
-      } else {
-        this.props.dispatch(showToast('当前已是最新版本!'));
-      }
-      this.props.dispatch(
-        showLoading({
-          isFetching: false,
-        }),
-      );
-    });
-  };
-
-  //清除更新信息
-  closeUpdateInfoView = () => {
-    gStorage.remove('CODEPUSH_PACKAGE_RUNNING');
-    gStorage.remove('CODEPUSH_PACKAGE_LATEST');
-    this.setState({
-      showUpdateInfo: false,
-    });
-    Alert.alert(
-      '提示',
-      '您可以在[我]-[关于我们]查看[更新日志]',
-      [
-        {
-          text: '确定',
-        },
-      ],
-      {
-        cancelable: false,
-      },
-    );
-  };
 }
 
 //只有更新后且id不一致才更新

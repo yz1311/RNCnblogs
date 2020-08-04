@@ -198,6 +198,8 @@ declare var __IOS__: boolean;
 
 declare var __ANDROID__: boolean;
 
+declare let fontSizeScaler:number;
+
 declare var gStore: any;
 
 declare var gBaseConfig: {

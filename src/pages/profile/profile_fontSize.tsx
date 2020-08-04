@@ -10,11 +10,7 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import {Styles} from '../../common/styles';
-import YZHeader from './profile_index';
-import {ListRow} from '@yz1311/teaset';
 import {connect} from 'react-redux';
-import {logout} from '../../actions/login/login_index_actions';
-import Entypo from 'react-native-vector-icons/Entypo';
 import Slider from 'react-native-slider';
 import {ReduxState} from '../../reducers';
 

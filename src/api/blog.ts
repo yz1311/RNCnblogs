@@ -75,7 +75,7 @@ export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSiz
 };
 
 export const getPickedBlogList = (data: getBlogListRequest) => {
-  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  let URL = `https://www.cnblogs.com/${data.request.CategoryType}/#p${data.request.PageIndex}`;
   return RequestUtils.post(URL,data.request, {
     resolveResult: resolveBlogHtml
   });
@@ -94,17 +94,18 @@ export const getSearchBlogList = (data: RequestModel<{Keywords: string,
   });
 };
 
-export const getHomeBlogList = (data: RequestModel<{pageIndex:number, pageSize: number}>) => {
-  const URL = `${gServerPath}/blog//sitehome/paged/${data.request.pageIndex}/${data.request.pageSize}`;
-  return RequestUtils.get(URL);
+
+export const getHomeBlogList = (data: getBlogListRequest) => {
+  const URL = `https://www.cnblogs.com/#p${data.request.PageIndex}`;
+  return RequestUtils.post(URL,data.request, {
+    resolveResult: resolveBlogHtml
+  });
 };
 
 export const getFollowingBlogList = (data: getBlogListRequest) => {
-  const URL = `https://www.cnblogs.com/aggsite/postlistbygroup`;
+  let URL = `https://www.cnblogs.com/${data.request.CategoryType}#/p${data.request.PageIndex}`;
   return RequestUtils.post(URL,data.request, {
-    resolveResult: (result)=>{
-      return resolveBlogHtml(result.postList);
-    }
+    resolveResult: resolveBlogHtml
   });
 };
 
@@ -223,29 +224,29 @@ export const modifyComment = (data:RequestModel<{commentId:number,body:string}>)
 
 export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"post_item\"[\s\S]+?(?=(post_item\"))/g)|| [];
+  let matches = result.match(/class=\"post-item\"[\s\S]+?(?=(<\/article>))/g)|| [];
   for (let match of matches) {
     let item:Partial<blogModel> = {};
     //解析digg
-    item.diggs = parseInt((match.match(/class=\"diggnum\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,''));
-    item.link = (match.match(/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
+    item.diggs = parseInt((match.match(/id=\"digg_count[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    item.link = (match.match(/class=\"post-item-title\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
     //不能根据link来截取，部分link后面并不是id
     // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
     item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
-    item.title = (match.match(/class=\"titlelnk\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
-    item.summary = (match.match(/post_item_summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.title = (match.match(/class=\"post-item-title\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.summary = (match.match(/post-item-summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
       id: '',
-      avatar: (match.match(/class=\"pfs\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: (match.match(/class=\"post_item_foot\"[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
-      uri: (match.match(/class=\"post_item_foot\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      avatar: (match.match(/class=\"post-item-author\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: (match.match(/class=\"post-item-author\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };
-    item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
-    item.published = (match.match(/发布于 [\s\S]+?(?=\s{3,})/)||[])[0]?.replace(/[\s\S]+?(?=\d)/,'');
-    item.comments = parseInt((match.match(/评论\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.views = parseInt((match.match(/阅读\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'')?.replace('/','');
+    item.published = (match.match(/class=\"post-meta-item\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.comments = parseInt((match.match(/#commentform\">[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    item.views = parseInt((match.match(/fill-rule=\"nonzero[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     items.push(item);
   }
   return items;

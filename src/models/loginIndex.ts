@@ -125,22 +125,23 @@ export default {
                     )(),
                     (
                         async ()=> {
-                            try {
-                                let aliasResponse = await Api.profile.getUserAliasByUserName({
-                                    request: {
-                                        userName: userInfo.nickName,
-                                        fuzzy: false,
-                                    }
-                                });
-                                if(aliasResponse.data.length>0) {
-                                    userInfo = {
-                                        ...userInfo,
-                                        ...userInfoResponse.data[0]
-                                    };
-                                }
-                            } catch (e) {
-
-                            }
+                            //Todo:修复该接口
+                            // try {
+                            //     let aliasResponse = await Api.profile.getUserAliasByUserName({
+                            //         request: {
+                            //             userName: userInfo.nickName,
+                            //             fuzzy: false,
+                            //         }
+                            //     });
+                            //     if(aliasResponse.data.length>0) {
+                            //         userInfo = {
+                            //             ...userInfo,
+                            //             ...userInfoResponse.data[0]
+                            //         };
+                            //     }
+                            // } catch (e) {
+                            //
+                            // }
                         }
                     )(),
                 ])
