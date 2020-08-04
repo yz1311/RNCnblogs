@@ -125,9 +125,11 @@ export default class status_index extends Component<IProps, IState> {
               }}
               activeTextColor={gColors.bgColorF}
               inactiveTextColor={'#DBDBDB'}
+              activeTextFontSize={Theme.px2dp(36)}
+              inactiveTextFontSize={Theme.px2dp(30)}
               underlineStyle={{
                 backgroundColor: gColors.bgColorF,
-                height: 3
+                height: 3,
               }}
             />
           )}

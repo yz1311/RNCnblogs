@@ -24,7 +24,7 @@
     "@react-navigation/stack": "5.7.1",
     "@yz1311/react-native-http-cache": "^0.3.1",
     "@yz1311/react-native-intent-launcher": "^0.2.0",
-    "@yz1311/react-native-scrollable-tab-view": "^1.0.4",
+    "@yz1311/react-native-scrollable-tab-view": "^1.0.5",
     "@yz1311/react-native-shadow": "^0.1.0",
     "@yz1311/react-native-wheel-picker": "0.2.0-beta20",
     "@yz1311/teaset": "^0.7.7",

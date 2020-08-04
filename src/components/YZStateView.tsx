@@ -325,7 +325,7 @@ class YZStateView extends Component<IProps, IState> {
                         <Text
                             style={[
                               {
-                                color: Colors.color999,
+                                color: gColors.color999,
                                 fontSize: 16,
                               },
                               errorButtonTextStyle,

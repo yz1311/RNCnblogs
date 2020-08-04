@@ -1797,10 +1797,10 @@
   resolved "https://registry.npmjs.org/@yz1311/react-native-intent-launcher/-/react-native-intent-launcher-0.2.0.tgz#afb236ebbb5380ba7ea95e360501d23c12700025"
   integrity sha512-SOKfXmBc05VLn8aDMst+wZ7BorCbbLk7KCnwrRCc5k18XTu1PMU17eAqP3+tX/mQkY54Z0QBbbSI8xmxHxZKfA==
 
-"@yz1311/react-native-scrollable-tab-view@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@yz1311/react-native-scrollable-tab-view/-/react-native-scrollable-tab-view-1.0.4.tgz#0ce1149acc2ad30ae65907422cf69a0a750d4dbc"
-  integrity sha512-erfx8deV+s9rDg/OvNOVsYokdA16bt2VXQWR+YLOe/3ycZJJGA20uhKL3Rcuit//eEebuwz+UdN4HeEnZUEz1g==
+"@yz1311/react-native-scrollable-tab-view@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@yz1311/react-native-scrollable-tab-view/-/react-native-scrollable-tab-view-1.0.5.tgz#0bf23848f47b039b9ecd4bad08fd0df8de136951"
+  integrity sha512-z/34aH5TVC5/YmZDgNk4wU8iy0TEo/RW96fh2TFx9SUcARhJ4pDVaN+qXoKQnfbpXYjlZeyeRaV47KeRIXbSAg==
   dependencies:
     "@react-native-community/viewpager" "^2.0.1"
     create-react-class "^15.6.2"

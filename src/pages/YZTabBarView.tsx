@@ -164,24 +164,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
               .add(loginInfo.expires_in, 'second')
               .isAfter(moment())
           ) {
-            //暂时定为，小于5小时就刷新token
-            if (
-              moment(loginInfo.create_time)
-                .add(loginInfo.expires_in, 'second')
-                .diff(moment(), 'hours') <= 5
-            ) {
-              //刷新token
-              this.props.dispatch({
-                type: actionTypes.LOGIN_REFRESH_TOKEN + '_PENDING',
-                payload: {
-                  request: `client_id=${gBaseConfig.clientId}&client_secret=${
-                    gBaseConfig.clientSecret
-                  }&grant_type=refresh_token&refresh_token=${
-                    loginInfo.refresh_token
-                  }&redirect_uri=https://oauth.cnblogs.com/auth/callback`,
-                },
-              });
-            }
+
           } else {
             //否则跳转到登录界面
             NavigationHelper.resetTo('Login');
