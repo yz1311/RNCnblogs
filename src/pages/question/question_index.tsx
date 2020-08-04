@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import HomeTabBar from '../home/home_indexTab';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
+import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseQuestionList from './base_question_list';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';

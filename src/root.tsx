@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   DeviceEventEmitter,
+  Modal
 } from 'react-native';
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
@@ -25,6 +26,7 @@ import models from './models';
 import {Styles} from './common/styles';
 import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
+import ModalExt from 'react-native-modal';
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -155,16 +157,15 @@ class Root extends PureComponent {
     // @ts-ignore
     Text.defaultProps = {...(Text.defaultProps || {}), allowFontScaling: false};
     // @ts-ignore
-    TouchableOpacity.defaultProps.activeOpacity = activeOpacity;
+    TextInput.defaultProps = {...(TextInput.defaultProps || {}), allowFontScaling: false};
     // @ts-ignore
-    TextInput.defaultProps = {
-      // @ts-ignore
-      ...(TextInput.defaultProps || {}),
-      allowFontScaling: false,
-    };
+    //0.63版本出现点击没有按压效果的bug
+    TouchableOpacity.defaultProps = {...(TouchableOpacity.defaultProps || {}), delayPressIn: 0, activeOpacity};
     Markdown.defaultProps.rules = markdownRules;
     Markdown.defaultProps.style = markdownStyles;
+    // @ts-ignore
     HtmlView.defaultProps.allowFontScaling = false;
+    // @ts-ignore
     HtmlView.defaultProps.baseFontStyle = {
       fontSize: gFont.sizeDetail,
       color: gColors.color4c,
@@ -175,26 +176,40 @@ class Root extends PureComponent {
       navColor: '#0d7dfa',
       navTitleColor: '#fff',
     })
-    //@ts-ignore
-    NavigationBar.defaultProps = {
       //@ts-ignore
-      ...NavigationBar.defaultProps,
-      leftView: (
-          <TouchableOpacity
-              activeOpacity={activeOpacity}
-              style={{
-                paddingLeft: 9,
-                paddingRight: 8,
-                alignSelf: 'stretch',
-                justifyContent: 'center',
-              }}
-              onPress={() => {
-                NavigationHelper.goBack();
-              }}>
-            <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF} />
-          </TouchableOpacity>
-      )
-    };
+      NavigationBar.defaultProps = {
+          //@ts-ignore
+          ...(NavigationBar.defaultProps || {}),
+          style: {
+              position: 'relative',
+              borderBottomColor: '#ececec',
+              borderBottomWidth: Theme.onePix
+          },
+          leftView: (
+              <TouchableOpacity
+                  activeOpacity={activeOpacity}
+                  style={{
+                      flex: 1,
+                      paddingLeft: 9,
+                      paddingRight: 8,
+                      alignSelf: 'stretch',
+                      justifyContent: 'center',
+                  }}
+                  onPress={() => {
+                      // navigation.goBack();
+                      NavigationHelper.goBack();
+                  }}>
+                  <Entypo name={'chevron-thin-left'} size={23} color={gColors.color666}/>
+              </TouchableOpacity>
+          )
+      };
+      //去掉Modal状态栏的变化
+      //@ts-ignore
+      (Modal.defaultProps || {}).statusBarTranslucent = true;
+      //修复关闭Modal时，会闪一下的问题
+      //https://github.com/react-native-community/react-native-modal/issues/268
+      //@ts-ignore
+      (ModalExt.defaultProps || {}).backdropTransitionOutTiming = 0;
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 

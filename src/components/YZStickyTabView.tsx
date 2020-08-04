@@ -4,7 +4,7 @@ import {
     Text, SectionList,
     SectionListProps, StyleProp, ViewStyle, RefreshControl, TouchableOpacity, ActivityIndicator, Image
 } from "react-native";
-import ScrollableTabView, {ChangeTabProperties} from 'react-native-scrollable-tab-view';
+import ScrollableTabView, {ChangeTabProperties} from '@yz1311/react-native-scrollable-tab-view';
 import {Theme} from "@yz1311/teaset";
 import YZStateCommonView from "./YZStateCommonView";
 import {ReducerResult} from "../utils/requestUtils";

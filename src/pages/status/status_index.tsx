@@ -11,7 +11,7 @@ import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import ScrollableTabView, {
   ScrollableTabBar,
-} from 'react-native-scrollable-tab-view';
+} from '@yz1311/react-native-scrollable-tab-view';
 import BaseStatusList from './base_status_list';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from 'react-native-action-button';

@@ -12,7 +12,7 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import {connect} from 'react-redux';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
+import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import YZTabBar from '../components/YZTabBar';
 import YZBackHandler from '../components/YZBackHandler';
 import Home from './home/home_index';

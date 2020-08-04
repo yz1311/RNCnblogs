@@ -6,7 +6,7 @@ import {ListRow, Theme} from '@yz1311/teaset';
 import BookmarkItem from './bookmark_item';
 import BaseBookmarkList from './base_bookmark_list';
 import {Api} from "../../api";
-import ScrollableTabView, {ScrollableTabBar} from "react-native-scrollable-tab-view";
+import ScrollableTabView, {ScrollableTabBar} from "@yz1311/react-native-scrollable-tab-view";
 import HomeTabBar from "../home/home_indexTab";
 import BaseNewsList from "../news/base_news_list";
 import {NewsTypes} from "../news/news_index";

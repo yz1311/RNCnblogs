@@ -6,7 +6,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {IBaseDataPageProps,} from '../../components/YZBaseDataPage';
 import {connect} from 'react-redux';
 import HomeTabBar from './home_indexTab';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
+import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import SearchBlogList from '../blog/base_blog_list';
 import SearchNewsList from '../news/base_news_list';
 import SearchQuestionList from '../question/base_question_list';

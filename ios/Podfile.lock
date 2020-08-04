@@ -210,7 +210,7 @@ PODS:
     - React
   - react-native-cameraroll (1.6.0):
     - React
-  - react-native-cookie-store (3.4.2):
+  - react-native-cookies (2.0.9):
     - React
   - react-native-netinfo (5.8.0):
     - React
@@ -316,7 +316,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-blur (from `../node_modules/react-native-blur`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
-  - react-native-cookie-store (from `../node_modules/react-native-cookie-store/ios`)
+  - "react-native-cookies (from `../node_modules/@react-native-community/cookies`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -407,8 +407,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-blur"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-community/cameraroll"
-  react-native-cookie-store:
-    :path: "../node_modules/react-native-cookie-store/ios"
+  react-native-cookies:
+    :path: "../node_modules/@react-native-community/cookies"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -499,7 +499,7 @@ SPEC CHECKSUMS:
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-cameraroll: 02e60e9af9273a3cc3b641632bf651189830aaf8
-  react-native-cookie-store: da5439ecb7641e5f0ad1ca0a658790994a88be28
+  react-native-cookies: bc1f91a504ee091f1998a1b6c7ff4b7a9ed5b80e
   react-native-netinfo: b9650ab1b8b4362b3c455b1274e4bc48223cc957
   react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -534,4 +534,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5b61e59a0c46ad12181d31649d5b63254ec0729a
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.8.0.beta.2

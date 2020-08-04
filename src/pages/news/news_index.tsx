@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import HomeTabBar from '../home/home_indexTab';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
+import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseNewsList from './base_news_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from '@yz1311/teaset';

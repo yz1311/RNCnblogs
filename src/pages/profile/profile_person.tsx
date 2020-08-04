@@ -12,7 +12,7 @@ import {ReduxState} from '../../reducers';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';
 import {fullUserInfoModel} from '../../api/profile';
-import {BlurView} from 'react-native-blur';
+import {BlurView} from '@react-native-community/blur';
 import ToastUtils from '../../utils/toastUtils';
 import YZStickyTabView from '../../components/YZStickyTabView';
 import {blogModel} from '../../api/blog';
