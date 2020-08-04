@@ -60,7 +60,6 @@ interface IProps extends IBaseDataPageProps {
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getQuestionDetail(data)),
     clearDataFn: data => dispatch(clearQuestionDetail(data)),
     clearQuestionAnswerListFn: data => dispatch(clearQuestionAnswerList(data)),

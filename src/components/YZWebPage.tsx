@@ -3,7 +3,7 @@ import {Clipboard, Linking, Share, View, TouchableOpacity} from 'react-native';
 import {WebView} from 'react-native-webview';
 import PropTypes from 'prop-types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import {showToast} from '../actions/app_actions';
@@ -27,12 +27,7 @@ export interface IProps {
 }
 
 @(connect(
-  state => ({}),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  state => ({})) as any)
 //@ts-ignore
 @YZBackHandler
 export default class YZWebPage extends Component<IProps, any> {
@@ -55,7 +50,7 @@ export default class YZWebPage extends Component<IProps, any> {
           onPress={() => {
             this.showMenu();
           }}>
-          <Entypo name="share" size={32} color={gColors.bgColorF} />
+          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
         </TouchableOpacity>
       ),
     });

@@ -23,6 +23,8 @@ import HTMLView from 'react-native-render-html';
 import {showToast} from '../../actions/app_actions';
 import {ReduxState} from '../../reducers';
 import {getUserAliasByUserName} from '../../actions/profile/profile_index_actions';
+import Feather from "react-native-vector-icons/Feather";
+import ToastUtils from "../../utils/toastUtils";
 
 interface IProps extends IReduxProps {
   item?: any;
@@ -46,7 +48,6 @@ interface IProps extends IReduxProps {
   //是否能够编辑评论
   canModify: boolean;
   canDelete: boolean;
-  showToastFn?: any;
   userInfo?: any;
 }
 
@@ -55,12 +56,7 @@ interface IState {}
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  })) as any)
 export default class comment_item extends PureComponent<IProps, IState> {
   static propTypes = {
     item: PropTypes.object,
@@ -100,8 +96,8 @@ export default class comment_item extends PureComponent<IProps, IState> {
   _onCopy = () => {
     Overlay.hide(this.overlayKey);
     Clipboard.setString(this.props.content);
-    this.props.showToastFn('拷贝成功!', {
-      position: 'CENTER',
+    ToastUtils.showToast('拷贝成功!', {
+      position: ToastUtils.positions.CENTER,
     });
   };
 
@@ -460,7 +456,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
             paddingHorizontal: 12,
           }}
           onPress={this.showMenu}>
-          <Ionicons name="ios-more" size={25} color={gColors.color0} />
+          <Feather name="more-horizontal" size={25} color={gColors.color0} />
         </TouchableOpacity>
       </TouchableOpacity>
     );

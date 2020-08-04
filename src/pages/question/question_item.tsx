@@ -31,6 +31,7 @@ import {questionModel} from '../../api/question';
 import HTMLView from 'react-native-render-html';
 import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
+import Feather from "react-native-vector-icons/Feather";
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
@@ -345,7 +346,7 @@ export default class question_item extends PureComponent<IProps, any> {
                 paddingHorizontal: 12,
               }}
               onPress={this.showMenu}>
-              <Ionicons name="ios-more" size={25} color={gColors.color0} />
+              <Feather name="more-horizontal" size={25} color={gColors.color0} />
             </TouchableOpacity>
           ) : null}
         </TouchableOpacity>

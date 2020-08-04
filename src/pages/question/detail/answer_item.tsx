@@ -23,6 +23,7 @@ import Markdown from 'react-native-markdown-renderer';
 import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
 import ServiceUtils from '../../../utils/serviceUtils';
+import Feather from "react-native-vector-icons/Feather";
 
 interface IProps extends IReduxProps {
   item: any;
@@ -41,7 +42,6 @@ interface IProps extends IReduxProps {
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     deleteQuestionAnswerFn: data => dispatch(deleteQuestionAnswer(data)),
     modifyQuestionAnswerFn: data => dispatch(modifyQuestionAnswer(data)),
     setSelectedAnswerFn: data => dispatch(setSelectedAnswer(data)),
@@ -276,7 +276,7 @@ export default class answer_item extends PureComponent<IProps, any> {
                 paddingVertical: 10,
                 paddingHorizontal: 12,
               }}>
-              <Ionicons name="ios-more" size={25} color={gColors.color0} />
+                <Feather name="more-horizontal" size={25} color={gColors.color0} />
             </TouchableOpacity>
           ) : null}
         </View>

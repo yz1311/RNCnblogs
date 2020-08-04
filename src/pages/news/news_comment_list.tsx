@@ -48,12 +48,7 @@ interface IState {
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
     isLogin: state.loginIndex.isLogin
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  })) as any)
 export default class news_comment_list extends Component<IProps, IState> {
   pageIndex = 1;
 

@@ -34,6 +34,7 @@ import {showToast} from '../../actions/app_actions';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
+import Feather from "react-native-vector-icons/Feather";
 
 export interface IProps extends IBaseDataPageProps {
   data?: any;
@@ -57,7 +58,6 @@ export interface IProps extends IBaseDataPageProps {
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getKnowledgeBaseDetail(data)),
     clearDataFn: data => dispatch(clearKnowledgeBaseDetail(data)),
   }),
@@ -92,7 +92,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
           onPress={() => {
             this.showMenu();
           }}>
-          <Ionicons name="ios-more" size={32} color={gColors.bgColorF} />
+          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
         </TouchableOpacity>
       ),
     });

@@ -36,11 +36,7 @@ interface IState {
 }
 
 @(connect(
-  state => ({}),
-  dispatch => ({
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  state => ({})) as any)
 export default class status_add extends PureComponent<IProps, IState> {
   static propTypes = {
     item: PropTypes.object,
@@ -73,7 +69,7 @@ export default class status_add extends PureComponent<IProps, IState> {
 
   _rightAction = async () => {
     if (!this.state.value) {
-      this.props.showToastFn('请填写内容');
+      ToastUtils.showToast('请填写内容');
       return;
     }
     ToastUtils.showLoading();

@@ -9,7 +9,7 @@ import {
   TextInput,
   Share,
   DeviceEventEmitter,
-  Linking, EmitterSubscription,
+  Linking, EmitterSubscription, InteractionManager,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {WebView} from 'react-native-webview';
@@ -36,6 +36,7 @@ import {Api} from "../../api";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
 import {ServiceTypes} from "../YZTabBarView";
+import Feather from "react-native-vector-icons/Feather";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -77,12 +78,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  })) as any)
 // @ts-ignore
 @YZBackHandler
 export default class blog_detail extends PureComponent<IProps, IState> {
@@ -111,7 +107,9 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.loadData();
+    InteractionManager.runAfterInteractions(()=>{
+      this.loadData();
+    });
     this.props.navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
@@ -121,7 +119,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
           onPress={() => {
             this.showMenu();
           }}>
-          <Ionicons name="ios-more" size={32} color={gColors.bgColorF} />
+          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
         </TouchableOpacity>
       ),
     });

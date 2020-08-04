@@ -26,6 +26,7 @@ import {ReduxState} from '../../reducers';
 import {bookmarkModel} from "../../api/bookmark";
 import {Api} from "../../api";
 import ToastUtils from '../../utils/toastUtils';
+import Feather from "react-native-vector-icons/Feather";
 
 interface IProps {
   userInfo?: any;
@@ -326,7 +327,7 @@ export default class bookmark_item extends PureComponent<IProps, {}> {
                     alignSelf: 'stretch',
                   }}
                   onPress={this.showMenu}>
-                  <Ionicons name="ios-more" size={25} color={gColors.color0} />
+                  <Feather name="more-horizontal" size={25} color={gColors.color0} />
                 </TouchableOpacity>:null}
               </View>
               {item.summary?

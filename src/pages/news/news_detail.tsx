@@ -33,6 +33,7 @@ import {newsCommentModel, newsInfoModel, newsModel} from "../../api/news";
 import {blogCommentModel} from "../../api/blog";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
+import Feather from "react-native-vector-icons/Feather";
 
 export interface IProps {
   item?: newsModel;
@@ -54,12 +55,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  })) as any)
 //@ts-ignore
 @YZBackHandler
 export default class news_detail extends PureComponent<IProps, IState> {
@@ -97,7 +93,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
           onPress={() => {
             this.showMenu();
           }}>
-          <Ionicons name="ios-more" size={32} color={gColors.bgColorF} />
+          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
         </TouchableOpacity>
       ),
     });

@@ -21,6 +21,7 @@ import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {statusModel} from "../../api/status";
 import ToastUtils from '../../utils/toastUtils';
 import {Api} from '../../api';
+import Feather from "react-native-vector-icons/Feather";
 
 interface IProps extends IReduxProps {
   item: statusModel;
@@ -39,12 +40,7 @@ interface IState {}
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
-  }),
-  dispatch => ({
-    dispatch,
-    showToastFn: data => dispatch(showToast(data)),
-  }),
-) as any)
+  })) as any)
 export default class status_item extends PureComponent<IProps, IState> {
   static defaultProps = {
     clickable: true,
@@ -248,7 +244,7 @@ export default class status_item extends PureComponent<IProps, IState> {
                 paddingHorizontal: 12,
               }}
               onPress={this.showMenu}>
-              <Ionicons name="ios-more" size={25} color={gColors.color0} />
+              <Feather name="more-horizontal" size={25} color={gColors.color0} />
             </TouchableOpacity>
           ) : null}
         </TouchableOpacity>

@@ -69,7 +69,6 @@ interface IState {
   }),
   dispatch => ({
     dispatch,
-    showToastFn: data => dispatch(showToast(data)),
     loadDataFn: data => dispatch(getAnswerCommentList(data)),
     clearDataFn: data => dispatch(clearAnswerCommentList(data)),
     clearQuestionAnswerListFn: data => dispatch(clearQuestionAnswerList(data)),
