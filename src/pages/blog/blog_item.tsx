@@ -80,7 +80,6 @@ export default class blog_item extends PureComponent<IProps, IState> {
                   baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
                   containerStyle={{marginVertical: 7}}
                   html={item.title}
-                  stylesheet={styles}
               />
             {/*<Text*/}
             {/*  style={[*/}

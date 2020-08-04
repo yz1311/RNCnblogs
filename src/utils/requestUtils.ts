@@ -19,6 +19,20 @@ export interface AxiosRequestConfigPatch extends AxiosRequestConfig{
     autoResolveXML?: boolean
 }
 
+export enum LoadDataResultStates {
+    none = 'none',
+    //正在加载数据，由于全局loading的存在，现在应为透明
+    loading = 'loading',
+    //表明调用成功，但是数据为空
+    empty = 'empty',
+    //表示调用成功，并且有数据
+    content = 'content',
+    //表明调用失败，此时显示错误信息
+    error = 'error',
+    //表明当前用户未登录或者token过期
+    unlogged = 'unlogged',
+}
+
 export interface ReducerResult {
     success: boolean,
     timestamp: Date,
@@ -70,40 +84,54 @@ export const dataToPagingResult = (exitList:Array<any>, pagingList:Array<any>, p
  * @param pageIndex 当前的页数，可选参数，非分页的list数据不要传，因为分页数据加载失败后，
  * 不一定要显示全部的错误页面，只在列表下面显示错误信息就行了
  */
-export const dataToReducerResult = (data,pageIndex?:number):ReducerResult => {
+export const dataToReducerResult = (
+    data,
+    pageIndex?: number,
+): ReducerResult => {
     //Error对象,说明调用接口报错(服务器错误或者业务错误)
-    if(data instanceof Error) {
+    if (data instanceof Error) {
         return {
             ...createReducerResult(),
             success: false,
             error: data,
             msg: data.message,
-            state: pageIndex>1?YZStateView.states.content:YZStateView.states.error
+            state:
+                pageIndex > 1
+                    ? LoadDataResultStates.content
+                    : LoadDataResultStates.error,
         };
     }
-    if(Array.isArray(data)) {
+    if (Array.isArray(data)) {
         return {
             ...createReducerResult(),
             success: true,
             timestamp: new Date(),
-            state: data.length==0?YZStateView.states.empty:YZStateView.states.content
+            state:
+                data.length == 0
+                    ? LoadDataResultStates.empty
+                    : LoadDataResultStates.content,
+            pageIndex: pageIndex,
         };
     }
-    if(data==undefined||data==''||(typeof data =='object'&&Object.keys(data).length==0)) {
+    if (
+        data == undefined ||
+        data == '' ||
+        (typeof data === 'object' && Object.keys(data).length == 0)
+    ) {
         return {
             ...createReducerResult(),
             success: true,
             timestamp: new Date(),
-            state: YZStateView.states.empty
+            state: LoadDataResultStates.empty,
         };
     }
     return {
         ...createReducerResult(),
         success: true,
         timestamp: new Date(),
-        state: YZStateView.states.content
+        state: LoadDataResultStates.content,
     };
-}
+};
 
 /**
  * 将action对象(标准的FSA对象)转换成,redux中将action转换成结果(reducer中使用需要使用该方法)

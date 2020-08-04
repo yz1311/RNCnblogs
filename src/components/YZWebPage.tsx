@@ -3,12 +3,12 @@ import {Clipboard, Linking, Share, View, TouchableOpacity} from 'react-native';
 import {WebView} from 'react-native-webview';
 import PropTypes from 'prop-types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import {ListRow, Overlay} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import {showToast} from '../actions/app_actions';
 import CommonUtils from '../utils/commonUtils';
 import YZBackHandler from './YZBackHandler';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -55,7 +55,7 @@ export default class YZWebPage extends Component<IProps, any> {
           onPress={() => {
             this.showMenu();
           }}>
-          <Ionicons name="ios-more" size={32} color={gColors.bgColorF} />
+          <Entypo name="share" size={32} color={gColors.bgColorF} />
         </TouchableOpacity>
       ),
     });
