@@ -154,28 +154,28 @@ export default class YZTabBarView extends Component<IProps, IState> {
     if (appState === 'active') {
       //检查并刷新token
       if (this.props.isLogin) {
-        const loginInfo = await gStorage.load('loginInfo');
-        //已登录
-        if (loginInfo && loginInfo.access_token != undefined) {
-          //未过期
-          if (
-            loginInfo.create_time &&
-            moment(loginInfo.create_time)
-              .add(loginInfo.expires_in, 'second')
-              .isAfter(moment())
-          ) {
-
-          } else {
-            //否则跳转到登录界面
-            NavigationHelper.resetTo('Login');
-          }
+        //Todo: 校验时间
+        // const loginInfo = await gStorage.load('loginInfo');
+        // //已登录
+        // if (loginInfo && loginInfo.access_token != undefined) {
+        //   //未过期
+        //   if (
+        //     loginInfo.create_time &&
+        //     moment(loginInfo.create_time)
+        //       .add(loginInfo.expires_in, 'second')
+        //       .isAfter(moment())
+        //   ) {
+        //
+        //   } else {
+        //     //否则跳转到登录界面
+        //     NavigationHelper.resetTo('Login');
+        //   }
         } else {
           //否则跳转到登录界面
           NavigationHelper.resetTo('Login');
         }
       }
       //Todo:刷新时间(所有列表中的时间)
-    }
   };
 
   _onChangeTab = obj => {
