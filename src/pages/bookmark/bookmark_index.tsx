@@ -2,7 +2,7 @@ import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow, Theme} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
 import BookmarkItem from './bookmark_item';
 import BaseBookmarkList from './base_bookmark_list';
 import {Api} from "../../api";
@@ -53,6 +53,7 @@ export default class bookmark_index extends PureComponent<IProps, IState> {
   render() {
     return (
       <View style={[Styles.container]}>
+          <NavigationBar title="收藏" />
         <ScrollableTabView
             renderTabBar={() => (
                 <ScrollableTabBar

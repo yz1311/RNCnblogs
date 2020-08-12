@@ -10,6 +10,7 @@ import SplashScreen from 'react-native-splash-screen';
 import {ReduxState} from '../../reducers';
 import CookieManager from '@react-native-community/cookies';
 import ToastUtils from "../../utils/toastUtils";
+import {NavigationBar} from "@yz1311/teaset";
 
 interface IProps {
   dispatch: any;
@@ -82,6 +83,7 @@ export default class login_index extends Component<IProps, IState> {
     let uri = `https://account.cnblogs.com/signin`;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="登录" />
         {this.state.isLoading ? (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

@@ -7,7 +7,7 @@ import {createReducerResult, dataToReducerResult, ReducerResult} from '../../uti
 import {Api} from '../../api';
 import {rankModel} from '../../api/home';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {Theme} from '@yz1311/teaset';
+import {NavigationBar, Theme} from '@yz1311/teaset';
 import ServiceUtils from '../../utils/serviceUtils';
 
 
@@ -82,6 +82,7 @@ export default class RankList extends PureComponent<IProps,IState>{
   render () {
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="排行榜" />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

@@ -245,8 +245,8 @@ export const resolveBlogHtml = (result)=>{
     };
     item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'')?.replace('/','');
     item.published = (match.match(/class=\"post-meta-item\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'');
-    item.comments = parseInt((match.match(/#commentform\">[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
-    item.views = parseInt((match.match(/fill-rule=\"nonzero[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    item.comments = parseInt((match.match(/href=\"#icon_comment[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    item.views = parseInt((match.match(/href=\"#icon_views[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     items.push(item);
   }
   return items;

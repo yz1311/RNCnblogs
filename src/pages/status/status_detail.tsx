@@ -29,6 +29,7 @@ import {Api} from "../../api";
 import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
+import {NavigationBar} from "@yz1311/teaset";
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: any;
@@ -293,6 +294,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
     );
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="闪存" />
         <YZStateView
           loadDataResult={createReducerResult({state: 'content'})}
           placeholderTitle="暂无数据"

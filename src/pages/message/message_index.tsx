@@ -6,7 +6,7 @@ import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseMessageList from './base_message_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {Theme} from '@yz1311/teaset';
+import {NavigationBar, Theme} from '@yz1311/teaset';
 
 interface IProps {
   navigation: any;
@@ -55,6 +55,7 @@ export default class news_index extends Component<IProps, IState> {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="消息中心" borderBottomWidth={0} />
         <ScrollableTabView
           renderTabBar={() => (
             <HomeTabBar

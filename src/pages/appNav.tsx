@@ -56,37 +56,14 @@ export default class AppNavigation extends Component {
                         leftAction = params.leftAction;
                     }
                     return {
-                        // header: () => null,
-                        title: title || '',
-                        headerLeft: (props: any) => {
-                            if(!props.canGoBack) {
-                                return null;
-                            }
-                            return (
-                                <TouchableOpacity
-                                    activeOpacity={activeOpacity}
-                                    style={{
-                                        paddingLeft: 9,
-                                        paddingRight: 8,
-                                        alignSelf: 'stretch',
-                                        justifyContent: 'center',
-                                    }}
-                                    onPress={() => {
-                                        leftAction ? leftAction() : navigation.goBack();
-                                    }}>
-                                    <Entypo name={'chevron-thin-left'} size={23} color={gColors.bgColorF}/>
-                                </TouchableOpacity>
-                            )
-                        },
-                        // headerTitle: params?.headerTitle || params?.title || '',
-                        headerMode: 'screen',
+                        headerShown: false,
                         headerBackTitle: ' ', // 左上角返回键文字
-                        headerTitleAlign: 'center',  //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
-                        headerTintColor: gColors.color0,
+                        //标题的对齐方向，android默认为left，ios默认为center，取代了前面上一层的headerLayoutPreset
+                        headerTitleAlign: 'center',
                         headerTitleStyle: {
                             //防止标题过长
                             maxWidth: Theme.deviceWidth / 2,
-                            color: gColors.bgColorF,
+                            color: Theme.navTintColor,
                         },
                         headerStyle: {
                             backgroundColor: Theme.navColor,
@@ -95,19 +72,15 @@ export default class AppNavigation extends Component {
                         gestureEnabled: true,
                         //5.x版本，必须要设置这个才能android下滑动关闭
                         gestureDirection: 'horizontal',
-                        cardStack: {
-                            gestureEnabled: true,
-                        },
-                        cardStyleInterpolator: (props) => StackViewStyleInterpolator.forHorizontalIOS(props)
+                        //统一两端的动画效果
+                        cardStyleInterpolator: props =>
+                            StackViewStyleInterpolator.forHorizontalIOS(props),
                     };
                 }}
             >
                 <Stack.Screen
                     name="YZTabBarView"
                     component={withMappedNavigationParams()(YZTabBarView)}
-                    options={{
-                        header: () => null
-                    }}
                 />
                 <Stack.Screen
                     name="YZWebPage"
@@ -116,16 +89,10 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="Login"
                     component={withMappedNavigationParams()(Login)}
-                    options={{
-                        title: '登录',
-                    }}
                 />
                 <Stack.Screen
                     name="AppEntry"
                     component={withMappedNavigationParams()(AppEntry)}
-                    options={{
-                        headerShown: false,
-                    }}
                 />
                 <Stack.Screen
                     name="HomeSearch"
@@ -211,89 +178,26 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="StatusDetail"
                     component={withMappedNavigationParams()(StatusDetail)}
-                    options={{
-                        title: '闪存'
-                    }}
                 />
                 <Stack.Screen
                     name="StatusAdd"
                     component={withMappedNavigationParams()(StatusAdd)}
-                    options={({route}) => {
-                        const {title, rightAction} = route?.params || {} as any;
-                        return {
-                            title: '发布闪存',
-                            headerRight: () => (
-                                <TouchableOpacity
-                                    activeOpacity={activeOpacity}
-                                    style={{
-                                        alignSelf: 'stretch',
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 8,
-                                    }}
-                                    onPress={rightAction}>
-                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-                                </TouchableOpacity>
-                            ),
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="Bookmark"
                     component={withMappedNavigationParams()(Bookmark)}
-                    options={{
-                        title: '收藏',
-                    }}
                 />
                 <Stack.Screen
                     name="BookmarkModify"
                     component={withMappedNavigationParams()(BookmarkModify)}
-                    options={({route}) => {
-                        const {title, rightAction} = route?.params || {} as any;
-                        return {
-                            title: title || '添加收藏',
-                            headerRight: () => (
-                                <TouchableOpacity
-                                    activeOpacity={activeOpacity}
-                                    style={{
-                                        alignSelf: 'stretch',
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 8,
-                                    }}
-                                    onPress={rightAction}>
-                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-                                </TouchableOpacity>
-                            ),
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="QuestionDetail"
                     component={withMappedNavigationParams()(QuestionDetail)}
-                    options={{
-                        title: '博问',
-                    }}
                 />
                 <Stack.Screen
                     name="QuestionAdd"
                     component={withMappedNavigationParams()(QuestionAdd)}
-                    options={({route}) => {
-                        const {title, rightAction} = route?.params || {} as any;
-                        return {
-                            title: title || '提问',
-                            headerRight: () => (
-                                <TouchableOpacity
-                                    activeOpacity={activeOpacity}
-                                    style={{
-                                        alignSelf: 'stretch',
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 8,
-                                    }}
-                                    onPress={rightAction}>
-                                    <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-                                </TouchableOpacity>
-                            ),
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="AnswerCommentList"
@@ -318,33 +222,18 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="ProfileSetting"
                     component={withMappedNavigationParams()(ProfileSetting)}
-                    options={({route}) => {
-                        const {title, rightAction} = route?.params || {} as any;
-                        return {
-                            title: '设置',
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="ProfileAbout"
                     component={withMappedNavigationParams()(ProfileAbout)}
-                    options={{
-                        title: '关于',
-                    }}
                 />
                 <Stack.Screen
                     name="ProfileFontSize"
                     component={withMappedNavigationParams()(ProfileFontSize)}
-                    options={{
-                        title: '字体设置',
-                    }}
                 />
                 <Stack.Screen
                     name="ProfilePerson"
                     component={withMappedNavigationParams()(ProfilePerson)}
-                    options={{
-                        headerShown: false
-                    }}
                 />
                 <Stack.Screen
                     name="NewsIndex"
@@ -353,30 +242,18 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="RankList"
                     component={withMappedNavigationParams()(RankList)}
-                    options={{
-                        title: '排行榜'
-                    }}
                 />
                 <Stack.Screen
                     name="StarList"
                     component={withMappedNavigationParams()(StarList)}
-                    options={{
-                        title: '关注'
-                    }}
                 />
                 <Stack.Screen
                     name="FollowerList"
                     component={withMappedNavigationParams()(FollowerList)}
-                    options={{
-                        title: '粉丝'
-                    }}
                 />
                 <Stack.Screen
                     name="MessageIndex"
                     component={withMappedNavigationParams()(MessageIndex)}
-                    options={{
-                        title: '消息中心'
-                    }}
                 />
             </Stack.Navigator>
         );

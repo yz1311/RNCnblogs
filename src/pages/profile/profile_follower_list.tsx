@@ -7,7 +7,7 @@ import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerRes
 import {Api} from '../../api';
 import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
-import {Alert, Button, Theme} from '@yz1311/teaset';
+import {Alert, Button, NavigationBar, Theme} from '@yz1311/teaset';
 import ToastUtils from '../../utils/toastUtils';
 import Entypo from 'react-native-vector-icons/Entypo';
 
@@ -124,6 +124,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
     console.log(this.state.dataList)
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="粉丝" />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

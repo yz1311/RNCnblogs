@@ -14,7 +14,7 @@ import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
 import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow, Theme} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -65,29 +65,6 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
     clickable: true,
   };
 
-  static navigationOptions = ({navigation}) => {
-    const {state} = navigation;
-    const {title, rightAction} = state.params || {
-      rightAction: undefined,
-      title: undefined,
-    };
-    return {
-      title: title || '提问',
-      headerRight: (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{
-            alignSelf: 'stretch',
-            justifyContent: 'center',
-            paddingHorizontal: 8,
-          }}
-          onPress={rightAction}>
-          <FontAwesome name="send" size={18} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    };
-  };
-
   constructor(props:IProps) {
     super(props);
     this.state = {
@@ -113,9 +90,6 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
   componentDidMount() {
     this.validate();
     this.getMyQuestionData();
-    this.props.navigation.setOptions({
-      rightAction: this._rightAction,
-    });
   }
 
   getMyQuestionData = async ()=>{
@@ -209,7 +183,23 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
     const {item, clickable} = this.props;
     const canAddTag = this.state.tagList.length < 5;
     return (
-      <KeyboardAwareScrollView style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
+        <View style={[Styles.container]}>
+          <NavigationBar
+              title={this.state.title || '提问'}
+              rightView={
+                <TouchableOpacity
+                    activeOpacity={activeOpacity}
+                    style={{
+                      alignSelf: 'stretch',
+                      justifyContent: 'center',
+                      paddingHorizontal: 8,
+                    }}
+                    onPress={this._rightAction}>
+                  <FontAwesome name="send" size={18} color={gColors.bgColorF} />
+                </TouchableOpacity>
+              }
+              />
+          <KeyboardAwareScrollView style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
         <View style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
           <ListRow
             title={'标题'}
@@ -386,6 +376,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
           </View>
         </View>
       </KeyboardAwareScrollView>
+        </View>
     );
   }
 }

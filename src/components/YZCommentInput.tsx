@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
   Image,
   View,
@@ -38,7 +38,7 @@ export interface IState {
   isToggle: boolean;
 }
 
-export default class YZCommentInput extends Component<IProps, IState> {
+export default class YZCommentInput extends PureComponent<IProps, IState> {
   static propTypes = {
     menuComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
     onSubmit: PropTypes.func,

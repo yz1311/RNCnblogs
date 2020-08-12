@@ -10,14 +10,14 @@ import {
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {ListRow, Input} from '@yz1311/teaset';
+import {ListRow, Input, NavigationBar} from '@yz1311/teaset';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from '../../reducers';
 import {bookmarkModel} from '../../api/bookmark';
 import {Api} from '../../api';
 
 interface IProps {
-  dispatch: any;
+  title: string;
   deleteBookmarkFn: any;
   addBookmarkFn: any;
   modifyBookmarkFn: any;
@@ -37,13 +37,6 @@ interface IState {
   TagsDesc: string;
 }
 
-@(connect(
-  (state: ReduxState) => ({}),
-  dispatch => ({
-    dispatch,
-
-  }),
-) as any)
 export default class bookmark_modify extends Component<IProps, IState> {
 
   constructor(props) {
@@ -72,9 +65,6 @@ export default class bookmark_modify extends Component<IProps, IState> {
       DateAdded: item.published,
       Tags: item.Tags,
       TagsDesc: ((item || {Tags: undefined}).Tags || []).join(','),
-    });
-    this.props.navigation.setOptions({
-      rightAction: this.rightAction,
     });
   }
 
@@ -118,6 +108,21 @@ export default class bookmark_modify extends Component<IProps, IState> {
   render() {
     return (
       <View style={[Styles.container]}>
+        <NavigationBar
+            title={this.props.title || '添加收藏'}
+            rightView={
+              <TouchableOpacity
+                  activeOpacity={activeOpacity}
+                  style={{
+                    alignSelf: 'stretch',
+                    justifyContent: 'center',
+                    paddingHorizontal: 8,
+                  }}
+                  onPress={this.rightAction}>
+                <FontAwesome name="send" size={18} color={gColors.bgColorF} />
+              </TouchableOpacity>
+            }
+        />
         <ListRow
           title="标题"
           detail={

@@ -4,7 +4,7 @@ import {WebView} from 'react-native-webview';
 import PropTypes from 'prop-types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Overlay} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import {showToast} from '../actions/app_actions';
 import CommonUtils from '../utils/commonUtils';
@@ -24,10 +24,9 @@ export interface IProps {
   uri: string;
   content: string;
   navigation: any;
+  title: string;
 }
 
-@(connect(
-  state => ({})) as any)
 //@ts-ignore
 @YZBackHandler
 export default class YZWebPage extends Component<IProps, any> {
@@ -137,9 +136,7 @@ export default class YZWebPage extends Component<IProps, any> {
   render() {
     return (
       <View style={{flex: 1}}>
-        {/*<YZHeader*/}
-        {/*title={this.props.title}*/}
-        {/*/>*/}
+        <NavigationBar title={this.props.title} />
         <View style={{flex: 1, overflow: 'hidden'}}>
           <WebView
             ref={ref => (this.webView = ref)}

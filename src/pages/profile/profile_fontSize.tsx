@@ -13,6 +13,7 @@ import {Styles} from '../../common/styles';
 import {connect} from 'react-redux';
 import Slider from 'react-native-slider';
 import {ReduxState} from '../../reducers';
+import {NavigationBar} from "@yz1311/teaset";
 
 interface IProps {
   dispatch: any;
@@ -43,6 +44,7 @@ export default class profile_fontSize extends Component<IProps, IState> {
     const {userInfo} = this.props;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title="字体设置" />
         <ScrollView style={{flex: 1}}>
           <View style={{marginTop: 10, alignItems: 'center', minHeight: 200}}>
             <View>
