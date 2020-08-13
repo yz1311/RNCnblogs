@@ -158,6 +158,8 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
 
 export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:string}>) => {
   const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
+  console.log('------')
+  console.log(URL)
   return RequestUtils.get<number>(URL);
 }
 
@@ -243,7 +245,7 @@ export const resolveBlogHtml = (result)=>{
       name: (match.match(/class=\"post-item-author\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
       uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };
-    item.author.id = item.author?.uri?.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'')?.replace('/','');
+    item.author.id = (item.author?.uri?.replace(/^https:\/\/[\s\S]+?\//,'')?.match(/[\s\S]+?(?=\/)/)||[])[0];
     item.published = (match.match(/class=\"post-meta-item\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.comments = parseInt((match.match(/href=\"#icon_comment[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     item.views = parseInt((match.match(/href=\"#icon_views[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));

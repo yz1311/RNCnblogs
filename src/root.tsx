@@ -27,6 +27,7 @@ import {Styles} from './common/styles';
 import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
 import ModalExt from 'react-native-modal';
+import {IImageInfo} from "react-native-image-zoom-viewer/built/image-viewer.type";
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -62,9 +63,11 @@ const markdownRules = {
         style={styles.image}
         onPress={() => {
           //由于暂时无法获取到item，所无法获取imgList属性（已解析）,暂时只能显示一张图片
-          DeviceEventEmitter.emit('showImgList', {
-            imgList: [node.attributes.src],
-            imgListIndex: 0,
+          DeviceEventEmitter.emit('showImageViewer', {
+            images: [{
+                url: node.attributes.src
+            }] as Array<IImageInfo>,
+            index: 0,
           });
         }}>
         <FitImage

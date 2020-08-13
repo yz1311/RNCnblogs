@@ -124,61 +124,9 @@ export default class news_detail extends PureComponent<IProps, IState> {
 
   showMenu = () => {
     this.fromView.measureInWindow((x, y, width, height) => {
-      let popoverStyle = {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        paddingTop: 8,
-        paddingBottom: 8,
-        // paddingLeft: 12,
-        paddingRight: 12,
-      };
-      y += __IOS__ ? 0 : 15;
-      let fromBounds = {x, y, width, height};
-      let overlayView = (
-        <Overlay.PopoverView
-          popoverStyle={popoverStyle}
-          fromBounds={fromBounds}
-          direction="left"
-          align="start"
-          directionInsets={4}
-          onCloseRequest={() => {
-            Overlay.hide(this.overlayKey);
-            this.overlayKey = null;
-          }}
-          showArrow={true}>
-          <ListRow
-            style={{backgroundColor: 'transparent', width: 140}}
-            titleStyle={{color: gColors.bgColorF, textAlign: 'center'}}
-            title="复制链接"
-            onPress={() => {
-              Overlay.hide(this.overlayKey);
-              this.overlayKey = null;
-              CommonUtils.copyText(this.props.item.link);
-            }}
-          />
-          <ListRow
-            style={{backgroundColor: 'transparent', width: 140}}
-            titleStyle={{color: gColors.bgColorF, textAlign: 'center'}}
-            title="查看原文"
-            onPress={() => {
-              Overlay.hide(this.overlayKey);
-              this.overlayKey = null;
-              CommonUtils.openUrl(this.props.item.link);
-            }}
-          />
-          <ListRow
-            style={{backgroundColor: 'transparent', width: 140}}
-            titleStyle={{color: gColors.bgColorF, textAlign: 'center'}}
-            title="分享"
-            bottomSeparator={null}
-            onPress={() => {
-              Overlay.hide(this.overlayKey);
-              this.overlayKey = null;
-              CommonUtils.share('', this.props.item.link);
-            }}
-          />
-        </Overlay.PopoverView>
-      );
-      this.overlayKey = Overlay.show(overlayView);
+      this.overlayKey = CommonUtils.showRightTopMenus({x,y,width,height}, this.props.item.link, ()=>{
+        this.overlayKey = null;
+      });
     });
   };
 
@@ -270,10 +218,11 @@ export default class news_detail extends PureComponent<IProps, IState> {
         });
         break;
       case 'img_click':
-        DeviceEventEmitter.emit('showImgList', {
-          imgList: imgList,
-          imgListIndex:
-            imgList.indexOf(postedMessage.url) == -1
+        DeviceEventEmitter.emit('showImageViewer', {
+          images: imgList.map(x=>({
+            url: x
+          })),
+          index: imgList.indexOf(postedMessage.url) == -1
               ? 0
               : imgList.indexOf(postedMessage.url),
         });
@@ -334,7 +283,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
     let showMoreButton = visibleCommentList.length === 10;
     let commentHtml = ``;
     if (commentList.length === 0) {
-      commentHtml = `<div style="margin-top: 30px;display: flex;flex-direction: column;align-items: center;color:${
+      commentHtml = `<div style="margin-top: 30px;min-height: 80px;display: flex;flex-direction: column;align-items: center;color:${
         gColors.color666
       }">-- 暂无评论 --</div>`;
     } else {

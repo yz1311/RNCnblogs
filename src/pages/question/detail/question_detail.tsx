@@ -127,10 +127,11 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
     const {item, data} = this.props;
     switch (postedMessage.type) {
       case 'img_click':
-        DeviceEventEmitter.emit('showImgList', {
-          imgList: data.imgList,
-          imgListIndex:
-            data.imgList.indexOf(postedMessage.url) == -1
+        DeviceEventEmitter.emit('showImageViewer', {
+          images: data.imgList.map(x=>({
+            url: x
+          })),
+          index: data.imgList.indexOf(postedMessage.url) == -1
               ? 0
               : data.imgList.indexOf(postedMessage.url),
         });

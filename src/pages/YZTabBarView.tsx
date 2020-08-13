@@ -27,6 +27,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import {ReduxState} from '../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ConfigServices from '../services/configServices';
+import YZImageViewer from "../components/YZImageViewer";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -39,9 +40,6 @@ interface IState {
   tabNames: Array<any>;
   tabIconNames: Array<string>;
   selectedTabIconNames: Array<string>;
-  imgList: Array<any>;
-  imgListVisible: boolean;
-  imgListIndex: number;
 }
 
 export enum ServiceTypes {
@@ -71,7 +69,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
     initialPage: 0,
   };
 
-  private showImgListListener: EmitterSubscription;
   private reloadThemeListener: EmitterSubscription;
   private tabBar;
   private selectedTabIndex: number = 0;
@@ -103,9 +100,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
         'slideshare',
         'user',
       ],
-      imgList: [],
-      imgListVisible: false,
-      imgListIndex: 0,
     };
     //android下按返回键退出后，路由栈并没有重置，再次进入的时候是直接进入主界面
     //但是root app这些均会运行，此时，必须手动关闭启动动画
@@ -116,16 +110,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
     ConfigServices.getConfig(true);
     // this._handleAppStateChange('active');
     AppState.addEventListener('change', this._handleAppStateChange);
-    this.showImgListListener = DeviceEventEmitter.addListener(
-      'showImgList',
-      ({imgList, imgListIndex}) => {
-        this.setState({
-          imgList: imgList.map(x => ({url: x})),
-          imgListVisible: true,
-          imgListIndex: imgListIndex,
-        });
-      },
-    );
     this.reloadThemeListener = DeviceEventEmitter.addListener(
       'reloadTheme',
       () => {
@@ -136,19 +120,8 @@ export default class YZTabBarView extends Component<IProps, IState> {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this._handleAppStateChange);
-    this.showImgListListener.remove();
     this.reloadThemeListener.remove();
   }
-
-  _onBack = () => {
-    if (this.state.imgListVisible) {
-      this.setState({
-        imgListVisible: false,
-      });
-      return true;
-    }
-    return false;
-  };
 
   _handleAppStateChange = async appState => {
     if (appState === 'active') {
@@ -230,23 +203,9 @@ export default class YZTabBarView extends Component<IProps, IState> {
           <DiscoverIndex  tabIndex={3} />
           <Profile navigation={this.props.navigation} tabIndex={4} />
         </ScrollableTabView>
-        <Modal
-          visible={this.state.imgListVisible}
-          onRequestClose={() => {
-            this.setState({
-              imgListVisible: false,
-            });
-          }}
-          transparent={true}>
-          <ImageViewer
-            onClick={() => this.setState({imgListVisible: false})}
-            enableSwipeDown
-            onSwipeDown={() => this.setState({imgListVisible: false})}
-            index={this.state.imgListIndex}
-            menuContext={{saveToLocal: '保存到相册', cancel: '取消'}}
-            imageUrls={this.state.imgList}
+        <YZImageViewer
+
           />
-        </Modal>
       </View>
     );
   }
