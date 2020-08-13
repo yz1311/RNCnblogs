@@ -29,7 +29,7 @@ import {Api} from "../../api";
 import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
-import {NavigationBar} from "@yz1311/teaset";
+import {NavigationBar, Theme} from "@yz1311/teaset";
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: any;
@@ -86,8 +86,8 @@ export default class status_detail extends PureComponent<IProps, IState> {
     );
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (this.props.loadDataResult !== nextProps.loadDataResult) {
+  componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
+    if(this.props.loadDataResult !== prevProps.loadDataResult) {
       this.setState({
         isRefreshing: false,
       });
@@ -114,9 +114,10 @@ export default class status_detail extends PureComponent<IProps, IState> {
       this.setState({
         commentList: imgRes.data,
         getCommentListResult: dataToReducerResult(imgRes.data)
+      }, ()=>{
+        //获取头像
+        this.getUserAvatar();
       });
-      //获取头像
-      this.getUserAvatar();
     } catch (e) {
       this.setState({
         getCommentListResult: dataToReducerResult(e)
@@ -313,7 +314,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
                       this.loadData,
                     );
                   }}
-                  colors={[gColors.themeColor]}
+                  colors={[Theme.primaryColor]}
                 />
               }
               style={{flex: 1, overflow: 'hidden'}}>

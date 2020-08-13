@@ -77,7 +77,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      tabNames: ['博客', '博问', '闪存','发现', '我'],
+      tabNames: ['博客', '博问', '闪存', '我'],
       tabIconNames: [
         // require('../resources/tab/Home.png'),
         // require('../resources/tab/Warning.png'),
@@ -86,7 +86,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
         'home',
         'news',
         'leaf',
-        'slideshare',
         'user',
       ],
       selectedTabIconNames: [
@@ -97,7 +96,6 @@ export default class YZTabBarView extends Component<IProps, IState> {
         'home',
         'news',
         'leaf',
-        'slideshare',
         'user',
       ],
     };
@@ -200,8 +198,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
           <Home navigation={this.props.navigation} tabIndex={0} />
           <Question navigation={this.props.navigation} tabIndex={1} />
           <Status navigation={this.props.navigation} tabIndex={2} />
-          <DiscoverIndex  tabIndex={3} />
-          <Profile navigation={this.props.navigation} tabIndex={4} />
+          <Profile navigation={this.props.navigation} tabIndex={3} />
         </ScrollableTabView>
         <YZImageViewer
 

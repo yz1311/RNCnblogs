@@ -155,8 +155,9 @@ export default class bookmark_modify extends Component<IProps, IState> {
           }
         />
         <Input
-          style={{height: 80, marginTop: 15, marginHorizontal: 2}}
+          style={{height: 100, marginTop: 15, marginHorizontal: 2}}
           placeholder="摘要不超过200字"
+          textAlignVertical="top"
           multiline={true}
           value={this.state.Summary}
           onChangeText={value => this.setState({Summary: value})}

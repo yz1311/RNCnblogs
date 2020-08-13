@@ -6,7 +6,9 @@ import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseMessageList from './base_message_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {NavigationBar, Theme} from '@yz1311/teaset';
+import {NavigationBar, SegmentedBar, Theme} from '@yz1311/teaset';
+import SegmentedControlTab from "react-native-segmented-control-tab";
+
 
 interface IProps {
   navigation: any;
@@ -16,6 +18,7 @@ interface IProps {
 
 interface IState {
   tabNames: Array<string>;
+  tabIndex: number;
 }
 
 export enum MessageTypes {
@@ -32,15 +35,20 @@ export enum MessageTypes {
 ) as any)
 export default class news_index extends Component<IProps, IState> {
   private tabBar: any;
+  private tabView: ScrollableTabView;
 
   constructor(props) {
     super(props);
     this.state = {
       tabNames: ['收件箱', '发件箱'],
+      tabIndex: 0,
     };
   }
 
   _onChangeTab = obj => {
+    this.setState({
+      tabIndex: obj.i
+    });
     switch (obj.i) {
       case 0:
         break;
@@ -51,22 +59,35 @@ export default class news_index extends Component<IProps, IState> {
     }
   };
 
+  handleIndexChange = (index)=>{
+    this.setState({
+      tabIndex: index
+    });
+    //@ts-ignore
+    this.tabView.goToPage(index);
+  }
+
   render() {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
-        <NavigationBar title="消息中心" borderBottomWidth={0} />
+        <NavigationBar title={
+          <SegmentedControlTab
+              tabsContainerStyle={{width: Theme.deviceWidth/2}}
+              tabStyle={{borderColor: 'purple'}}
+              activeTabStyle={{backgroundColor:'purple'}}
+              values={["收件箱", "发件箱"]}
+              selectedIndex={this.state.tabIndex}
+              onTabPress={this.handleIndexChange}
+          />
+        } borderBottomWidth={0} />
         <ScrollableTabView
+          ref={ref=>this.tabView = ref}
           renderTabBar={() => (
-            <HomeTabBar
-              ref={bar => (this.tabBar = bar)}
-              containerStyle={{backgroundColor: Theme.navColor}}
-              tabDatas={tabNames}
-            />
+            <View />
           )}
           tabBarPosition="top"
           initialPage={this.props.initialPage || 0}
-          scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
           <BaseMessageList

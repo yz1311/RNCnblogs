@@ -202,7 +202,7 @@ class Root extends PureComponent {
                       // navigation.goBack();
                       NavigationHelper.goBack();
                   }}>
-                  <Entypo name={'chevron-thin-left'} size={23} color={gColors.color666}/>
+                  <Entypo name={'chevron-thin-left'} size={23} color="white" />
               </TouchableOpacity>
           )
       };

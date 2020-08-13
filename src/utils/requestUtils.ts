@@ -191,7 +191,13 @@ export default class RequestUtils {
         //设置全局超时时间
         axios.defaults.timeout = 15000;
 
-        axios.interceptors.request.use( function (request:AxiosRequestConfigPatch) {
+        axios.interceptors.request.use( async function (request:AxiosRequestConfigPatch) {
+            if(!gUserData.token) {
+                let res = await gStorage.load('token');
+                if(res) {
+                    gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+                }
+            }
             request.headers = {
                 ...request.headers,
                 'content-type': 'application/json; charset=UTF-8',
