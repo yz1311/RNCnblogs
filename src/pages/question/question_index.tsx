@@ -106,7 +106,6 @@ export default class question_index extends Component<IProps, IState> {
               <ScrollableTabBar
                   ref={bar => (this.tabBar = bar)}
                   //@ts-ignore
-                  tabDatas={tabNames}
                   style={{
                     backgroundColor: Theme.navColor,
                   }}
@@ -117,6 +116,9 @@ export default class question_index extends Component<IProps, IState> {
                   underlineStyle={{
                     backgroundColor: gColors.bgColorF,
                     height: 3,
+                    alignSelf: 'center',
+                    width: 50,
+                    borderRadius: 1.5
                   }}
               />
           )}
@@ -126,26 +128,32 @@ export default class question_index extends Component<IProps, IState> {
           locked={false}
           onChangeTab={this._onChangeTab}>
           <BaseQuestionList
+            tabLabel="待解决"
             navigation={this.props.navigation}
             questionType={QuestionTypes.待解决}
           />
           <BaseQuestionList
+            tabLabel="高分"
             navigation={this.props.navigation}
             questionType={QuestionTypes.高分}
           />
           <BaseQuestionList
+            tabLabel="零回答"
             navigation={this.props.navigation}
             questionType={QuestionTypes.零回答}
           />
           <BaseQuestionList
+            tabLabel="已解决"
             navigation={this.props.navigation}
             questionType={QuestionTypes.已解决}
           />
           <BaseQuestionList
+            tabLabel="新回答"
             navigation={this.props.navigation}
             questionType={QuestionTypes.新回答}
           />
           <BaseQuestionList
+            tabLabel="新评论"
             navigation={this.props.navigation}
             questionType={QuestionTypes.新评论}
           />

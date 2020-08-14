@@ -118,8 +118,6 @@ export default class status_index extends Component<IProps, IState> {
           renderTabBar={() => (
             <ScrollableTabBar
               ref={bar => (this.tabBar = bar)}
-              //@ts-ignore
-              tabDatas={tabNames}
               style={{
                 backgroundColor: Theme.navColor,
               }}
@@ -130,6 +128,9 @@ export default class status_index extends Component<IProps, IState> {
               underlineStyle={{
                 backgroundColor: gColors.bgColorF,
                 height: 3,
+                alignSelf: 'center',
+                width: 50,
+                borderRadius: 1.5
               }}
             />
           )}

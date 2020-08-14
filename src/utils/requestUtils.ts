@@ -5,6 +5,7 @@ import {NavigationHelper} from '@yz1311/teaset-navigation';
 import ToastUtils from "./toastUtils";
 import {parseString} from 'react-native-xml2js';
 import {err} from "react-native-svg/lib/typescript/xml";
+import StorageUtils from "./storageUtils";
 
 
 //拓展config，添加自定义参数
@@ -193,10 +194,14 @@ export default class RequestUtils {
         axios.defaults.timeout = 15000;
 
         axios.interceptors.request.use( async function (request:AxiosRequestConfigPatch) {
-            if(!gUserData.token) {
-                let res = await gStorage.load('token');
+            if(!gUserData || !gUserData.token) {
+                let res = await StorageUtils.load('token');
                 if(res) {
-                    gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+                    //@ts-ignore
+                    gUserData = {
+                        ...(gUserData || {}),
+                        token: Object.keys(res).map(key=>key+'='+res[key]).join(';')
+                    };
                 }
             }
             request.headers = {
@@ -305,7 +310,7 @@ export default class RequestUtils {
                 switch (error.response?.status) {
                     //授权失败
                     case 401:
-                        gStorage.save('token','');
+                        StorageUtils.save('token','');
                         NavigationHelper.push('Login');
                         break;
                     case 404:

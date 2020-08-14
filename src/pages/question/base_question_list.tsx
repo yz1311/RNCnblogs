@@ -23,7 +23,8 @@ export interface IProps {
   navigation?: any;
   keyword?: string,
   userInfo?: userInfoModel,
-  searchParams?: SearchParams
+  searchParams?: SearchParams;
+  tabLabel?: string;
 }
 
 interface IState {
