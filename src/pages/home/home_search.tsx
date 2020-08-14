@@ -42,7 +42,7 @@ const LeftItem = ({onPress, type, leftTitle}) => {
         <Text
           style={{
             fontSize: gFont.size15,
-            color: gColors.themeColor,
+            color: Theme.primaryColor,
             marginLeft: gMargin,
           }}>{`${leftTitle}`}</Text>
       )) || (

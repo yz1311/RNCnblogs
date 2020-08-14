@@ -329,7 +329,7 @@ export default class question_item extends PureComponent<IProps, any> {
               </Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
+                  {moment(item.published,'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')}
                 </Text>
               </View>
             </View>
@@ -377,7 +377,7 @@ const Tag = ({item, index, style,uri}) => {
         },
         style,
       ]}>
-      <Text style={{color: gColors.themeColor, fontSize: gFont.size12}}>
+      <Text style={{color: Theme.primaryColor, fontSize: gFont.size12}}>
         {item}
       </Text>
     </TouchableOpacity>

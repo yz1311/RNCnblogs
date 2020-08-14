@@ -1,9 +1,10 @@
 import {Alert, Platform} from 'react-native';
-import Permissions, {RESULTS} from 'react-native-permissions';
+import Permissions, {RESULTS, request, requestMultiple} from 'react-native-permissions';
 import DeviceInfo from 'react-native-device-info';
 import IntentLauncher, {
     IntentConstant,
 } from '@yz1311/react-native-intent-launcher';
+import requestUtils from "./requestUtils";
 const {displayName: appName} = require('../../app.json');
 
 export default class PermissionUtils {
@@ -109,4 +110,24 @@ export default class PermissionUtils {
             ]);
         }
     };
+
+    static requestPhotoPermission(callback) {
+        requestMultiple(Platform.OS==='android'?[
+            Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+            Permissions.PERMISSIONS.ANDROID.CAMERA
+        ]: [
+            Permissions.PERMISSIONS.IOS.CAMERA,
+            Permissions.PERMISSIONS.IOS.PHOTO_LIBRARY,
+        ])
+            .then(statuses =>{
+                if(PermissionUtils.checkPermissionResult(Platform.OS==='android'
+                    ?statuses[Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE]
+                    :statuses[Permissions.PERMISSIONS.IOS.PHOTO_LIBRARY], '相册')) {
+                    callback();
+                }
+            })
+            .catch(err=>{
+
+            });
+    }
 }

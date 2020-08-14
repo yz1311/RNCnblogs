@@ -111,7 +111,7 @@ export default class status_index extends Component<IProps, IState> {
         <View
           style={{
             height: Theme.statusBarHeight,
-            backgroundColor: Theme.primaryColor,
+            backgroundColor: Theme.navColor,
           }}
         />
         <ScrollableTabView
@@ -121,7 +121,7 @@ export default class status_index extends Component<IProps, IState> {
               //@ts-ignore
               tabDatas={tabNames}
               style={{
-                backgroundColor: Theme.primaryColor,
+                backgroundColor: Theme.navColor,
               }}
               activeTextColor={gColors.bgColorF}
               inactiveTextColor={'#DBDBDB'}

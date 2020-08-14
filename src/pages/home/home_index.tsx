@@ -72,7 +72,7 @@ export default class home_index extends Component<IProps, IState> {
             <HomeTabBar
               ref={bar => (this.tabBar = bar)}
               tabWidth={70}
-              containerStyle={{backgroundColor: Theme.navColor}}
+              containerStyle={{backgroundColor: Theme.primaryColor}}
               tabDatas={tabNames}
               showSearchButton
             />

@@ -13,7 +13,6 @@ import {
 import PropTypes from 'prop-types';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {resetActionPayload} from '../sagas/nav_sagas';
 
 const RightChevron = ({size = undefined, style = undefined}) => (
   <Entypo

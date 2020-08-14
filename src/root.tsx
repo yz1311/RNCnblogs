@@ -28,6 +28,8 @@ import RequestUtils from "./utils/requestUtils";
 import Entypo from "react-native-vector-icons/Entypo";
 import ModalExt from 'react-native-modal';
 import {IImageInfo} from "react-native-image-zoom-viewer/built/image-viewer.type";
+import {BaseButton, RectButton} from "react-native-gesture-handler";
+import themeUtils from "./utils/themeUtils";
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -39,6 +41,8 @@ models.forEach(x => {
   dvaApp.model(x);
 });
 dvaApp.start();
+
+themeUtils.reloadTheme();
 
 const store = dvaApp._store;
 global.gStore = store;
@@ -213,6 +217,18 @@ class Root extends PureComponent {
       //https://github.com/react-native-community/react-native-modal/issues/268
       //@ts-ignore
       (ModalExt.defaultProps || {}).backdropTransitionOutTiming = 0;
+      //@ts-ignore
+      BaseButton.defaultProps = {
+          //@ts-ignore
+          ...(BaseButton.defaultProps || {}),
+          rippleColor: "#e0e0e0"
+      };
+      //@ts-ignore
+      RectButton.defaultProps = {
+          //@ts-ignore
+          ...(RectButton.defaultProps || {}),
+          activeOpacity: 0.75,
+      };
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 

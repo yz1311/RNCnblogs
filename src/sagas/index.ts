@@ -1,5 +1,4 @@
 import {watchApp} from './app_sagas';
-import {watchNav} from './nav_sagas';
 import {all, fork} from 'redux-saga/effects';
 import {watchLoginIndex} from './login/login_index_sagas';
 import {watchNewsIndex} from './news/news_index_sagas';
@@ -12,7 +11,6 @@ import {watchProfileIndex} from './profile/profile_index_sagas';
 export default function* rootSaga() {
   yield all([
     fork(watchApp),
-    fork(watchNav),
     fork(watchLoginIndex),
     fork(watchNewsIndex),
     fork(watchStatusIndex),

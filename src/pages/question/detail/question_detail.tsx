@@ -227,7 +227,6 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
                       this.loadData,
                     );
                   }}
-                  colors={[gColors.themeColor]}
                 />
               }
               style={{flex: 1, overflow: 'hidden'}}>

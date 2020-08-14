@@ -226,7 +226,12 @@ export const modifyComment = (data:RequestModel<{commentId:number,body:string}>)
 
 export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
+  console.log('--------pp', result)
+  if(Array.isArray(result)) {
+    return result;
+  }
   let matches = result.match(/class=\"post-item\"[\s\S]+?(?=(<\/article>))/g)|| [];
+
   for (let match of matches) {
     let item:Partial<blogModel> = {};
     //解析digg

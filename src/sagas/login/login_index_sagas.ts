@@ -7,7 +7,6 @@ import {
   takeOrCancel,
 } from '../../utils/reduxUtils';
 import API from '../../api';
-import {resetTo} from '../nav_sagas';
 import moment from 'moment';
 import {showToast} from '../app_sagas';
 import Toastutils from '../../utils/toastUtils';

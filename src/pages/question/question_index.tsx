@@ -7,13 +7,10 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import HomeTabBar from '../home/home_indexTab';
-import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
+import ScrollableTabView, {ScrollableTabBar} from '@yz1311/react-native-scrollable-tab-view';
 import BaseQuestionList from './base_question_list';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from '@yz1311/teaset';
 
 interface IProps extends IReduxProps {
@@ -106,11 +103,22 @@ export default class question_index extends Component<IProps, IState> {
         />
         <ScrollableTabView
           renderTabBar={() => (
-            <HomeTabBar
-              ref={bar => (this.tabBar = bar)}
-              containerStyle={{backgroundColor: Theme.navColor}}
-              tabDatas={tabNames}
-            />
+              <ScrollableTabBar
+                  ref={bar => (this.tabBar = bar)}
+                  //@ts-ignore
+                  tabDatas={tabNames}
+                  style={{
+                    backgroundColor: Theme.navColor,
+                  }}
+                  activeTextColor={gColors.bgColorF}
+                  inactiveTextColor={'#DBDBDB'}
+                  activeTextFontSize={Theme.px2dp(36)}
+                  inactiveTextFontSize={Theme.px2dp(30)}
+                  underlineStyle={{
+                    backgroundColor: gColors.bgColorF,
+                    height: 3,
+                  }}
+              />
           )}
           tabBarPosition="top"
           initialPage={this.props.initialPage || 0}

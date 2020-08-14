@@ -2,13 +2,16 @@ import YZStateView from '../components/YZStateCommonView';
 // import YZLottieView from "../components/YZLottieView";
 import React from 'react';
 import {Platform} from 'react-native';
+import {Theme} from "@yz1311/teaset";
 
 export default class themeUtils {
   static reloadTheme = async () => {
     const themeInfo = await gStorage.load('themeInfo');
-    gColors.themeColor = '#2f97a7';
     if (themeInfo && themeInfo.primaryColor) {
-      gColors.themeColor = themeInfo.primaryColor;
+      Theme.set({
+        primaryColor: themeInfo.primaryColor,
+        navColor: themeInfo.primaryColor
+      });
       // let animationFile = require('../resources/animation/trail_loading');
       // switch (gColors.themeColor) {
       //     case '#d33c30':

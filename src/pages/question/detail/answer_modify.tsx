@@ -16,7 +16,7 @@ import {
   deleteQuestionAnswer,
   modifyQuestionAnswer,
 } from '../../../actions/question/question_detail_actions';
-import {Overlay, Label, Input} from '@yz1311/teaset';
+import {Overlay, Label, Input, Theme} from '@yz1311/teaset';
 
 interface IProps {
   title?: string;
@@ -99,7 +99,7 @@ export default class answer_modify extends PureComponent<IProps, IState> {
             onPress={() => {
               onSubmit && onSubmit(this.state.answer);
             }}>
-            <Text style={{color: gColors.themeColor}}>修改</Text>
+            <Text style={{color: Theme.primaryColor}}>修改</Text>
           </TouchableOpacity>
         </View>
       </View>

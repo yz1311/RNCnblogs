@@ -4162,6 +4162,11 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+hermes-engine@0.5.2-rc1:
+  version "0.5.2-rc1"
+  resolved "https://registry.npm.taobao.org/hermes-engine/download/hermes-engine-0.5.2-rc1.tgz?cache=0&sync_timestamp=1596500883637&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fhermes-engine%2Fdownload%2Fhermes-engine-0.5.2-rc1.tgz#01faccf58b45f6a4592443c1acf98f0ddbd5bf36"
+  integrity sha1-AfrM9YtF9qRZJEPBrPmPDdvVvzY=
+
 hermes-engine@~0.5.0:
   version "0.5.1"
   resolved "https://registry.npmjs.org/hermes-engine/-/hermes-engine-0.5.1.tgz#601115e4b1e0a17d9aa91243b96277de4e926e09"

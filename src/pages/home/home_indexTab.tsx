@@ -14,6 +14,7 @@ import {
 import PropTypes from 'prop-types';
 import YZTabItem, {ITabItemProps} from '../../components/YZScrollableTabItem';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Theme} from "@yz1311/teaset";
 
 interface IProps extends ITabItemProps {
   showSearchButton: boolean;
@@ -57,7 +58,7 @@ export default class home_indexTab extends YZTabItem<IProps, any> {
       // width: containerWidth / numberOfTabs,
       width: tabWidth,
       height: 4,
-      backgroundColor: gColors.themeColor,
+      backgroundColor: 'transparent',
       bottom: 0,
     };
 
@@ -111,8 +112,10 @@ export default class home_indexTab extends YZTabItem<IProps, any> {
         ) : null}
         {this.props.tabDatas.length > 1 ? (
           <Animated.View
-            style={[tabUnderlineStyle, left, this.props.underlineStyle]}
-          />
+            style={[tabUnderlineStyle, left, this.props.underlineStyle, {backgroundColor: 'transparent',}]}
+          >
+            <View style={{flex:1, alignSelf:'center', borderRadius: 4, width: tabWidth/2, backgroundColor: 'white'}} />
+          </Animated.View>
         ) : null}
       </View>
     );
@@ -126,6 +129,7 @@ export default class home_indexTab extends YZTabItem<IProps, any> {
       tabDatas,
     } = this.props;
     const textColor = isTabActive ? activeTextColor : inactiveTextColor;
+    const fontSize = isTabActive ? Theme.px2dp(35) : Theme.px2dp(30);
     const fontWeight = isTabActive ? 'bold' : 'normal';
     let tabContentStyle = {};
     if (this.props.tabDatas.length > 1) {
@@ -154,12 +158,12 @@ export default class home_indexTab extends YZTabItem<IProps, any> {
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 16,
+            alignItems: 'flex-end',
+            paddingTop: 10,
           }}>
           <Text
             style={[
-              {color: textColor, fontSize: gFont.size16},
+              {color: textColor, fontSize: fontSize, fontWeight: fontWeight, textAlignVertical:'bottom',marginBottom: 8},
               this.props.textStyle,
             ]}>
             {tabDatas[index]}

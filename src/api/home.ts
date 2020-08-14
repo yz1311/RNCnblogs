@@ -58,3 +58,29 @@ export const rankList = (data:RequestModel<{}>) => {
     }
   });
 };
+
+
+export const uploadFile = (data: RequestModel<{file, fileName: string}>) => {
+  const URL = `https://upload.cnblogs.com/imageuploader/processupload?host=q.cnblogs.com&qqfile=${data.request.fileName}`;
+  let formData = new FormData();
+  formData.append('file', {
+    uri: data.request.file.path,
+    type: 'application/octet-stream',
+    name: data.request.fileName
+  });
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data;charset=utf-8',
+      Authorization: 'Bearer ' + gUserData.token,
+    },
+    body: formData,
+  };
+  return requestWithTimeout({
+    URL,
+    data,
+    options,
+    errorMessage: '上传文件失败!',
+    actionType: '',
+  });
+};

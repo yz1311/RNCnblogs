@@ -11,6 +11,7 @@ import YZAnimatedModal from '../../components/YZAnimatedModal';
 import PropTypes from 'prop-types';
 import Feather from 'react-native-vector-icons/Feather';
 import ThemeUtils from '../../utils/themeUtils';
+import {Theme} from "@yz1311/teaset";
 
 interface IProps {
   dispatch?: any;
@@ -83,7 +84,7 @@ export default class profile_themeModal extends Component<IProps, IState> {
         value: '#f57d29',
       },
     ],
-    selectedTheme: gColors.themeColor,
+    selectedTheme: Theme.primaryColor,
   };
 
   render() {

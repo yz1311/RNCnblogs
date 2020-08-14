@@ -17,7 +17,6 @@ import {
   sagaActionToAction,
 } from '../../utils/reduxUtils';
 import API from '../../api';
-import {resetTo} from '../nav_sagas';
 import {checkIsBookmark} from '../bookmark/bookmark_index_sagas';
 import {showToast} from '../app_sagas';
 import ToastUtils from '../../utils/toastUtils';

@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {Theme} from '@yz1311/teaset';
+import {BorderlessButton} from "react-native-gesture-handler";
 
 export interface IProps {
   goToPage?: any; // 跳转到对应tab的方法
@@ -52,13 +53,13 @@ export default class YZTabBar extends React.Component<IProps, {}> {
     return (
       <View style={styles.tabs}>
         {this.props.tabs.map((tap, i) => {
-          let color = this.props.activeTab == i ? Theme.navColor : 'gray';
+          let color = this.props.activeTab == i ? Theme.primaryColor : 'gray';
           let icon =
             this.props.activeTab == i
               ? this.props.selectedTabIconNames[i]
               : this.props.tabIconNames[i];
           return (
-            <TouchableOpacity
+            <BorderlessButton
               key={i}
               activeOpacity={0.85}
               style={styles.tab}
@@ -84,7 +85,7 @@ export default class YZTabBar extends React.Component<IProps, {}> {
                 {/*{i===1?*/}
                 {/*<View style={{position:'absolute',right:0,width:10,height:10,borderRadius:5,backgroundColor:gColors.colorRed}}/>:null}*/}
               </View>
-            </TouchableOpacity>
+            </BorderlessButton>
           );
         })}
       </View>

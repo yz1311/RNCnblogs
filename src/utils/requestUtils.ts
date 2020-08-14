@@ -4,6 +4,7 @@ import axios, {AxiosProxyConfig, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import ToastUtils from "./toastUtils";
 import {parseString} from 'react-native-xml2js';
+import {err} from "react-native-svg/lib/typescript/xml";
 
 
 //拓展config，添加自定义参数
@@ -298,13 +299,17 @@ export default class RequestUtils {
                 return Promise.reject(error)
             }
         },function (error) {
+            console.log(error)
             if(error.response) {
-                error.status = error.response.status;
-                switch (error.response.status) {
+                error.status = error.response?.status;
+                switch (error.response?.status) {
                     //授权失败
                     case 401:
                         gStorage.save('token','');
                         NavigationHelper.push('Login');
+                        break;
+                    case 404:
+                        error.message = '接口不存在!';
                         break;
                     //部分接口以406表示逻辑错误
                     case 406:
@@ -313,7 +318,7 @@ export default class RequestUtils {
                 }
             } else {
                 //说明没有经过服务器
-                error.message = '网络连接失败!';
+                error.message = error.message || '网络连接失!';
             }
             console.log(error.config?.method+'  '+error.config?.url)
             console.log(error.config?.data)

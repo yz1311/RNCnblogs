@@ -1,15 +1,10 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
-import BookmarkItem from './bookmark_item';
 import BaseBookmarkList from './base_bookmark_list';
 import {Api} from "../../api";
 import ScrollableTabView, {ScrollableTabBar} from "@yz1311/react-native-scrollable-tab-view";
-import HomeTabBar from "../home/home_indexTab";
-import BaseNewsList from "../news/base_news_list";
-import {NewsTypes} from "../news/news_index";
 
 interface IProps {
   dataList: Array<any>;
