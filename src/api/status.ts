@@ -117,7 +117,8 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
           id: '',
           uri: (match.match(/id=\"comment_author_[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
           name: (match.match(/id=\"comment_author_[\s\S]+?(?=\<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').trim(),
-          avatar: '',
+          avatar: ((match.match(/<img src=\"https:\/\/pic.cnblogs.com\/face\/[\s\S]+?\" (?=class=\"ing_comment_face\")/)||[])
+              [0]?.match(/\"[\s\S]+?(?=\")/)||[])[0]?.replace(/"/g,""),
           no: (match.match(/commentReply[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
         };
         comment.author.id = comment.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
