@@ -17,6 +17,8 @@ export type questionModel = {
     uri: string,
     id: string,
     avatar: string,
+    level?: string,
+    peans?: string
   },
   tags: Array<{
     name: string,
@@ -24,6 +26,7 @@ export type questionModel = {
   }>,
   diggs: number,
   comments: number,
+  commentList: Array<any>;
   views: number,
   published: string,
   publishedDesc: string,
@@ -98,14 +101,84 @@ export const checkIsAnswered = data => {
 };
 
 export const getQuestionDetail = data => {
-  const URL = `${gServerPath}/questions/${data.request.id}`;
+  const URL = `https://q.cnblogs.com/q/${data.request.id}`;
   const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取问题详情失败!',
-    actionType: types.QUESTION_GET_DETAIL,
+  return RequestUtils.get(URL, {
+    resolveResult: (result)=>{
+      let match = (result.match(/<div id=\"main[\s\S]+?id=\"right_sidebar\"/g) || [])[0];
+      let question = {
+        title: (match.match(/id=\"q_title[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+        summary: (match.match(/class=\"q_content[\s\S]+?(?=<div class=\"qclear)/)||[])[0]?.trim()?.
+        replace(/class=\"q_content\">/,'')?.trim()?.
+        replace(/<\/div>/,'')?.trim(),
+        author: {
+          id: '',
+          avatar: (match.match(/class=\"q_avatar\" src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+          name: (match.match(/class=\"question_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+          level: (match.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+          peans: (match.match(/id=\"question_user_allscore\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+        },
+        published: (match.match(/提问于：\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])[0]?.trim()?.replace(/提问于：/,'')+':00',
+        tags: (()=>{
+          let tagMatches = match.match(/class=\"detail_tag\"[\s\S]+?(?=<\/a>)/g) || [];
+          let tags = [];
+          for (let tagMatch of tagMatches) {
+            tags.push({
+              uri: 'https://q.cnblogs.com'+(tagMatch.match(/href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
+              name: (tagMatch.match(/\">[\s\S]+?$/)||[])[0]?.replace(/[\s\S]+>/,''),
+            });
+          }
+          return tags;
+        })(),
+        commentList: (()=>{
+          let comments = [];
+          //最佳答案(可能没有)
+          let bestMatch = (match.match(/class=\"qitem_best_answer_inner[\s\S]+?(?=<div id=\"panelAnswerList)/)||[])[0];
+          if(bestMatch) {
+            comments.push({
+              isBest: true,
+              id: (bestMatch.match(/aid=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+              content: (match.match(/class=\"q_content[\s\S]+?(?=id=\"answer_option)/)||[])[0]?.trim()?.
+                replace(/class=\"q_content\">/,'')?.trim()?.
+                replace(/<\/div>/,'')?.trim(),
+              name: (bestMatch.match(/class=\"answer_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+              level: (bestMatch.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+              peans: (bestMatch.match(/园豆：\d+?(?=\")/)||[])[0]?.trim()?.replace(/园豆：/,''),
+              published: ((bestMatch.match(/v-split\"[\s\S]+?(?=<\/div>)/)||[])[0]?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])+':00',
+              supportCount: (bestMatch.match(/支持\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
+              rejectCount: (bestMatch.match(/反对\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
+            });
+          }
+          //全部答案(里面不包含最佳答案)
+          let allMatch = (match.match(/class=\"qitem_all_answer_inner[\s\S]+?(?=<div id=\"btnendqes)/)||[])[0];
+          if(allMatch) {
+            let allMatches = allMatch.match(/class=\"q_answeritem[\s\S]+?class=\"anscomment\"/) || [];
+            for (let tempMatch of allMatches) {
+              comments.push({
+                isBest: false,
+                id: (tempMatch.match(/aid=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+                content: (tempMatch.match(/class=\"q_content[\s\S]+?(?=id=\"answer_option)/)||[])[0]?.trim()?.
+                  replace(/class=\"q_content\">/,'')?.trim()?.
+                  replace(/<\/div>/,'')?.trim(),
+                name: (tempMatch.match(/class=\"answer_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                level: (()=>{
+                  let temp = (tempMatch.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'');
+                  temp = temp.substr(1);
+                  temp = temp.substr(0, temp.length-1);
+                  return temp;
+                })(),
+                peans: (tempMatch.match(/园豆：\d+?(?=\")/)||[])[0]?.trim()?.replace(/园豆：/,''),
+                published: ((tempMatch.match(/v-split\"[\s\S]+?(?=<\/div>)/)||[])[0]?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])+':00',
+                supportCount: (tempMatch.match(/支持\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
+                rejectCount: (tempMatch.match(/反对\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
+              });
+            }
+          }
+          return comments;
+        })(),
+      } as Partial<questionModel>;
+      return question;
+    }
   });
 };
 

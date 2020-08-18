@@ -195,9 +195,12 @@ export default class question_item extends PureComponent<IProps, any> {
           onPress={() => {
             if (clickable) {
               // this.props.navigation.navigate('QuestionDetail', {});
-              NavigationHelper.push('YZWebPage',{
-                title: '博问详情',
-                uri: item.link
+              // NavigationHelper.push('YZWebPage',{
+              //   title: '博问详情',
+              //   uri: item.link
+              // });
+              NavigationHelper.push('QuestionDetail', {
+                item: item
               });
             }
           }}>

@@ -216,6 +216,7 @@ export default class status_item extends PureComponent<IProps, IState> {
             <HTMLView
               containerStyle={{marginVertical: 7}}
               html={item.summary}
+              //@ts-ignore
               stylesheet={styles}
             />
             {item.commentCount > 0 ? (

@@ -38,9 +38,11 @@ import {ReduxState} from '../../../reducers';
 import AutoHeightWebView from 'react-native-autoheight-webview';
 import {ServiceTypes} from "../../YZTabBarView";
 import {NavigationBar} from "@yz1311/teaset";
+import {Api} from "../../../api";
+import {questionModel} from "../../../api/question";
 
 interface IProps extends IBaseDataPageProps {
-  item: any;
+  item: questionModel;
   answerQuestionFn?: any;
   answerList?: Array<any>;
   getAnswerListResult?: any;
@@ -49,25 +51,8 @@ interface IProps extends IBaseDataPageProps {
   isLogin?: boolean
 }
 
-@(connect(
-  (state: ReduxState) => ({
-    data: state.questionDetail.questionDetail,
-    loadDataResult: state.questionDetail.getQuestionDetailResult,
-    answerList: state.questionDetail.answerList,
-    getAnswerListResult: state.questionDetail.getAnswerListResult,
-    userInfo: state.loginIndex.userInfo,
-    item: state.questionDetail.selectedQuestion,
-    isLogin: state.loginIndex.isLogin
-  }),
-  dispatch => ({
-    dispatch,
-    loadDataFn: data => dispatch(getQuestionDetail(data)),
-    clearDataFn: data => dispatch(clearQuestionDetail(data)),
-    clearQuestionAnswerListFn: data => dispatch(clearQuestionAnswerList(data)),
-    answerQuestionFn: data => dispatch(answerQuestion(data)),
-  }),
-) as any)
-export default class question_detail extends YZBaseDataPage<IProps, any> {
+
+export default class question_detail extends Component<IProps, any> {
   static propTypes = {
     item: PropTypes.object,
   };
@@ -84,36 +69,23 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
   }
 
   componentDidMount() {
-    super.componentDidMount();
-    this.reloadListener = DeviceEventEmitter.addListener(
-      'reload_question_detail',
-      this.loadData,
-    );
+    this.loadData();
   }
 
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (this.props.loadDataResult !== nextProps.loadDataResult) {
-      this.setState({
-        isRefreshing: false,
+  loadData = async ()=>{
+    const {item} = this.props;
+    try {
+      let response = await Api.question.getQuestionDetail({
+        request: {
+          id: item.id
+        }
       });
+    } catch (e) {
+
+    } finally {
+
     }
   }
-
-  componentWillUnmount() {
-    super.componentWillUnmount();
-    this.reloadListener && this.reloadListener.remove();
-  }
-
-  getParams = () => {
-    const {item} = this.props;
-    const params = {
-      request: {
-        id: item.Qid,
-      },
-      url: item.Url,
-    };
-    return params;
-  };
 
   _renderCommentItem = ({item, index}) => {
     return <AnswerItem item={item} />;
@@ -181,25 +153,25 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
         {/*    selectable={true}*/}
         {/*    navigation={this.props.navigation}*/}
         {/*/>*/}
-        <QuestionDetail
-          DiggCount={this.props.data.DiggCount}
-          AnswerCount={this.props.data.AnswerCount}
-          ViewCount={this.props.data.ViewCount}
-          title={this.props.data.Title}
-          avatar={
-            this.props.data.QuestionUserInfo
-              ? this.props.data.QuestionUserInfo.Face
-              : 'https://pic.cnblogs.com/face/sample_face.gif'
-          }
-          author={
-            this.props.data.QuestionUserInfo
-              ? this.props.data.QuestionUserInfo.UserName
-              : ''
-          }
-          timeDesc={this.props.data.postDateDesc}
-          content={this.props.data.ConvertedContent}
-          onMessage={this._onMessage}
-        />
+        {/*<QuestionDetail*/}
+        {/*  DiggCount={this.props.item.comments+''}*/}
+        {/*  AnswerCount={this.props.item.comments+''}*/}
+        {/*  ViewCount={this.props.item.comments+''}*/}
+        {/*  title={this.props.item.title}*/}
+        {/*  avatar={*/}
+        {/*    this.props.data.QuestionUserInfo*/}
+        {/*      ? this.props.data.QuestionUserInfo.Face*/}
+        {/*      : 'https://pic.cnblogs.com/face/sample_face.gif'*/}
+        {/*  }*/}
+        {/*  author={*/}
+        {/*    this.props.data.QuestionUserInfo*/}
+        {/*      ? this.props.data.QuestionUserInfo.UserName*/}
+        {/*      : ''*/}
+        {/*  }*/}
+        {/*  timeDesc={this.props.data.postDateDesc}*/}
+        {/*  content={this.props.data.ConvertedContent}*/}
+        {/*  onMessage={this._onMessage}*/}
+        {/*/>*/}
         <Text
           style={{marginVertical: 8, color: gColors.color666, marginLeft: 8}}>
           所有回答
@@ -209,76 +181,26 @@ export default class question_detail extends YZBaseDataPage<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <NavigationBar title='博问' />
-        <YZStateView
-          loadDataResult={this.props.loadDataResult}
-          placeholderTitle="暂无数据"
-          errorButtonAction={this.loadData}>
-          {this.props.getAnswerListResult.success &&
-          this.props.answerList.length == 0 ? (
-            <ScrollView
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.isRefreshing}
-                  onRefresh={() => {
-                    this.setState(
-                      {
-                        isRefreshing: true,
-                      },
-                      this.loadData,
-                    );
-                  }}
-                />
-              }
-              style={{flex: 1, overflow: 'hidden'}}>
-              {headerComponent}
-              <View style={{marginVertical: 30, alignItems: 'center'}}>
-                <Text style={{color: gColors.color999}}>-- 暂无回答 --</Text>
-              </View>
-            </ScrollView>
-          ) : (
-            <YZStateView
-              loadDataResult={this.props.getAnswerListResult}
-              placeholderTitle="-- 暂无回答 --"
-              errorButtonAction={this.loadData}>
-              <YZFlatList
-                ref={ref => (this._flatList = ref)}
-                style={{flex: 1}}
-                renderItem={this._renderCommentItem}
-                ListHeaderComponent={headerComponent}
-                data={this.props.answerList}
-                loadDataResult={this.props.getAnswerListResult}
-                noMore
-                initialNumToRender={20}
-                loadData={this.loadData}
-                ListFooterComponent={() => null}
-                ItemSeparatorComponent={() => (
-                  <View
-                    style={{height: 1, backgroundColor: gColors.borderColor}}
-                  />
-                )}
-              />
-            </YZStateView>
-          )}
-        </YZStateView>
-        <YZCommentInput
-          onSubmit={this.onSubmit}
-          isLogin={this.props.isLogin}
-          placeholder="想说点什么"
-          menuComponent={() => (
-            <YZCommonActionMenu
-              data={this.props.item}
-              commentCount={data.AnswerCount}
-              serviceType={ServiceTypes.博问}
-              onClickCommentList={() => {
-                this._flatList &&
-                  this._flatList.flatList.scrollToIndex({
-                    viewPosition: 0,
-                    index: 0,
-                  });
-              }}
-            />
-          )}
-        />
+
+        {/*<YZCommentInput*/}
+        {/*  onSubmit={this.onSubmit}*/}
+        {/*  isLogin={this.props.isLogin}*/}
+        {/*  placeholder="想说点什么"*/}
+        {/*  menuComponent={() => (*/}
+        {/*    <YZCommonActionMenu*/}
+        {/*      data={this.props.item}*/}
+        {/*      commentCount={data.AnswerCount}*/}
+        {/*      serviceType={ServiceTypes.博问}*/}
+        {/*      onClickCommentList={() => {*/}
+        {/*        this._flatList &&*/}
+        {/*          this._flatList.flatList.scrollToIndex({*/}
+        {/*            viewPosition: 0,*/}
+        {/*            index: 0,*/}
+        {/*          });*/}
+        {/*      }}*/}
+        {/*    />*/}
+        {/*  )}*/}
+        {/*/>*/}
       </View>
     );
   }

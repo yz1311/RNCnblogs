@@ -17,6 +17,7 @@ import {connect} from 'react-redux';
 // import YZLottieView from '../components/YZLottieView';
 import {showToast} from '../actions/app_actions';
 import {ReduxState} from '../reducers';
+import {Theme} from "@yz1311/teaset";
 
 export interface IProps {
   menuComponent: any;
@@ -258,7 +259,7 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
               }}>
               <Text
                 style={{
-                  color: !canSubmit ? gColors.color999 : gColors.themeColor,
+                  color: !canSubmit ? gColors.color999 : Theme.primaryColor,
                   fontSize: gFont.size15,
                 }}>
                 {submitButtonText}

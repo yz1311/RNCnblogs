@@ -5,14 +5,13 @@ import {
   TouchableOpacity,
   Image,
   Text,
-  Alert,
   Clipboard,
   Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {Alert, ListRow, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import {Styles} from '../../common/styles';
 import moment from 'moment';
