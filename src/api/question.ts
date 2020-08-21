@@ -26,7 +26,7 @@ export type questionModel = {
   }>,
   diggs: number,
   comments: number,
-  commentList: Array<any>;
+  commentList: Array<questionCommentModel>;
   views: number,
   published: string,
   publishedDesc: string,
@@ -36,6 +36,20 @@ export type questionModel = {
     summary: string,
     uri: string
   }
+};
+
+export type questionCommentModel = {
+  isBest: boolean;
+  id: string;
+  content: string;
+  name: string;
+  userId: string;
+  level: string;
+  peans: string;
+  published: string;
+  supportCount: string;
+  rejectCount: string;
+  avatar: string;
 };
 
 export type personQuestionIndex = {
@@ -103,7 +117,7 @@ export const checkIsAnswered = data => {
 export const getQuestionDetail = data => {
   const URL = `https://q.cnblogs.com/q/${data.request.id}`;
   const options = createOptions(data, 'GET');
-  return RequestUtils.get(URL, {
+  return RequestUtils.get<questionModel>(URL, {
     resolveResult: (result)=>{
       let match = (result.match(/<div id=\"main[\s\S]+?id=\"right_sidebar\"/g) || [])[0];
       let question = {
@@ -142,6 +156,7 @@ export const getQuestionDetail = data => {
                 replace(/class=\"q_content\">/,'')?.trim()?.
                 replace(/<\/div>/,'')?.trim(),
               name: (bestMatch.match(/class=\"answer_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+              userId: (bestMatch.match(/href=\"\/u\/[\s\S]+?(?=\/\")/)||[])[0]?.replace(/[\s\S]+\//,''),
               level: (bestMatch.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
               peans: (bestMatch.match(/园豆：\d+?(?=\")/)||[])[0]?.trim()?.replace(/园豆：/,''),
               published: ((bestMatch.match(/v-split\"[\s\S]+?(?=<\/div>)/)||[])[0]?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])+':00',
@@ -152,7 +167,7 @@ export const getQuestionDetail = data => {
           //全部答案(里面不包含最佳答案)
           let allMatch = (match.match(/class=\"qitem_all_answer_inner[\s\S]+?(?=<div id=\"btnendqes)/)||[])[0];
           if(allMatch) {
-            let allMatches = allMatch.match(/class=\"q_answeritem[\s\S]+?class=\"anscomment\"/) || [];
+            let allMatches = allMatch.match(/class=\"q_answeritem[\s\S]+?class=\"anscomment\"/g) || [];
             for (let tempMatch of allMatches) {
               comments.push({
                 isBest: false,
@@ -161,6 +176,7 @@ export const getQuestionDetail = data => {
                   replace(/class=\"q_content\">/,'')?.trim()?.
                   replace(/<\/div>/,'')?.trim(),
                 name: (tempMatch.match(/class=\"answer_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                userId: (tempMatch.match(/href=\"\/u\/[\s\S]+?(?=\/\")/)||[])[0]?.replace(/[\s\S]+\//,''),
                 level: (()=>{
                   let temp = (tempMatch.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,'');
                   temp = temp.substr(1);

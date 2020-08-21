@@ -1,5 +1,16 @@
 import {Action, ActionMeta} from "redux-actions";
 import YZStateView from "../components/YZStateView";
+import produce from "immer";
+
+export const handleActions = <T = any>(
+    actionsMap: {[key: string]: (state: T, action: SagaAction<any>) => void},
+    defaultState,
+) => (state = defaultState, preAction) =>
+    produce(state, draft => {
+      const {type} = preAction;
+      const action = actionsMap[type];
+      action && action(draft, preAction);
+    });
 
 /**
  * 将action对象转换成,redux中将action转换成结果

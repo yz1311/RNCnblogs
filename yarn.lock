@@ -1643,10 +1643,10 @@
     "@types/prop-types" "*"
     "@types/react" "*"
 
-"@types/react-native@0.62.17":
-  version "0.62.17"
-  resolved "https://registry.npmjs.org/@types/react-native/-/react-native-0.62.17.tgz#78e630692557ae82a106dab7682560a8b541c49a"
-  integrity sha512-nkWG9oYS0wNiobzY11GOAjG/spV4vCPIbW+u1QIXx+wnQQ4EhkFz6lqqvncO3puXMzwkRhEGawq/bImMReA/vQ==
+"@types/react-native@0.63.8":
+  version "0.63.8"
+  resolved "https://registry.npmjs.org/@types/react-native/-/react-native-0.63.8.tgz#73ec087122c64c309eeaf150b565b8d755f0fb1f"
+  integrity sha512-QRwGFRTyGafRVTUS+0GYyJrlpmS3boyBaFI0ULSc+mh/lQNxrzbdQvoL2k5X7+t9hxyqA4dTQAlP6l0ir/fNJQ==
   dependencies:
     "@types/react" "*"
 

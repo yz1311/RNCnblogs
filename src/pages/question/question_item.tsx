@@ -17,9 +17,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import StringUtils from '../../utils/stringUtils';
-import Markdown, {getUniqueID} from 'react-native-markdown-renderer';
-import FitImage from 'react-native-fit-image';
 import {deleteQuestion} from '../../actions/question/question_index_actions';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
@@ -285,16 +282,13 @@ export default class question_item extends PureComponent<IProps, any> {
             {/*      },*/}
             {/*    }}*/}
             {/*/>*/}
-            <View style={{flexDirection: 'row'}}>
-              {showAll ? (
-                <Markdown>{item.summary}</Markdown>
-              ) :
-                  <HTMLView
-                      baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
-                      containerStyle={{marginVertical: 4}}
-                      html={item.summary}
-                  />
-              }
+            <View style={{}}>
+              <HTMLView
+                  baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
+                  containerStyle={{marginVertical: 4}}
+                  imagesMaxWidth={Theme.deviceWidth}
+                  html={item.summary}
+              />
             </View>
             <View
               style={{

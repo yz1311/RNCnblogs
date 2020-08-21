@@ -24,22 +24,16 @@ import YZCommentInput from '../../../components/YZCommentInput';
 import YZCommonActionMenu from '../../../components/YZCommonActionMenu';
 import {Styles} from '../../../common/styles';
 import PropTypes from 'prop-types';
-import {
-  getQuestionDetail,
-  clearQuestionDetail,
-  clearQuestionAnswerList,
-  answerQuestion,
-  setSelectedQuestion,
-} from '../../../actions/question/question_detail_actions';
 import QuestionItem from '../question_item';
-import AnswerItem from './answer_item';
-import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
-import AutoHeightWebView from 'react-native-autoheight-webview';
-import {ServiceTypes} from "../../YZTabBarView";
-import {NavigationBar} from "@yz1311/teaset";
+import {NavigationBar, Theme} from "@yz1311/teaset";
 import {Api} from "../../../api";
-import {questionModel} from "../../../api/question";
+import {questionCommentModel, questionModel} from "../../../api/question";
+import {createReducerResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
+import CommentItem from "../../blog/comment_item";
+import ToastUtils from "../../../utils/toastUtils";
+import ProfileServices from "../../../services/profileServices";
+import produce from "immer";
 
 interface IProps extends IBaseDataPageProps {
   item: questionModel;
@@ -52,7 +46,16 @@ interface IProps extends IBaseDataPageProps {
 }
 
 
-export default class question_detail extends Component<IProps, any> {
+interface IState {
+  isRefreshing: boolean;
+  questionDetail: Partial<questionModel>,
+  loadDataResult: ReducerResult
+}
+
+@(connect((state:ReduxState)=>({
+  userInfo: state.loginIndex.userInfo
+})) as any)
+export default class question_detail extends Component<IProps, IState> {
   static propTypes = {
     item: PropTypes.object,
   };
@@ -63,8 +66,9 @@ export default class question_detail extends Component<IProps, any> {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.state,
       isRefreshing: false,
+      questionDetail: null,
+      loadDataResult: createReducerResult()
     };
   }
 
@@ -80,98 +84,131 @@ export default class question_detail extends Component<IProps, any> {
           id: item.id
         }
       });
+      this.setState({
+        questionDetail: response.data,
+        loadDataResult: dataToReducerResult(response.data)
+      });
+      //加载评论的头像
+      if(response.data.commentList&&response.data.commentList.length>0) {
+        let avatars = await ProfileServices.getAllUserAvatars(response.data.commentList.map(x=>x.userId));
+        let nextDetail = produce(response.data, draftState=>{
+          let index = 0;
+          for (let comment of draftState.commentList) {
+            comment.avatar = avatars[index];
+            index++;
+          }
+        });
+        this.setState({
+          questionDetail: nextDetail
+        });
+      }
     } catch (e) {
-
+      this.setState({
+        loadDataResult: dataToReducerResult(e)
+      });
     } finally {
 
     }
   }
 
-  _renderCommentItem = ({item, index}) => {
-    return <AnswerItem item={item} />;
-  };
 
-  _onMessage = event => {
-    let postedMessage = event.nativeEvent.data;
-    try {
-      postedMessage = JSON.parse(event.nativeEvent.data);
-    } catch (e) {}
-    const {item, data} = this.props;
-    switch (postedMessage.type) {
-      case 'img_click':
-        DeviceEventEmitter.emit('showImageViewer', {
-          images: data.imgList.map(x=>({
-            url: x
-          })),
-          index: data.imgList.indexOf(postedMessage.url) == -1
-              ? 0
-              : data.imgList.indexOf(postedMessage.url),
-        });
-        break;
-      case 'link_click':
-        Linking.canOpenURL(postedMessage.url).then(supported => {
-          if (supported) {
-            // Linking.openURL(postedMessage.url);
-            this.props.navigation.navigate('YZWebPage', {
-              uri: postedMessage.url,
-              title: '详情',
-            });
-          } else {
-            console.log('无法打开该URL:' + postedMessage.url);
-          }
-        });
-        break;
-    }
+  _renderCommentItem = ({item, index}:{item:questionCommentModel,index:number}) => {
+    const {userInfo} = this.props;
+    return (
+        <CommentItem
+            item={item}
+            iconName={item?.avatar||''}
+            authorUserId={item.userId}
+            userId={''}
+            userName={item.name}
+            floor={index+1}
+            content={item.content}
+            postDate={item.published}
+            //官方闪存评论无法修改
+            canModify={false}
+            canDelete={item.userId === userInfo.id}
+            onComment={(item, userName) => {
+              this.setState(
+                  {
+                    // headerTitle: '正在回复  ' + userName,
+                    // headerSubmit: '@' + userName + ':',
+                    // selectedCommentItem: item,
+                  },
+                  () => {
+                    // console.log(this._commentInput)
+                    // this._commentInput &&
+                    // this._commentInput.show();
+                  },
+              );
+            }}
+            onDeleteCommentFn={async () => {
+              ToastUtils.showLoading();
+              try {
+                let response = await Api.status.deleteStatusComment({
+                  request: {
+                    commentId: parseInt(item.id)
+                  }
+                });
+                if(response.data.isSuccess) {
+                  ToastUtils.showToast('删除成功!');
+                  //刷新当前列表
+                  // this.pageIndex = 1;
+                  if (this._flatList) {
+                    this._flatList && this._flatList._onRefresh();
+                  } else {
+                    this.loadData();
+                  }
+                } else {
+                  ToastUtils.showToast(response.data.message, {
+                    position: ToastUtils.positions.CENTER,
+                    type: ToastUtils.types.error
+                  });
+                }
+              } catch (e) {
+                ToastUtils.showToast(e.message, {
+                  position: ToastUtils.positions.CENTER,
+                  type: ToastUtils.types.error
+                });
+              } finally {
+                ToastUtils.hideLoading();
+              }
+            }}
+        />
+    );
   };
 
   onSubmit = (text, callback) => {
     const {answerQuestionFn, item, userInfo} = this.props;
-    let QuestionUserInfo = item.QuestionUserInfo || {};
-    answerQuestionFn({
-      request: {
-        id: item.Qid,
-        loginName: userInfo.BlogApp,
-        Answer: text,
-        UserID: QuestionUserInfo.UserID,
-        //这个不是评论人
-        UserName: QuestionUserInfo.UserName,
-      },
-      successAction: () => {
-        callback && callback();
-      },
-    });
+    // let QuestionUserInfo = item.QuestionUserInfo || {};
+    // answerQuestionFn({
+    //   request: {
+    //     id: item.Qid,
+    //     loginName: userInfo.BlogApp,
+    //     Answer: text,
+    //     UserID: QuestionUserInfo.UserID,
+    //     //这个不是评论人
+    //     UserName: QuestionUserInfo.UserName,
+    //   },
+    //   successAction: () => {
+    //     callback && callback();
+    //   },
+    // });
   };
 
   render() {
     const {item, data} = this.props;
+    const {questionDetail} = this.state;
     let headerComponent = (
       <View>
-        {/*<QuestionItem*/}
-        {/*    item={this.props.data}*/}
-        {/*    clickable={false}*/}
-        {/*    showAll={true}*/}
-        {/*    selectable={true}*/}
-        {/*    navigation={this.props.navigation}*/}
-        {/*/>*/}
-        {/*<QuestionDetail*/}
-        {/*  DiggCount={this.props.item.comments+''}*/}
-        {/*  AnswerCount={this.props.item.comments+''}*/}
-        {/*  ViewCount={this.props.item.comments+''}*/}
-        {/*  title={this.props.item.title}*/}
-        {/*  avatar={*/}
-        {/*    this.props.data.QuestionUserInfo*/}
-        {/*      ? this.props.data.QuestionUserInfo.Face*/}
-        {/*      : 'https://pic.cnblogs.com/face/sample_face.gif'*/}
-        {/*  }*/}
-        {/*  author={*/}
-        {/*    this.props.data.QuestionUserInfo*/}
-        {/*      ? this.props.data.QuestionUserInfo.UserName*/}
-        {/*      : ''*/}
-        {/*  }*/}
-        {/*  timeDesc={this.props.data.postDateDesc}*/}
-        {/*  content={this.props.data.ConvertedContent}*/}
-        {/*  onMessage={this._onMessage}*/}
-        {/*/>*/}
+        <QuestionItem
+            item={{
+              ...this.props.item,
+              summary: questionDetail?.summary || this.props.item.summary
+            }}
+            clickable={false}
+            selectable={true}
+            navigation={this.props.navigation}
+        />
         <Text
           style={{marginVertical: 8, color: gColors.color666, marginLeft: 8}}>
           所有回答
@@ -181,7 +218,57 @@ export default class question_detail extends Component<IProps, any> {
     return (
       <View style={[Styles.container]}>
         <NavigationBar title='博问' />
-
+        <YZStateView
+            loadDataResult={createReducerResult({state: 'content'})}
+            placeholderTitle="暂无数据"
+            errorButtonAction={this.loadData}>
+          {this.state.loadDataResult.success &&
+          this.state.questionDetail?.commentList.length == 0 ? (
+              <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={() => {
+                          this.setState(
+                              {
+                                isRefreshing: true,
+                              },
+                              this.loadData,
+                          );
+                        }}
+                        colors={[Theme.primaryColor]}
+                    />
+                  }
+                  style={{flex: 1, overflow: 'hidden'}}>
+                {headerComponent}
+                <View style={{marginVertical: 30, alignItems: 'center'}}>
+                  <Text style={{color: gColors.color999}}>-- 暂无评论 --</Text>
+                </View>
+              </ScrollView>
+          ) : (
+              <YZStateView
+                  loadDataResult={this.state.loadDataResult}
+                  placeholderTitle="-- 暂无评论 --"
+                  errorButtonAction={this.loadData}>
+                <YZFlatList
+                    ref={ref => (this._flatList = ref)}
+                    ListHeaderComponent={headerComponent}
+                    renderItem={this._renderCommentItem}
+                    data={this.state.questionDetail?.commentList}
+                    loadDataResult={this.state.loadDataResult}
+                    noMore
+                    initialNumToRender={20}
+                    loadData={this.loadData}
+                    ListFooterComponent={() => <View style={{height: 0, backgroundColor:'transparent'}} />}
+                    ItemSeparatorComponent={() => (
+                        <View
+                            style={{height: 1, backgroundColor: gColors.borderColor}}
+                        />
+                    )}
+                />
+              </YZStateView>
+          )}
+        </YZStateView>
         {/*<YZCommentInput*/}
         {/*  onSubmit={this.onSubmit}*/}
         {/*  isLogin={this.props.isLogin}*/}
@@ -206,113 +293,6 @@ export default class question_detail extends Component<IProps, any> {
   }
 }
 
-const QuestionDetail: FC<{
-  content: string;
-  title: string;
-  author: string;
-  avatar: string;
-  timeDesc: string;
-  DiggCount: string;
-  AnswerCount: string;
-  ViewCount: string;
-  onMessage: any;
-}> = ({
-  content,
-  title,
-  author,
-  avatar,
-  timeDesc,
-  DiggCount,
-  AnswerCount,
-  ViewCount,
-  onMessage,
-}) => {
-  let toPx = num => num;
-  let html = `
-        <body>
-            <div style="display: flex;flex-direction: column;padding: ${toPx(
-              8,
-            )}px;">
-            <div style="display: flex;flex-direction: row;align-items: center;">
-                <img class="avatar" src="${avatar}" />
-                <span class="userName">${author}</span>
-                <span class="dateDesc">${timeDesc}</span>
-            </div>
-            <div style="font-weight: bold;font-size: ${toPx(15)}px;color:${
-    gColors.color0
-  };margin-top: 10px;margin-bottom: 10px;">${title}</div>
-            ${content}
-            <div style="display: flex;flex-direction: row;align-items: center;color:${
-              gColors.color666
-            };font-size: 12px;">
-                ${DiggCount} 推荐 · ${AnswerCount} 回答 · ${ViewCount} 阅读
-            </div>
-        </body>
-    `;
-  return (
-    <AutoHeightWebView
-      customScript={`document.body.style.background = 'white';window.onload = function(){
-                        var imgs = document.getElementsByTagName("img");
-                        for (let i=0;i<imgs.length;i++) {
-                            imgs[i].onclick = function(){
-                                window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                    type: 'img_click',
-                                    url: imgs[i].src
-                                }))
-                            }
-                        }
-                        var links = document.getElementsByTagName("a");
-                        for (let i=0;i<links.length;i++) {
-                            links[i].onclick = function(){
-                                window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                    type: 'link_click',
-                                    url: links[i].href
-                                }));
-                                return false;
-                            }
-                        }
-                    };`}
-      customStyle={`
-                body {
-                    font-size: ${toPx(14)}px;
-                }
-                img {
-                    height: auto;
-                    width: auto;
-                    max-width: 100%;
-                }
-                pre {
-                    background-color: #f5f5f5;
-                    font-family: Courier New!important;
-                    font-size: 12px!important;
-                    border: 1px solid #ccc;
-                    padding: ${toPx(5)}px;
-                    overflow: auto;
-                    margin: ${toPx(5)}px 0;
-                    color: #000;
-                }
-                .avatar {
-                    width: ${toPx(28)}px;
-                    height:${toPx(28)}px;
-                    border-radius: ${toPx(14)}px;
-                }
-                .userName {
-                    color: ${gColors.color333};
-                    font-size: ${toPx(13)}px;
-                    margin-left: ${toPx(7)}px;
-                    font-weight: bold;
-                }
-                .dateDesc {
-                    color: ${gColors.color666};
-                    font-size: ${toPx(12)}px;
-                    margin-left: ${toPx(10)}px;
-                }
-            `}
-      source={{html: html}}
-      onMessage={onMessage}
-    />
-  );
-};
 
 const styles = StyleSheet.create({
   avator: {

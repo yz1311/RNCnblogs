@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   DeviceEventEmitter,
-  Modal
+  Modal,
+  Pressable
 } from 'react-native';
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
@@ -178,6 +179,10 @@ class Root extends PureComponent {
       color: gColors.color4c,
       ...Styles.text4Pie,
     };
+    // @ts-ignore
+    HtmlView.defaultProps.onLinkPress = ()=>{
+
+    }
     Theme.set({
       primaryColor: '#0d7dfa',
       navColor: '#0d7dfa',
@@ -228,6 +233,12 @@ class Root extends PureComponent {
           //@ts-ignore
           ...(RectButton.defaultProps || {}),
           activeOpacity: 0.75,
+      };
+      Pressable.defaultProps = {
+          ...(Pressable.defaultProps || {}),
+          android_ripple: {
+              color: 'yellow'
+          }
       };
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }
