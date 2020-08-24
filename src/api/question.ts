@@ -472,7 +472,7 @@ export const resolveQuestion1Html = (result)=>{
     let item:Partial<questionModel> = {};
     //解析digg
     // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
-    item.id = (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,'');
+    item.id = (match.match(/href=\"\/q\/\d+/)||[])[0]?.replace(/[\s\S]+\//,'');
     item.link = `https://news.cnblogs.com/q/${item.id}/`;
     item.gold = parseInt((match.match(/class=\"gold\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim()||'0');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">

@@ -39,7 +39,9 @@ const QuestionReplayItem:FC<IProps> = ({clickable, item,showAll})=>{
         activeOpacity={clickable ? activeOpacity : 1}
         onPress={() => {
           if (clickable) {
-            NavigationHelper.navigate('QuestionDetail', {});
+            NavigationHelper.navigate('QuestionDetail', {
+              item: item
+            });
           }
         }}>
         <View
