@@ -119,6 +119,10 @@ export default class status_detail extends PureComponent<IProps, IState> {
       this.setState({
         getCommentListResult: dataToReducerResult(e)
       })
+    } finally {
+      this.setState({
+        isRefreshing: false
+      });
     }
   }
 
