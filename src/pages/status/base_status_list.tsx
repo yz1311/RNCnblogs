@@ -14,7 +14,7 @@ import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, NavigationBar} from '@yz1311/teaset';
 import StatusItem from './status_item';
 import CommonUtils from '../../utils/commonUtils';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
@@ -23,11 +23,10 @@ import {Api} from "../../api";
 import {blogCommentModel} from "../../api/blog";
 import {statusModel} from "../../api/status";
 import {SearchParams} from "../home/home_search";
-import {QuestionTypes} from "../question/question_index";
 import {ReduxState} from '../../models';
 import {userInfoModel} from '../../api/login';
-import add = Animated.add;
 import produce from 'immer';
+import {QuestionTypes} from "../question/question_index";
 
 export interface IProps {
   tabLabel?: string;
@@ -35,7 +34,8 @@ export interface IProps {
   statusType: StatusTypes,
   keyword?: string,
   userInfo?: userInfoModel,
-  searchParams?: SearchParams
+  searchParams?: SearchParams,
+  tagName?: string;
 }
 
 interface IState {
@@ -112,7 +112,8 @@ export default class base_status_list extends PureComponent<IProps, IState> {
           request: {
             pageIndex: this.pageIndex,
             pageSize: this.pageSize,
-            statusType: this.props.statusType
+            statusType: this.props.statusType,
+            tag: this.props.tagName
           }
         });
       }
@@ -166,6 +167,11 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   render() {
     return (
       <View style={[Styles.container]}>
+        {this.props.statusType === StatusTypes.标签 ?
+            <NavigationBar title={this.props.tagName}/>
+            :
+            null
+        }
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

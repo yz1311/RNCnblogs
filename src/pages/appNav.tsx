@@ -38,6 +38,7 @@ import {NavigationBar, Theme} from '@yz1311/teaset';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BaseQuestionList from '../pages/question/base_question_list';
+import BaseStatusList from '../pages/status/base_status_list';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Stack = createStackNavigator();
@@ -259,6 +260,10 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="BaseQuestionList"
                     component={withMappedNavigationParams()(BaseQuestionList)}
+                />
+                <Stack.Screen
+                    name="BaseStatusList"
+                    component={withMappedNavigationParams()(BaseStatusList)}
                 />
             </Stack.Navigator>
         );

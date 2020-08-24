@@ -51,8 +51,8 @@ export type statusCommentModel = {
   Floor: number
 };
 
-export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number}>) => {
-  const URL = `https://ing.cnblogs.com/ajax/ing/GetIngList?IngListType=${data.request.statusType}&PageIndex=${data.request.pageIndex}&PageSize=${data.request.pageSize}`;
+export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number, tag?:string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/GetIngList?IngListType=${data.request.statusType}&PageIndex=${data.request.pageIndex}&PageSize=${data.request.pageSize}&Tag=${data.request.tag}`;
   return RequestUtils.get<Array<questionModel>>(URL, {
     headers: {
       //必须要加这个，否则请求失败

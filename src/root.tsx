@@ -3,17 +3,17 @@ import './utils/globalStorage';
 import codePush from 'react-native-code-push';
 import React, {Component, PureComponent} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Alert,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  DeviceEventEmitter,
-  Modal,
-  Pressable
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    Alert,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    DeviceEventEmitter,
+    Modal,
+    Pressable, Linking
 } from 'react-native';
 import {Provider} from 'react-redux';
 import {create} from 'dva-core';
@@ -31,6 +31,8 @@ import ModalExt from 'react-native-modal';
 import {IImageInfo} from "react-native-image-zoom-viewer/built/image-viewer.type";
 import {BaseButton, RectButton} from "react-native-gesture-handler";
 import themeUtils from "./utils/themeUtils";
+import ServiceUtils from "./utils/serviceUtils";
+import {StatusTypes} from "./pages/status/status_index";
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -180,8 +182,46 @@ class Root extends PureComponent {
       ...Styles.text4Pie,
     };
     // @ts-ignore
-    HtmlView.defaultProps.onLinkPress = ()=>{
-
+    HtmlView.defaultProps.onLinkPress = async (evt, href) => {
+        console.log(href);
+        //http://home.cnblogs.com/u/985807/
+        //https://pic.cnblogs.com/face/u76066.png?id=09112956
+        //说明是@个人用户
+        if (href && href.indexOf('//home.cnblogs.com/u') > 0) {
+            // let userInfo = await this.searchUserAlias(href);
+            // if (userInfo) {
+            //     ServiceUtils.viewProfileDetail(
+            //         this.props.dispatch,
+            //         userInfo.alias,
+            //         userInfo.iconUrl,
+            //     );
+            //     return;
+            // }
+        }
+        if(href && href.indexOf('/tag/') === 0) {
+            href = href.replace('/tag/', '');
+            if(href[href.length-1] === '/') {
+                href = href.substr(0, href.length - 1);
+            }
+            let tagName = decodeURI(href);
+            NavigationHelper.push('BaseStatusList', {
+                statusType: StatusTypes.标签,
+                tagName: tagName
+            });
+            return ;
+        }
+        //Todo:需要区分是链接还是文件
+        Linking.canOpenURL(href).then(supported => {
+            if (supported) {
+                // Linking.openURL(postedMessage.url);
+                NavigationHelper.navigate('YZWebPage', {
+                    uri: href,
+                    title: '详情',
+                });
+            } else {
+                console.log('无法打开该URL:' + href);
+            }
+        });
     }
     Theme.set({
       primaryColor: '#0d7dfa',

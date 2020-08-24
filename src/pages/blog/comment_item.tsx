@@ -409,35 +409,6 @@ export default class comment_item extends PureComponent<IProps, IState> {
           <HTMLView
             containerStyle={{marginVertical: 12}}
             html={content}
-            onLinkPress={async (evt, href) => {
-              console.log(href);
-              //http://home.cnblogs.com/u/985807/
-              //https://pic.cnblogs.com/face/u76066.png?id=09112956
-              //说明是@个人用户
-              if (href && href.indexOf('//home.cnblogs.com/u') > 0) {
-                let userInfo = await this.searchUserAlias(href);
-                if (userInfo) {
-                  ServiceUtils.viewProfileDetail(
-                    this.props.dispatch,
-                    userInfo.alias,
-                    userInfo.iconUrl,
-                  );
-                  return;
-                }
-              }
-              //Todo:需要区分是链接还是文件
-              Linking.canOpenURL(href).then(supported => {
-                if (supported) {
-                  // Linking.openURL(postedMessage.url);
-                  NavigationHelper.navigate('YZWebPage', {
-                    uri: href,
-                    title: '详情',
-                  });
-                } else {
-                  console.log('无法打开该URL:' + href);
-                }
-              });
-            }}
           />
           <Text style={{fontSize: gFont.size13, color: gColors.color999}}>
             {StringUtils.formatDate(postDate)}
