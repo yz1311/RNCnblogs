@@ -114,6 +114,8 @@ export default class question_detail extends Component<IProps, IState> {
 
   _renderCommentItem = ({item, index}:{item:questionCommentModel,index:number}) => {
     const {userInfo} = this.props;
+    console.log(item.level)
+    console.log(item.peans)
     return (
         <CommentItem
             item={item}
@@ -121,6 +123,8 @@ export default class question_detail extends Component<IProps, IState> {
             authorUserId={item.userId}
             userId={''}
             userName={item.name}
+            questionLevel={item.level}
+            questionPeans={item.peans}
             floor={index+1}
             content={item.content}
             postDate={item.published}

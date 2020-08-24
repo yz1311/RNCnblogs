@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Alert, ListRow, Overlay} from '@yz1311/teaset';
+import {Alert, ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import {Styles} from '../../common/styles';
 import moment from 'moment';
@@ -48,6 +48,8 @@ interface IProps extends IReduxProps {
   canModify: boolean;
   canDelete: boolean;
   userInfo?: any;
+  questionLevel?: string;
+  questionPeans?: string;
 }
 
 interface IState {}
@@ -222,51 +224,6 @@ export default class comment_item extends PureComponent<IProps, IState> {
     });
   };
 
-  renderNode = (node, index, siblings, parent, defaultRenderer) => {
-    if (node.name === 'fieldset') {
-      const a = node.attribs;
-      let text = ``;
-      let legend = '';
-      for (let child of node.children) {
-        if (child.type === 'tag') {
-          switch (child.name) {
-            case 'legend':
-              legend = child.children.length > 0 ? child.children[0].data : '';
-              break;
-            case 'br':
-              text += '\n';
-              break;
-          }
-        } else if (child.type === 'text') {
-          text += child.data;
-        }
-      }
-      return (
-        <View
-          style={{
-            borderColor: gColors.color999,
-            borderWidth: 1,
-            borderRadius: 6,
-            padding: 8,
-          }}>
-          <Text>{text}</Text>
-          <Text
-            style={{
-              position: 'absolute',
-              top: -7,
-              left: 15,
-              backgroundColor: gColors.bgColorF,
-              fontSize: gFont.size12,
-            }}>
-            {legend}
-          </Text>
-        </View>
-      );
-    } else if (node.name === 'quote') {
-      console.log(node);
-    }
-  };
-
   //查看个人页面
   searchUserAlias = async href => {
     let userId = ServiceUtils.getUserIdFromAvatorUrl(href);
@@ -379,11 +336,18 @@ export default class comment_item extends PureComponent<IProps, IState> {
         </TouchableOpacity>
         <View style={{flex: 1, marginLeft: 7}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={[Styles.userName, {fontWeight: 'bold'}]}>
-              <Text style={{color: 'salmon'}}>{'#' + floor + '楼'}</Text>
-              &nbsp;&nbsp;
-              <Text>{userName}</Text>
-            </Text>
+            <View>
+              <Text style={[Styles.userName, {fontWeight: 'bold'}]}>
+                <Text style={{color: 'salmon'}}>{'#' + floor + '楼'}</Text>
+                &nbsp;&nbsp;
+                <Text>{userName}</Text>
+              </Text>
+              {this.props.questionPeans != undefined ?
+                  <Text style={{...Theme.fontSizeAndColor(23, gColors.color999), marginTop:Theme.px2dp(8)}}>{`园豆：${this.props.questionPeans}(${this.props.questionLevel})`}</Text>
+                  :
+                  null
+              }
+            </View>
             {userId == authorUserId ? (
               <View
                 style={{
@@ -400,12 +364,6 @@ export default class comment_item extends PureComponent<IProps, IState> {
               </View>
             ) : null}
           </View>
-          {/*<HTMLView*/}
-          {/*style={{marginVertical:12}}*/}
-          {/*value={content}*/}
-          {/*renderNode={this.renderNode}*/}
-          {/*stylesheet={styles}*/}
-          {/*/>*/}
           <HTMLView
             containerStyle={{marginVertical: 12}}
             html={content}

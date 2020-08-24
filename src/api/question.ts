@@ -166,7 +166,7 @@ export const getQuestionDetail = data => {
               name: (bestMatch.match(/class=\"answer_author\"[\s\S]+?class=\"bluelink\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
               userId: (bestMatch.match(/href=\"\/u\/[\s\S]+?(?=\/\")/)||[])[0]?.replace(/[\s\S]+\//,''),
               level: (bestMatch.match(/href=\"\/q\/faq#qt\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
-              peans: (bestMatch.match(/园豆：\d+?(?=\")/)||[])[0]?.trim()?.replace(/园豆：/,''),
+              peans: (bestMatch.match(/园豆：\d+/)||[])[0]?.trim()?.replace(/园豆：/,''),
               published: ((bestMatch.match(/v-split\"[\s\S]+?(?=<\/div>)/)||[])[0]?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])+':00',
               supportCount: (bestMatch.match(/支持\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
               rejectCount: (bestMatch.match(/反对\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
@@ -177,6 +177,7 @@ export const getQuestionDetail = data => {
           if(allMatch) {
             let allMatches = allMatch.match(/class=\"q_answeritem[\s\S]+?class=\"anscomment\"/g) || [];
             for (let tempMatch of allMatches) {
+              console.log(tempMatch)
               comments.push({
                 isBest: false,
                 id: (tempMatch.match(/aid=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
@@ -191,13 +192,15 @@ export const getQuestionDetail = data => {
                   temp = temp.substr(0, temp.length-1);
                   return temp;
                 })(),
-                peans: (tempMatch.match(/园豆：\d+?(?=\")/)||[])[0]?.trim()?.replace(/园豆：/,''),
+                peans: (tempMatch.match(/园豆：\d+/)||[])[0]?.trim()?.replace(/园豆：/,''),
                 published: ((tempMatch.match(/v-split\"[\s\S]+?(?=<\/div>)/)||[])[0]?.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])+':00',
                 supportCount: (tempMatch.match(/支持\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
                 rejectCount: (tempMatch.match(/反对\(\[\s\S]+?(?=<\/span>")/)||[])[0]?.trim()?.replace(/[\s\S]+>/,''),
               });
             }
           }
+          console.log('~~~~comments')
+          console.log(comments)
           return comments;
         })(),
       } as Partial<questionModel>;
