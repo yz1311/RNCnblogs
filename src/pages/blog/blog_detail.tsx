@@ -496,27 +496,27 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             />
           </View>
         </YZStateView>
-        {/*<YZCommentInput*/}
-        {/*  onSubmit={this.onSubmit}*/}
-        {/*  isLogin={this.props.isLogin}*/}
-        {/*  menuComponent={() => (*/}
-        {/*    <YZCommonActionMenu*/}
-        {/*      data={this.props.item}*/}
-        {/*      title={this.props.item.title}*/}
-        {/*      commentCount={this.state.commentCount}*/}
-        {/*      serviceType={ServiceTypes.博客}*/}
-        {/*      onClickCommentList={() => {*/}
-        {/*        NavigationHelper.push('BlogCommentList', {*/}
-        {/*          pageIndex: 1,*/}
-        {/*          item: {*/}
-        {/*            ...item,*/}
-        {/*            id: this.state.postId*/}
-        {/*          },*/}
-        {/*        });*/}
-        {/*      }}*/}
-        {/*    />*/}
-        {/*  )}*/}
-        {/*/>*/}
+        <YZCommentInput
+          onSubmit={this.onSubmit}
+          isLogin={this.props.isLogin}
+          menuComponent={() => (
+            <YZCommonActionMenu
+              data={this.props.item}
+              title={this.props.item.title}
+              commentCount={this.state.commentCount}
+              serviceType={ServiceTypes.博客}
+              onClickCommentList={() => {
+                NavigationHelper.push('BlogCommentList', {
+                  pageIndex: 1,
+                  item: {
+                    ...item,
+                    id: this.state.postId
+                  },
+                });
+              }}
+            />
+          )}
+        />
       </View>
     );
   }

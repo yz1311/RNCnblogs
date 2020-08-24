@@ -40,6 +40,7 @@
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-action-button": "^2.8.5",
+    "react-native-auto-height-image": "^3.2.2",
     "react-native-autogrow-textinput": "^5.4.0",
     "react-native-autoheight-webview": "^1.5.2",
     "react-native-cardview": "^2.0.5",

@@ -117,12 +117,6 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="BlogCommentList"
                     component={withMappedNavigationParams()(BlogCommentList)}
-                    options={({route}) => {
-                        const {title} = route?.params || {} as any;
-                        return {
-                            title: `${title ? title + '条' : ''}评论`,
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="BaseBlogList"

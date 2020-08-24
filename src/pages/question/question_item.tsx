@@ -271,26 +271,12 @@ export default class question_item extends PureComponent<IProps, any> {
               ) : null}
               <Text selectable>{item.title}</Text>
             </Text>
-            {/*<HTMLView*/}
-            {/*    baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}*/}
-            {/*    containerStyle={{marginVertical: 7,width:Theme.deviceWidth}}*/}
-            {/*    html={`<div style="display: flex;flex-direction: row;flex-wrap:wrap;word-break:break-all;">${item.gold?`<img src='https://common.cnblogs.com/images/icons/yuandou20170322.png' /><span style="color:#f47a20;font-size:16px;"> ${item.gold}</span>`:''}  ${item.title}</div>`}*/}
-            {/*    renderers={{*/}
-            {/*      img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{*/}
-            {/*        return (*/}
-            {/*            <Image style={{width:17,height:17,backgroundColor:'yellow'}} resizeMode={'contain'} source={{uri:'https://common.cnblogs.com/images/icons/yuandou20170322.png'}} />*/}
-            {/*        );*/}
-            {/*      },*/}
-            {/*    }}*/}
-            {/*/>*/}
-            <View style={{}}>
-              <HTMLView
-                  baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
-                  containerStyle={{marginVertical: 4}}
-                  imagesMaxWidth={Theme.deviceWidth}
-                  html={item.summary}
-              />
-            </View>
+            <HTMLView
+                baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
+                containerStyle={{marginVertical: 4, marginHorizontal: -8, paddingHorizontal: 8}}
+                imagesMaxWidth={Theme.deviceWidth - 16}
+                html={item.summary}
+            />
             <View
               style={{
                 flexDirection: 'row',

@@ -31,8 +31,9 @@ import ModalExt from 'react-native-modal';
 import {IImageInfo} from "react-native-image-zoom-viewer/built/image-viewer.type";
 import {BaseButton, RectButton} from "react-native-gesture-handler";
 import themeUtils from "./utils/themeUtils";
-import ServiceUtils from "./utils/serviceUtils";
 import {StatusTypes} from "./pages/status/status_index";
+import AutoHeightImage from 'react-native-auto-height-image';
+
 
 //必须要延后加载，否则Theme设置无效
 const App = require('./pages/app').default;
@@ -223,6 +224,33 @@ class Root extends PureComponent {
             }
         });
     }
+    //@ts-ignore
+    HtmlView.defaultProps.renderers = {
+        img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{
+            console.log('~~~~~~')
+            console.log(htmlAttribs)
+            console.log(children)
+            console.log(convertedCSSStyles)
+            return (
+                <TouchableOpacity
+                    onPress={()=>{
+                        DeviceEventEmitter.emit('showImageViewer', {
+                            images: [{
+                                url: htmlAttribs.src
+                            }],
+                            index: 0,
+                        });
+                    }}
+                >
+                    <AutoHeightImage
+                        width={Theme.deviceWidth-16}
+                        source={{uri: htmlAttribs.src}}
+                        resizeMode="contain"
+                    />
+                </TouchableOpacity>
+            );
+        }
+    };
     Theme.set({
       primaryColor: '#0d7dfa',
       navColor: '#0d7dfa',

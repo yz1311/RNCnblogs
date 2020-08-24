@@ -34,6 +34,8 @@ import CommentItem from "../../blog/comment_item";
 import ToastUtils from "../../../utils/toastUtils";
 import ProfileServices from "../../../services/profileServices";
 import produce from "immer";
+import {ServiceTypes} from "../../YZTabBarView";
+import {statusCommentModel} from "../../../api/status";
 
 interface IProps extends IBaseDataPageProps {
   item: questionModel;
@@ -49,7 +51,10 @@ interface IProps extends IBaseDataPageProps {
 interface IState {
   isRefreshing: boolean;
   questionDetail: Partial<questionModel>,
-  loadDataResult: ReducerResult
+  loadDataResult: ReducerResult;
+  headerTitle: string;
+  headerSubmit: string;
+  selectedCommentItem: questionCommentModel;
 }
 
 @(connect((state:ReduxState)=>({
@@ -62,13 +67,17 @@ export default class question_detail extends Component<IProps, IState> {
 
   private reloadListener: EmitterSubscription;
   private _flatList: any;
+  private _commentInput: any;
 
   constructor(props) {
     super(props);
     this.state = {
       isRefreshing: false,
+      headerTitle: '',
+      headerSubmit: '',
       questionDetail: null,
-      loadDataResult: createReducerResult()
+      loadDataResult: createReducerResult(),
+      selectedCommentItem: null
     };
   }
 
@@ -134,14 +143,14 @@ export default class question_detail extends Component<IProps, IState> {
             onComment={(item, userName) => {
               this.setState(
                   {
-                    // headerTitle: '正在回复  ' + userName,
-                    // headerSubmit: '@' + userName + ':',
-                    // selectedCommentItem: item,
+                    headerTitle: '正在回复  ' + userName,
+                    headerSubmit: '@' + userName + ':',
+                    selectedCommentItem: item,
                   },
                   () => {
-                    // console.log(this._commentInput)
-                    // this._commentInput &&
-                    // this._commentInput.show();
+                    console.log(this._commentInput)
+                    this._commentInput &&
+                    this._commentInput.show();
                   },
               );
             }}
@@ -273,25 +282,36 @@ export default class question_detail extends Component<IProps, IState> {
               </YZStateView>
           )}
         </YZStateView>
-        {/*<YZCommentInput*/}
-        {/*  onSubmit={this.onSubmit}*/}
-        {/*  isLogin={this.props.isLogin}*/}
-        {/*  placeholder="想说点什么"*/}
-        {/*  menuComponent={() => (*/}
-        {/*    <YZCommonActionMenu*/}
-        {/*      data={this.props.item}*/}
-        {/*      commentCount={data.AnswerCount}*/}
-        {/*      serviceType={ServiceTypes.博问}*/}
-        {/*      onClickCommentList={() => {*/}
-        {/*        this._flatList &&*/}
-        {/*          this._flatList.flatList.scrollToIndex({*/}
-        {/*            viewPosition: 0,*/}
-        {/*            index: 0,*/}
-        {/*          });*/}
-        {/*      }}*/}
-        {/*    />*/}
-        {/*  )}*/}
-        {/*/>*/}
+        <YZCommentInput
+          ref={ref => (this._commentInput = ref)}
+          headerTitle={this.state.headerTitle}
+          onSubmit={this.onSubmit}
+          onToggle={val=>{
+            //关闭时清空标题
+            if(!val) {
+              this.setState({
+                headerTitle: '',
+                headerSubmit: ''
+              });
+            }
+          }}
+          isLogin={this.props.isLogin}
+          placeholder="想说点什么"
+          menuComponent={() => (
+            <YZCommonActionMenu
+              data={this.props.item}
+              commentCount={this.props.item.comments}
+              serviceType={ServiceTypes.博问}
+              onClickCommentList={() => {
+                this._flatList &&
+                  this._flatList.flatList.scrollToIndex({
+                    viewPosition: 0,
+                    index: 0,
+                  });
+              }}
+            />
+          )}
+        />
       </View>
     );
   }

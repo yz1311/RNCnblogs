@@ -6781,6 +6781,13 @@ react-native-animatable@1.3.3:
   dependencies:
     prop-types "^15.7.2"
 
+react-native-auto-height-image@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.npmjs.org/react-native-auto-height-image/-/react-native-auto-height-image-3.2.2.tgz#da34fccd097351a701dcdeb0481a8e8bb6ae4832"
+  integrity sha512-MPTwuGt+TFvYoKkuKLA8XgcpBqHR3tQOlPCp63zECsq21w4IIPqLc/HACiaUH0UsvtdLPpo012K815IxtT1PWA==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-native-autogrow-textinput@^5.4.0:
   version "5.4.0"
   resolved "https://registry.npmjs.org/react-native-autogrow-textinput/-/react-native-autogrow-textinput-5.4.0.tgz#df3d7a549d20e8bf34f493d2eaa1839d3e48a319"

@@ -10,7 +10,6 @@ import {
   BackHandler,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {connect} from 'react-redux';
@@ -18,6 +17,7 @@ import {connect} from 'react-redux';
 import {showToast} from '../actions/app_actions';
 import {ReduxState} from '../reducers';
 import {Theme} from "@yz1311/teaset";
+import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 
 export interface IProps {
   menuComponent: any;
@@ -220,34 +220,23 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
             borderTopRightRadius: 6,
           }}>
           {headerComponent}
-          <View
-            style={{
-              paddingLeft: 8,
-              paddingVertical: isToggle ? 10 : 0,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+          <View style={{paddingLeft:8,paddingVertical:isToggle?10:0,
+            flexDirection:'row',alignItems:'center'}}>
             <AutoGrowingTextInput
-              ref={ref => (this.input = ref)}
-              style={styles.textInput}
-              placeholder={placeholder}
-              onChangeText={value => this.setState({comment: value})}
-              value={this.state.comment}
-              textAlignVertical="top"
-              multiline
+                ref={ref=>this.input=ref}
+                style={styles.textInput}
+                placeholder={placeholder}
+                onChangeText={value=>this.setState({comment:value})}
+                value={this.state.comment}
+                textAlignVertical="top"
+                multiline
             />
             <TouchableOpacity
-              activeOpacity={activeOpacity}
-              style={{
-                paddingHorizontal: 10,
-                alignSelf: 'stretch',
-                justifyContent: 'center',
-                backgroundColor: gColors.bgColorF,
-              }}
-              onPress={() => {
-                if (canSubmit) {
-                  onSubmit &&
-                    onSubmit(this.state.comment, () => {
+                activeOpacity={activeOpacity}
+                style={{paddingHorizontal:10,alignSelf:'stretch',justifyContent:'center',backgroundColor:gColors.bgColorF}}
+                onPress={()=>{
+                  if(canSubmit) {
+                    onSubmit && onSubmit(this.state.comment, () => {
                       //清除评论并且收回键盘
                       this._onToggle(false);
                       this.setState({
@@ -255,15 +244,10 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
                       });
                       this.input.blur();
                     });
-                }
-              }}>
-              <Text
-                style={{
-                  color: !canSubmit ? gColors.color999 : Theme.primaryColor,
-                  fontSize: gFont.size15,
-                }}>
-                {submitButtonText}
-              </Text>
+                  }
+                }}
+            >
+              <Text style={{color:!canSubmit?gColors.color999:Theme.primaryColor,fontSize:gFont.size15}}>{submitButtonText}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -285,10 +269,11 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
             <TouchableOpacity
               activeOpacity={activeOpacity}
               onPress={() => {
-                if (!this.props.isLogin) {
-                  NavigationHelper.navigate('Login');
-                  return;
-                }
+                //Todo:还原
+                // if (!this.props.isLogin) {
+                //   NavigationHelper.navigate('Login');
+                //   return;
+                // }
                 if (editable) {
                   this._onToggle(true);
                   this.input.focus();
@@ -312,12 +297,6 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
           )}
           {menu}
         </View>
-        {__IOS__ ? (
-          <KeyboardSpacer
-            style={{backgroundColor: 'black'}}
-            onToggle={this._onToggle}
-          />
-        ) : null}
       </View>
     );
   }

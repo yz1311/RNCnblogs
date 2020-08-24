@@ -20,7 +20,6 @@ import {
 import {Overlay, Label, Input, ListRow} from '@yz1311/teaset';
 import AnswerModify from './answer_modify';
 import Markdown from 'react-native-markdown-renderer';
-import {showToast} from '../../../actions/app_actions';
 import {ReduxState} from '../../../reducers';
 import ServiceUtils from '../../../utils/serviceUtils';
 import Feather from "react-native-vector-icons/Feather";

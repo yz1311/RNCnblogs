@@ -24,6 +24,7 @@ import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
+import {NavigationBar} from "@yz1311/teaset";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
@@ -37,7 +38,8 @@ interface IState {
   headerSubmit: string,
   dataList: Array<blogCommentModel>,
   noMore: boolean,
-  loadDataResult: ReducerResult
+  loadDataResult: ReducerResult;
+  title: string;
 }
 
 @(connect(
@@ -64,7 +66,8 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
       headerSubmit: '',
       dataList: [],
       noMore: false,
-      loadDataResult: createReducerResult()
+      loadDataResult: createReducerResult(),
+      title: ''
     };
   }
 
@@ -78,8 +81,8 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     this.loadData();
     this.setTitle();
     this.updateCountListener = DeviceEventEmitter.addListener('update_blog_comment_count',count=>{
-      this.props.navigation.setOptions({
-        title: count,
+      this.setState({
+        title: count
       });
     });
   }
@@ -91,9 +94,9 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   setTitle = (nextProps:IProps = null) => {
     nextProps = nextProps || this.props;
-    nextProps.navigation.setParams({
-      title: nextProps.item.comments,
-    });
+    this.setState({
+      title: nextProps.item.comments+''
+    })
   };
 
   onRefresh = ()=>{
@@ -281,9 +284,10 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
 
   render() {
     const {item} = this.props;
-    const {dataList, loadDataResult, noMore} = this.state;
+    const {dataList, loadDataResult, noMore, title} = this.state;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title={`${title ? title + '条' : ''}评论`} />
         <YZStateView
           loadDataResult={loadDataResult}
           placeholderTitle="暂无数据"

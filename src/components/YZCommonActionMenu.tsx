@@ -11,13 +11,10 @@ import {
   InteractionManager,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
 // import LottieView from 'lottie-react-native';
-import moment from 'moment';
 import {ReduxState} from '../reducers';
-import {checkIsBookmarkRequest} from '../api/bookmark';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import ToastUtils from "../utils/toastUtils";
 import {Api} from "../api";
 import {ServiceTypes} from "../pages/YZTabBarView";
@@ -231,12 +228,12 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
               alignSelf: 'stretch',
               justifyContent: 'center',
               paddingHorizontal: 8,
-              paddingTop: 4,
+              paddingTop: 2,
             }}
             onPress={() => {
               onClickCommentList && onClickCommentList();
             }}>
-            <MaterialIcons name="message" size={26} color={gColors.color999} />
+            <AntDesign name="message1" size={25} color={gColors.color999} />
             {commentCount > 0 ? (
               <View
                 style={{
@@ -258,21 +255,12 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
             ) : null}
           </TouchableOpacity>
         ) : null}
-        {/*{showFavButton?*/}
-        {/*<TouchableOpacity*/}
-        {/*activeOpacity={activeOpacity}*/}
-        {/*style={{alignSelf:'stretch',justifyContent:'center',paddingHorizontal:6}}*/}
-        {/*onPress={this.favAction}*/}
-        {/*>*/}
-        {/*<MaterialIcons name="star" size={30} color={isFav?gColors.colorRed:gColors.color999} />*/}
-        {/*</TouchableOpacity>*/}
-        {/*:null}*/}
         {showFavButton ? (
           <TouchableOpacity
             activeOpacity={activeOpacity}
-            style={{alignSelf: 'stretch', justifyContent: 'center',paddingTop:5}}
+            style={{alignSelf: 'stretch', justifyContent: 'center',paddingHorizontal: 8,}}
             onPress={this.favAction}>
-            <Ionicons name={isFav?'ios-heart':'ios-heart-empty'} size={27} color={isFav?gColors.colorRed:gColors.color999}/>
+            <AntDesign name={isFav?'star':'staro'} size={27} color={isFav?gColors.colorRed:gColors.color999}/>
           </TouchableOpacity>
         ) : null}
         {showShareButton ? (
@@ -284,7 +272,7 @@ export default class YZCommonActionMenu extends PureComponent<IProps, IState> {
               paddingHorizontal: 8,
             }}
             onPress={this.shareAction}>
-            <MaterialIcons name="share" size={27} color={gColors.color999} />
+            <AntDesign name="sharealt" size={27} color={gColors.color999} />
           </TouchableOpacity>
         ) : null}
       </View>

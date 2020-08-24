@@ -13,8 +13,6 @@ import {newsModel} from "../../api/news";
 import moment from "moment";
 import {messageModel} from '../../api/message';
 import ServiceUtils from '../../utils/serviceUtils';
-import Markdown from 'react-native-markdown-renderer';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface IProps extends IReduxProps{
   navigation: any;
