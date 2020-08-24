@@ -2,7 +2,7 @@ import moment from 'moment';
 import React from 'react';
 import {PixelRatio} from 'react-native';
 
-export default class stringUtils {
+export default class StringUtils {
   static isBlank(input) {
     return input == null || /^\s*$/.test(input);
   }

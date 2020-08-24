@@ -227,10 +227,6 @@ class Root extends PureComponent {
     //@ts-ignore
     HtmlView.defaultProps.renderers = {
         img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{
-            console.log('~~~~~~')
-            console.log(htmlAttribs)
-            console.log(children)
-            console.log(convertedCSSStyles)
             return (
                 <TouchableOpacity
                     onPress={()=>{

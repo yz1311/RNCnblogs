@@ -5,6 +5,7 @@ import {BorderShadow} from '@yz1311/react-native-shadow';
 import {blogModel} from '../../api/blog';
 import moment from "moment";
 import HTMLView from 'react-native-render-html';
+import StringUtils from "../../utils/stringUtils";
 
 interface IProps {
   item: blogModel;
@@ -115,7 +116,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
               </Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
+                  {StringUtils.formatDate(item.published)}
                 </Text>
               </View>
             </View>

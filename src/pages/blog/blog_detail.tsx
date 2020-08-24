@@ -74,6 +74,7 @@ interface IState {
   postId: string;
   commentCount: number;
   html: string;
+  title: string;
 }
 
 @(connect(
@@ -104,7 +105,8 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       getCommentListResult: createReducerResult(),
       postId: '',
       commentCount: props.item?.comments,
-      html: ''
+      html: '',
+      title: '博文',
     };
   }
 
@@ -421,7 +423,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.title : '博文')) {
-          this.props.navigation.setOptions({
+          this.setState({
             title: postedMessage.value >= 50 ? item.title : '博文',
           });
         }
@@ -466,7 +468,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     return (
       <View style={[Styles.container]}>
         <NavigationBar
-            title={""}
+            title={this.state.title}
             rightView={
               <TouchableOpacity
                   activeOpacity={activeOpacity}

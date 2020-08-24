@@ -128,49 +128,6 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     }
   }
 
-  renderNode = (node, index, siblings, parent, defaultRenderer) => {
-    if (node.name === 'fieldset') {
-      const a = node.attribs;
-      let text = ``;
-      let legend = '';
-      for (let child of node.children) {
-        if (child.type === 'tag') {
-          switch (child.name) {
-            case 'legend':
-              legend = child.children.length > 0 ? child.children[0].data : '';
-              break;
-            case 'br':
-              text += '\n';
-              break;
-          }
-        } else if (child.type === 'text') {
-          text += child.data;
-        }
-      }
-      return (
-        <View
-          style={{
-            borderColor: gColors.color999,
-            borderWidth: 1,
-            borderRadius: 6,
-            padding: 8,
-          }}>
-          <Text>{text}</Text>
-          <Text
-            style={{
-              position: 'absolute',
-              top: -7,
-              left: 15,
-              backgroundColor: gColors.bgColorF,
-              fontSize: gFont.size12,
-            }}>
-            {legend}
-          </Text>
-        </View>
-      );
-    }
-  };
-
   _renderItem = ({item, index}: {item: blogCommentModel; index: number}) => {
     const {userInfo} = this.props;
     return (
@@ -304,7 +261,9 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
               this.pageIndex = pageIndex;
             }}
             ItemSeparatorComponent={() => (
-              <View style={{height: 10, backgroundColor: 'transparent'}} />
+                <View
+                    style={{height: 1, backgroundColor: gColors.borderColor}}
+                />
             )}
           />
         </YZStateView>
