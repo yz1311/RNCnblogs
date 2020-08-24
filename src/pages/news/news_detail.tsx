@@ -19,7 +19,7 @@ import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {showToast} from '../../actions/app_actions';
@@ -49,7 +49,8 @@ interface IState {
   commentList: Array<newsCommentModel>;
   commentList_noMore: boolean;
   getCommentListResult: ReducerResult;
-  newsInfo: Partial<newsInfoModel>
+  newsInfo: Partial<newsInfoModel>;
+  title: string;
 }
 
 @(connect(
@@ -78,25 +79,13 @@ export default class news_detail extends PureComponent<IProps, IState> {
       commentList: [],
       commentList_noMore: false,
       getCommentListResult: createReducerResult(),
-      newsInfo: {}
+      newsInfo: {},
+      title: '',
     };
   }
 
   componentDidMount() {
     this.loadData();
-    this.props.navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{paddingHorizontal: 8}}
-          ref={ref => (this.fromView = ref)}
-          onPress={() => {
-            this.showMenu();
-          }}>
-          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    });
     this.reloadNewsInfoListener = DeviceEventEmitter.addListener('reload_news_info',this.loadCommentsAndInfo);
   }
 
@@ -244,7 +233,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.title : '新闻')) {
-          this.props.navigation.setOptions({
+          this.setState({
             title: postedMessage.value >= 50 ? item.title : '新闻',
           });
         }
@@ -399,6 +388,17 @@ export default class news_detail extends PureComponent<IProps, IState> {
                 </html>`;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title={this.state.title} rightView={
+          <TouchableOpacity
+              activeOpacity={activeOpacity}
+              style={{paddingHorizontal: 8}}
+              ref={ref => (this.fromView = ref)}
+              onPress={() => {
+                this.showMenu();
+              }}>
+            <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
+          </TouchableOpacity>
+        } />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

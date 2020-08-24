@@ -17,7 +17,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {deleteQuestion} from '../../actions/question/question_index_actions';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {showToast} from '../../actions/app_actions';
@@ -33,7 +32,6 @@ import {QuestionTypes} from "./question_index";
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
-  deleteQuestionFn?: any;
   item: questionModel;
   showAll?: boolean;
   clickable: boolean;
@@ -53,7 +51,6 @@ interface IProps extends IReduxProps {
   dispatch => ({
     dispatch,
     setSelectedQuestionFn: data => dispatch(setSelectedQuestion(data)),
-    deleteQuestionFn: data => dispatch(deleteQuestion(data)),
   }),
 ) as any)
 export default class question_item extends PureComponent<IProps, any> {
@@ -95,7 +92,7 @@ export default class question_item extends PureComponent<IProps, any> {
           text: '删除',
           onPress: async () => {
             ToastUtils.showLoading();
-            const {deleteQuestionFn, item} = this.props;
+            const {item} = this.props;
             try {
               let response = await Api.question.deleteQuestion({
                 request: {

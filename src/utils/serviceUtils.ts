@@ -2,12 +2,7 @@
 业务相关的工具类
  */
 
-// import Realm from 'realm';
-const Realm = {};
-import {tables, userSchema} from '../common/database';
 import {Alert} from 'react-native';
-import {getPersonInfo} from '../actions/profile/profile_index_actions';
-import {showToast} from '../actions/app_actions';
 
 export default class serviceUtils {
   /**
@@ -45,27 +40,6 @@ export default class serviceUtils {
       }
     }
     return '';
-  }
-
-  static async searchUserAlias(userId) {
-    //在本地数据库查找用户，能找到，则找出alias
-    let realm;
-    try {
-      realm = await Realm.open({schema: [userSchema]});
-      let users = realm.objects(tables.user);
-      let curUsers = users.filtered(`id = '${userId}'`);
-      console.log(curUsers.length);
-      if (curUsers && curUsers.length > 0) {
-        return JSON.parse(JSON.stringify(curUsers[0]));
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      if (realm) {
-        realm.close();
-      }
-    }
-    return null;
   }
 
   static async searchUserAliasByName(userName) {}

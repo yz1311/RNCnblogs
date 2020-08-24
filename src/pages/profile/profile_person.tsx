@@ -26,7 +26,6 @@ const avatorRadius = 40;
 interface IProps extends IReduxProps {
   userAlias: string;
   avatorUrl: string;
-  navigation?: any;
 }
 
 interface IState {
@@ -43,7 +42,8 @@ interface IState {
   questionList: Array<questionModel>,
   loadQuestionListResult: ReducerResult,
   questionListNoMore: boolean,
-  activeSubMenu: Array<number>
+  activeSubMenu: Array<number>;
+  title: string;
 }
 
 @(connect(
@@ -86,7 +86,8 @@ export default class profile_person extends PureComponent<IProps, IState> {
       questionList: [],
       loadQuestionListResult: createReducerResult(),
       questionListNoMore: false,
-      activeSubMenu: [0,0,0]
+      activeSubMenu: [0,0,0],
+      title: '',
     };
   }
 
@@ -274,18 +275,16 @@ export default class profile_person extends PureComponent<IProps, IState> {
   _handleScroll = event => {
     let curScrollY = event.nativeEvent.contentOffset.y;
     const {personInfo} = this.state;
-    let {title} = (this.props.navigation.state || {params: undefined})
-      .params || {title: undefined};
-    title = title || '园友';
+    let title = this.state.title || '园友';
     if (curScrollY > this.namePositionY && title == '园友') {
-      this.props.navigation.setOptions({
+      this.setState({
         title: personInfo.nickName,
       });
     } else if (
       curScrollY < this.namePositionY &&
       title == personInfo.nickName
     ) {
-      this.props.navigation.setOptions({
+      this.setState({
         title: '园友',
       });
     }

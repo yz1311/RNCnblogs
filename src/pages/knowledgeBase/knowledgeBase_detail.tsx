@@ -23,7 +23,7 @@ import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Overlay} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
@@ -46,7 +46,8 @@ export interface IProps extends IBaseDataPageProps {
   item?: any;
   clearBlogCommentListFn?: any;
   commentBlogFn?: any;
-  isLogin?: boolean
+  isLogin?: boolean;
+  title: string;
 }
 
 @(connect(
@@ -79,24 +80,8 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
     super(props);
     this.state = {
       comment: '',
+      title: '',
     };
-  }
-
-  componentDidMount() {
-    super.componentDidMount();
-    this.props.navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{paddingHorizontal: 8}}
-          ref={ref => (this.fromView = ref)}
-          onPress={() => {
-            this.showMenu();
-          }}>
-          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    });
   }
 
   componentWillUnmount() {
@@ -182,7 +167,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
         this.scrollPosition = postedMessage.value;
         let curTitle = this.props.route.params.title;
         if (curTitle !== (postedMessage.value >= 50 ? item.Title : '知识库')) {
-          this.props.navigation.setOptions({
+          this.setState({
             title: postedMessage.value >= 50 ? item.Title : '知识库',
           });
         }
@@ -264,6 +249,17 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
     html = html.replace(/<img[\s\S]{1,10}:\/\/counter[\s\S]+?\/>/, '');
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title={this.state.title} rightView={
+          <TouchableOpacity
+              activeOpacity={activeOpacity}
+              style={{paddingHorizontal: 8}}
+              ref={ref => (this.fromView = ref)}
+              onPress={() => {
+                this.showMenu();
+              }}>
+            <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
+          </TouchableOpacity>
+        } />
         <YZStateView
           loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"

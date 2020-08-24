@@ -39,21 +39,6 @@ export default class YZWebPage extends Component<IProps, any> {
   private overlayKey: any;
   private webView: any;
 
-  componentDidMount() {
-    this.props.navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          activeOpacity={activeOpacity}
-          style={{paddingHorizontal: 8}}
-          ref={ref => (this.fromView = ref)}
-          onPress={() => {
-            this.showMenu();
-          }}>
-          <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
-        </TouchableOpacity>
-      ),
-    });
-  }
 
   _onCopy = () => {
     Overlay.hide(this.overlayKey);
@@ -136,7 +121,17 @@ export default class YZWebPage extends Component<IProps, any> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <NavigationBar title={this.props.title} />
+        <NavigationBar title={this.props.title} rightView={
+          <TouchableOpacity
+              activeOpacity={activeOpacity}
+              style={{paddingHorizontal: 8}}
+              ref={ref => (this.fromView = ref)}
+              onPress={() => {
+                this.showMenu();
+              }}>
+            <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
+          </TouchableOpacity>
+        } />
         <View style={{flex: 1, overflow: 'hidden'}}>
           <WebView
             ref={ref => (this.webView = ref)}

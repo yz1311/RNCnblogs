@@ -81,14 +81,6 @@ export default class status_index extends Component<IProps, IState> {
     );
   }
 
-  componentDidMount() {
-    this.props.navigation.setOptions({
-      rightAction: () => {
-        this.props.navigation.navigate('StatusAdd');
-      },
-    });
-  }
-
   componentWillUnmount() {
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
   }

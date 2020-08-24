@@ -228,8 +228,9 @@ export default class comment_item extends PureComponent<IProps, IState> {
   searchUserAlias = async href => {
     let userId = ServiceUtils.getUserIdFromAvatorUrl(href);
     if (userId) {
-      let userInfo = await ServiceUtils.searchUserAlias(userId);
-      return userInfo;
+      //Todo:
+      // let userInfo = await ServiceUtils.searchUserAlias(userId);
+      // return userInfo;
     }
     return null;
   };
