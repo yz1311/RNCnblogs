@@ -17,6 +17,7 @@ import CommentItem from '../blog/comment_item';
 import {userInfoModel} from '../../api/login';
 import {connect} from 'react-redux';
 import {ReduxState} from '../../models';
+import {NavigationBar} from "@yz1311/teaset";
 
 export interface IProps {
   questionType: QuestionTypes;
@@ -25,6 +26,7 @@ export interface IProps {
   userInfo?: userInfoModel,
   searchParams?: SearchParams;
   tabLabel?: string;
+  tagName?: string;
 }
 
 interface IState {
@@ -87,6 +89,14 @@ export default class base_question_list extends PureComponent<IProps,IState> {
           request: {
             pageIndex: this.pageIndex,
             Keywords: this.props.keyword,
+            ...(this.props.searchParams||{})
+          }
+        });
+      } if(this.props.questionType==QuestionTypes.标签) {
+        response = await Api.question.getQuestionListByTag({
+          request: {
+            pageIndex: this.pageIndex,
+            tagName: this.props.tagName,
             ...(this.props.searchParams||{})
           }
         });
@@ -180,6 +190,11 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   render() {
     return (
       <View style={[Styles.container]}>
+        {this.props.questionType === QuestionTypes.标签 ?
+            <NavigationBar title={this.props.tagName}/>
+            :
+            null
+        }
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

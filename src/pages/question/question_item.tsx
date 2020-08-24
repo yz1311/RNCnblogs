@@ -29,6 +29,7 @@ import HTMLView from 'react-native-render-html';
 import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
 import Feather from "react-native-vector-icons/Feather";
+import {QuestionTypes} from "./question_index";
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
@@ -358,9 +359,10 @@ const Tag = ({item, index, style,uri}) => {
     <TouchableOpacity
       activeOpacity={activeOpacity}
       onPress={() => {
-        NavigationHelper.push('YZWebPage', {
-          title: item,
-          uri: uri
+        NavigationHelper.push('BaseQuestionList', {
+          tagName: item,
+          questionType: QuestionTypes.标签,
+          keyword: ''
         });
       }}
       style={[

@@ -33,6 +33,7 @@ export enum QuestionTypes {
   零回答 = 'noanswer',
   已解决 = 'solved',
   搜索 = 'search',
+  标签 = 'tag',
 }
 
 

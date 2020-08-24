@@ -81,6 +81,14 @@ export const getQuestionList = (data:RequestModel<{questionType:QuestionTypes,pa
 };
 
 
+export const getQuestionListByTag = (data:RequestModel<{tagName: string,pageIndex:number}>) => {
+  const URL = `https://q.cnblogs.com/tag/${data.request.tagName}?page=${data.request.pageIndex}`;
+  return RequestUtils.post<Array<questionModel>>(URL,data.request, {
+    resolveResult: resolveQuestionHtml
+  });
+};
+
+
 export const getOtherQuestionList = (data:RequestModel<{myQuestionType:MyQuestionTypes,userId:string,pageIndex:number}>) => {
   const URL = `https://q.cnblogs.com/u/${data.request.userId}/${data.request.myQuestionType}${data.request.pageIndex>1?('/'+data.request.pageIndex):''}`;
   return RequestUtils.get<Array<questionModel>>(URL, {
@@ -416,7 +424,7 @@ export const resolveQuestionHtml = (result)=>{
     }
     item.published = (match.match(/title=\"[\s\S]+?(?=class=\"date\")/)||[])[0]?.replace(/[\s\S]+?\"/,'').replace('"','');
     item.publishedDesc = (match.match(/class=\"date\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
-    item.comments = parseInt((match.match(/回答\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.comments = parseInt((match.match(/class=\"diggnum (answered|unanswered)\"[\s\S]+?(?=<\/div>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     item.views = parseInt((match.match(/浏览\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
   }
