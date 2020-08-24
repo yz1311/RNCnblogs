@@ -6,6 +6,8 @@ import {SearchParams} from "../pages/home/home_search";
 export type blogModel = {
   id: string;
   title: string;
+  //是否置顶
+  isSticky: boolean;
   link: string;
   summary: string;
   author: {
@@ -63,14 +65,9 @@ export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSiz
   if(!data.request.userId) {
     data.request.userId = gUserData.userId;
   }
-  const URL = `${gServerPath}/blog/u/${data.request.userId}/posts/${data.request.pageIndex}/${data.request.pageSize}`;
-  return RequestUtils.get(URL,{
-    resolveResult: (result)=>{
-      result.map(item=>{
-        item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
-      });
-      return result;
-    }
+  const URL = `https://www.cnblogs.com/${data.request.userId}/default.html?page=${data.request.pageIndex}`;
+  return RequestUtils.get(URL, {
+    resolveResult: resolvePersonalBlogHtml
   });
 };
 
@@ -226,7 +223,6 @@ export const modifyComment = (data:RequestModel<{commentId:number,body:string}>)
 
 export const resolveBlogHtml = (result)=>{
   let items:Array<any> = [];
-  console.log('--------pp', result)
   if(Array.isArray(result)) {
     return result;
   }
@@ -254,6 +250,62 @@ export const resolveBlogHtml = (result)=>{
     item.published = (match.match(/class=\"post-meta-item\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.comments = parseInt((match.match(/href=\"#icon_comment[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     item.views = parseInt((match.match(/href=\"#icon_views[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+
+export const resolvePersonalBlogHtml = (result)=>{
+  let items:Array<any> = [];
+  if(Array.isArray(result)) {
+    return result;
+  }
+  result = (result.match(/id=\"mainContent\"[\s\S]+(?=id=\"footer\")/) || [])[0];
+  if(!result) {
+    return [];
+  }
+  let matches = result.match(/class=\"day\"[\s\S]+?class=\"postDesc[\s\S]+?(?=class=\"clear\")/g)|| [];
+
+  for (let match of matches) {
+    let item:Partial<blogModel> = {};
+    //解析digg
+    item.diggs = parseInt((match.match(/class=\"post-digg-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.link = (match.match(/class=\"postTitle2 vertical-middle\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
+    //不能根据link来截取，部分link后面并不是id
+    //2020-08-24 先就这样吧
+    item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    // item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
+    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
+    item.title = (match.match(/class=\"postTitle2 vertical-middle\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+?>/,'')?.trim();
+    if(item.title.indexOf('<span>[置顶]</span>')>=0) {
+      item.isSticky = true;
+      item.title = item.title.replace('<span>[置顶]</span>', '');
+    }
+    //清空span，不然标题会有空格
+    if(item.title) {
+      item.title = item.title
+          .replace(/^<span>/, '')
+          .replace(/<\/span>$/, '')
+          ?.trim();
+    }
+    item.summary = (match.match(/class=\"c_b_p_desc\"[\s\S]+?(?=<a href[\s\S]+?c_b_p_desc_readmore)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
+    //太突兀，加上...
+    if(!item.summary) {
+      item.summary += '...';
+    }
+    item.author = {
+      id: '',
+      //没有头像
+      avatar: '',
+      name: (match.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}[\s\S]+?(?=<span class=\"post-view-count)/)||[])[0]?.substr(16)?.trim(),
+      uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+    };
+    item.author.id = (item.author?.uri?.replace(/^https:\/\/[\s\S]+?\//,'')?.match(/[\s\S]+?(?=\/)/)||[])[0];
+    item.published = (match.match(/class=\"postDesc\"[\s\S]+?\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])[0]?.replace(/[\s\S]+@ /,'')?.trim();
+    item.comments = parseInt((match.match(/class=\"post-comment-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.views = parseInt((match.match(/class=\"post-view-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
   }
   return items;

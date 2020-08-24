@@ -11,19 +11,26 @@ import YZFlatList from "../../components/YZFlatList";
 import {Api} from "../../api";
 import {SearchParams} from "../home/home_search";
 import {messageModel} from "../../api/message";
+import {NavigationBar} from "@yz1311/teaset";
+import ProfileServices from "../../services/profileServices";
+import produce from "immer";
+import {blogModel} from "../../api/blog";
 
 export interface IProps {
+  title: string;
   navigation: any,
   tabIndex: number,
   loadData?: Function,
   blogType: BlogTypes,
   userInfo?: any,
   keyword?: string,
-  searchParams?: SearchParams
+  searchParams?: SearchParams,
+  userAvatar?: string;
 }
 
 export interface IState {
-  dataList?: Array<any>;
+  dataList?: Array<blogModel>;
+  stickyList: Array<blogModel>;
   loadDataResult?: ReducerResult;
   noMore?: boolean;
   tabIndex?: number;
@@ -40,6 +47,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
 
   readonly state:IState = {
     dataList: [],
+    stickyList: [],
     noMore: false,
     loadDataResult: createReducerResult()
   };
@@ -81,6 +89,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   }
 
   loadData = async ()=>{
+    let pageSize = 20;
     let params:any = {
       request: {
         blogApp: this.props.userInfo.BlogApp || 'yz1311',
@@ -138,10 +147,12 @@ class base_blog_list extends PureComponent<IProps,IState> {
         };
         break;
       case BlogTypes.我的:
+        pageSize = 10;
         action = ()=>{
           return Api.blog.getPersonalBlogList({
             request: {
               pageIndex: this.pageIndex,
+              //必须是10
               pageSize: 10
             }
           })
@@ -162,14 +173,32 @@ class base_blog_list extends PureComponent<IProps,IState> {
     }
     try {
       let response = await action();
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,20);
+      //加载头像和用户id
+      if(this.props.blogType === BlogTypes.我的) {
+        response.data = response.data.map(x=>({
+            ...x,
+            author: {
+                ...x.author,
+                avatar: this.props.userAvatar,
+                id: gUserData.userId
+            }
+        }));
+        //并且置顶的数据不能算在分页数据中，不然会导致分页混乱
+        response.data = response.data.filter(x=>!x.isSticky);
+        let restList = response.data.filter(x=>x.isSticky);
+        let tempList = [].concat(this.state.stickyList);
+        for (let item of restList) {
+          if(!tempList.some(x=>x.id===item.id)) {
+            tempList.push(item)
+          }
+        }
+        this.setState({
+          stickyList: tempList
+        });
+      }
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,pageSize);
       this.setState({
           ...pagingResult
-      },()=>{
-        //搜索列表没有头像
-        if(this.props.blogType==BlogTypes.搜索) {
-          this.getUserAvatar();
-        }
       });
     } catch (e) {
       this.setState({
@@ -178,36 +207,6 @@ class base_blog_list extends PureComponent<IProps,IState> {
     }
   }
 
-  getUserAvatar = async ()=>{
-    for (let index in this.state.dataList) {
-      let item = this.state.dataList[index];
-      if(!item.author?.avatar || item.author?.avatar=='') {
-        try {
-          let imgRes = await Api.profile.getUserAvatar({
-            request: {
-              userId: (item as messageModel).author?.name
-            }
-          });
-          let nextDateList = [
-            ...this.state.dataList.slice(0,parseInt(index)),
-            {
-              ...item,
-              author: {
-                ...item.author,
-                avatar: imgRes.data.avatar
-              }
-            },
-            ...this.state.dataList.slice(parseInt(index)+1),
-          ];
-          this.setState({
-            dataList: nextDateList
-          })
-        } catch (e) {
-
-        }
-      }
-    }
-  }
 
   _renderItem = ({item, index}) => {
     return <BlogItem item={item} navigation={this.props.navigation} />;
@@ -216,6 +215,11 @@ class base_blog_list extends PureComponent<IProps,IState> {
   render() {
     return (
       <View style={[Styles.container]}>
+        {this.props.title ?
+            <NavigationBar title={this.props.title}/>
+            :
+            null
+        }
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"

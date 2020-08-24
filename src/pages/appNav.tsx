@@ -115,13 +115,6 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="BaseBlogList"
                     component={withMappedNavigationParams()(BaseBlogList)}
-                    options={({route}) => {
-                        const {title} = route?.params || {} as any;
-                        return {
-                            headerShown: title!=undefined,
-                            title: title || ''
-                        };
-                    }}
                 />
                 <Stack.Screen
                     name="NewsDetail"
