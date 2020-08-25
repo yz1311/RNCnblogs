@@ -248,7 +248,7 @@ export const resolveBlogHtml = (result)=>{
     item.summary = (match.match(/post-item-summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
     item.author = {
       id: '',
-      avatar: (match.match(/class=\"post-item-author\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      avatar: (match.match(/class=\"post-item-summary\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/class=\"post-item-author\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
       uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };

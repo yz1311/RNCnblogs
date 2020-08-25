@@ -180,7 +180,7 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
                         justifyContent: 'center',
                     }}>
                         <Image source={require('../resources/img/app_nocontent.png')}
-                               style={[{width: Theme.px2dp(131), height: Theme.px2dp(130)}]} resizeMode="contain"/>
+                               style={[{width: Theme.px2dp(240), height: Theme.px2dp(240)}]} resizeMode="contain"/>
                         <Text style={[{color: gColors.color999, marginTop: 15, fontSize: Theme.px2dp(30)}]}>
                             {'暂无数据'}
                         </Text>
@@ -188,7 +188,6 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
                 </TouchableOpacity>
             );
         }
-        //TODO：显示错误信息页面
         return (
             <TouchableOpacity
                 activeOpacity={0.9}

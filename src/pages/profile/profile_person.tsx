@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {findNodeHandle, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {findNodeHandle, Image, InteractionManager, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Styles} from '../../common/styles';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
@@ -92,7 +92,9 @@ export default class profile_person extends PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.loadData();
+    InteractionManager.runAfterInteractions(()=>{
+      this.loadData();
+    });
   }
 
   loadData = async () => {
@@ -162,6 +164,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
   }
 
   _renderHeader = () => {
+    //多个blurView叠加会导致闪退
     const {avatorUrl} = this.props;
     const {personInfo} = this.state;
     return (
@@ -180,13 +183,11 @@ export default class profile_person extends PureComponent<IProps, IState> {
                 this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
               }}
           />
-          <BlurView
-              style={{position:'absolute',top:0,left:0,right:0,bottom:0}}
-              //@ts-ignore
-              viewRef={this.state.viewRef}
-              blurType="light"
-              blurAmount={10}
-          />
+          {/*<BlurView*/}
+          {/*    style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}*/}
+          {/*    blurType="light"*/}
+          {/*    blurAmount={1}*/}
+          {/*/>*/}
         </View>
         <View
           style={{paddingTop: avatorRadius, borderRadius: 10, marginTop: -avatorRadius}}>
@@ -437,7 +438,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
     const {personInfo} = this.state;
     return (
       <View style={[Styles.container]}>
-        <NavigationBar style={{position:'relative'}} title={'详情'} />
+        <NavigationBar style={{position:'relative', backgroundColor:'transparent'}} title={'详情'} />
         <YZStickyTabView
             ref={ref => this.stickyTabViewRef = ref}
             style={{flex: 1}}
@@ -484,7 +485,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
             }}
             data={this.getDataFromState()}
         />
-        <NavigationBar title={'详情'}/>
+        <NavigationBar style={{position:'absolute'}} title={'详情'}/>
       </View>
     );
   }
