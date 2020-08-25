@@ -248,6 +248,21 @@ export const addQuestion = (data:RequestModel<{Title: string,Content: string,
   return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
+//修改tag无效(修复tags是单独修改的)
+export const modifyQuestion = (data:RequestModel<{
+  qid: number;
+  Title: string;
+  Content: string;
+  PublishOption: boolean; //是否发布在博问首页 false:
+}>) => {
+  const URL = `https://q.cnblogs.com/q/ModiQuestion`;
+  let formData = new FormData();
+  for (let key in data.request) {
+    formData.append(key,data.request[key]);
+  }
+  return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
+};
+
 export const deleteQuestion = (data:RequestModel<{qid:number}>) => {
   const URL = `https://q.cnblogs.com/q/DelQuestion`;
   let formData = new FormData();
@@ -268,18 +283,6 @@ export const closeQuestion = (data:RequestModel<{qid:number}>) => {
   return RequestUtils.post(URL, formData);
 };
 
-//修改tag无效
-export const modifyQuestion = data => {
-  const URL = `${gServerPath}/questions/${data.request.questionId}`;
-  const options = createOptions(data, 'PATCH');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '修改问题失败!',
-    actionType: types.QUESTION_MODIFY_QUESTION,
-  });
-};
 
 export const answerQuestion = data => {
   const URL = `${gServerPath}/questions/${data.request.id}/answers?loginName=${

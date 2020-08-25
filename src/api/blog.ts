@@ -160,6 +160,12 @@ export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:st
   return RequestUtils.get<number>(URL);
 }
 
+
+export const deleteBlog = (data:RequestModel<{postId: string}>) => {
+  const URL = `https://i.cnblogs.com/api/posts/${data.request.postId}`;
+  return RequestUtils.delete<any>(URL);
+};
+
 export const getBlogViewCount = (data: RequestModel<{postId: string}>) => {
   const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetViewCount.aspx??postId=${data.request.postId}`;
   return RequestUtils.get<number>(URL);

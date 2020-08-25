@@ -19,10 +19,6 @@ import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-import {
-  addQuestion,
-  modifyQuestion,
-} from '../../actions/question/question_index_actions';
 import {ReduxState} from '../../reducers';
 import {personQuestionIndex, questionModel} from '../../api/question';
 import {Api} from '../../api';
@@ -34,7 +30,6 @@ interface IProps extends IReduxProps {
   item: questionModel;
   clickable: boolean;
   navigation: any;
-  modifyQuestionFn?: any;
   userInfo?: any;
 }
 
@@ -52,10 +47,7 @@ interface IState {
 @(connect(
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
-  }),
-  dispatch => ({
-    modifyQuestionFn: data => dispatch(modifyQuestion(data)),
-  }),
+  })
 ) as any)
 export default class QuestionAdd extends PureComponent<IProps, IState> {
   static propTypes = {
@@ -113,26 +105,29 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
 
   _rightAction = async () => {
     if (this.state.canSubmit) {
-      const { item, modifyQuestionFn} = this.props;
+      const { item} = this.props;
       ToastUtils.showLoading();
       //修改
       if (item?.title) {
-        modifyQuestionFn({
-          request: {
-            questionId: item.id,
-            Title: this.state.title,
-            Content: this.state.value,
-            Tags: this.state.tagList.join(','),
-            Flags: this.state.isPublishToTop ? '1' : '2',
-            UserID: this.props.userInfo.SpaceUserID,
-          },
-          successAction: () => {
-            //返回到上一级，并刷新所有的列表
-            NavigationHelper.goBack();
-            //刷新‘待解决’和‘没有答案'、'我的问题'三个列表
-            DeviceEventEmitter.emit('question_list_refresh',-1);
-          },
-        });
+        try {
+          let response = await Api.question.modifyQuestion({
+            request: {
+              qid: parseInt(item.id),
+              Title: this.state.title,
+              Content: this.state.value,
+              PublishOption: this.state.isPublishToTop,
+            }
+          });
+          ToastUtils.showToast('修改成功!');
+          //返回到上一级，并刷新所有的列表
+          NavigationHelper.goBack();
+          //刷新‘待解决’和‘没有答案'、'我的问题'三个列表
+          DeviceEventEmitter.emit('question_list_refresh',-1);
+        } catch (e) {
+
+        } finally {
+          ToastUtils.hideLoading();
+        }
       }
       //新增
       else {
@@ -203,23 +198,6 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
               />
           <KeyboardAwareScrollView style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
             <View style={[Styles.container, {backgroundColor: gColors.bgColorF}]}>
-              <Button title="测试" onPress={()=>{
-                UploadUtils.openImagePicker({}, async (photos)=>{
-                  console.log(photos)
-                  try {
-                    let aaa = await Api.home.uploadFile({
-                      request: {
-                        file: {
-                          uri: photos[0].uri
-                        },
-                        fileName: 'test.png'
-                      }
-                    })
-                  } catch (e) {
-
-                  }
-                });
-              }} />
               <ListRow
                 title={'标题'}
                 detail={
@@ -243,6 +221,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
                     }}>
                     <TextInput
                       style={[styles.input,{flex:1}]}
+                      editable={!(item?.title)}
                       placeholder={'准确的Tag有助于专家高手发现问题'}
                       value={this.state.tag}
                       maxLength={30}
@@ -273,7 +252,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
                           : gColors.borderColor,
                         borderRadius: 6,
                       }}>
-                      <Text style={{color: Theme.primaryColor}}>添加</Text>
+                      <Text style={{color: 'white'}}>添加</Text>
                     </TouchableOpacity>
                   </View>
                 }
@@ -287,10 +266,11 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
                     园豆)</Text>
                     <Text style={{fontSize:Theme.labelFontSizeSM,color:gColors.color6e,marginTop:6}}>悬赏园豆越多，您的问题会越受关注，从而得到更佳答案。</Text>
                   </View>
-                    }
+                }
                 detail={
                   <TextInput
                     style={[styles.input]}
+                    editable={!(item?.title)}
                     value={this.state.integral}
                     keyboardType={'numeric'}
                     placeholder="请输入悬赏值"
@@ -463,9 +443,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   input: {
-    // flex:1,
+    flex:1,
     textAlign:'right',
     marginLeft:10,
-    height:__ANDROID__?40:35
+    height:__ANDROID__?40:35,
   }
 });

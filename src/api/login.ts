@@ -17,6 +17,13 @@ export type userInfoModel = {
   postcount: string,
 };
 
+
+//为0的时候表示可以连通
+export const checkConnectivity = (data:RequestModel<{}>) => {
+  const URL = `https://i.cnblogs.com/api/msg`;
+  return RequestUtils.get<number>(URL);
+};
+
 export const getToken = data => {
   data.request = {
     client_id: gBaseConfig.clientId,
