@@ -1,7 +1,6 @@
 import * as actionTypes from '../../actions/actionTypes';
 import {
   handleActions,
-  createReducerResult,
   actionToResult,
   SagaAction,
   reducerModel,
@@ -13,6 +12,7 @@ import {
   getBlogCommentListRequest,
   getBlogDetailRequest,
 } from '../../api/blog';
+import {createReducerResult} from "../../utils/requestUtils";
 
 export interface State {
   personalBlogList: Array<blogModel>;
@@ -40,9 +40,9 @@ export interface State {
   personBlogList_noMore: boolean;
   blogDetail: any;
   getBlogDetailResult: any;
-  blogDetails: {[key: string]: reducerModel<any>};
+  blogDetails: {[key: string]: Partial<reducerModel<any>>};
   selectedBlog: blogModel;
-  blogCommentLists: {[key: string]: reducerModel<blogCommentModel>};
+  blogCommentLists: {[key: string]: Partial<reducerModel<blogCommentModel>>};
   blogCommentList: Array<blogCommentModel>;
   blogCommentList_noMore: boolean;
   getBlogCommentListResult: any;

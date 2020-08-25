@@ -2,9 +2,9 @@ import * as actionTypes from '../../actions/actionTypes';
 import {
   actionToResult,
   handleActions,
-  createReducerResult,
 } from '../../utils/reduxUtils';
 import StringUtils from '../../utils/stringUtils';
+import {createReducerResult} from "../../utils/requestUtils";
 
 export interface State {
   kbList: Array<any>;

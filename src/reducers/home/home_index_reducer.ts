@@ -1,10 +1,10 @@
 import * as actionTypes from '../../actions/actionTypes';
 import {
   handleActions,
-  createReducerResult,
   actionToResult,
   reducerModel,
 } from '../../utils/reduxUtils';
+import {createReducerResult} from "../../utils/requestUtils";
 
 export interface State {
   blog: reducerModel<any>;

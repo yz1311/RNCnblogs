@@ -1,10 +1,9 @@
 import * as actionTypes from '../../actions/actionTypes';
 import {
   handleActions,
-  createReducerResult,
   actionToResult,
 } from '../../utils/reduxUtils';
-import StringUtils from '../../utils/stringUtils';
+import {createReducerResult} from "../../utils/requestUtils";
 
 export interface State {
   //园友信息

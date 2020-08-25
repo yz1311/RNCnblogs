@@ -77,3 +77,9 @@ export interface SagaActionMeta<Payload,Meta> extends Action<Payload>{
     parData: Payload,
   } & Meta
 }
+
+export interface reducerModel<T> {
+  list: Array<T>,
+  noMore: boolean,
+  loadDataResult: any
+}
