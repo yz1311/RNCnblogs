@@ -60,21 +60,21 @@ export default class profile_setting extends Component<IProps, IState> {
         <NavigationBar title="设置" />
         <ScrollView style={{flex: 1}}>
           <View style={{marginTop: 10}}>
-            <ListRow
-              activeOpacity={activeOpacity}
-              title="字体大小"
-              icon={
-                <Entypo
-                  style={{marginRight: 6}}
-                  size={18}
-                  color={Theme.primaryColor}
-                  name="rss"
-                />
-              }
-              onPress={() => {
-                NavigationHelper.navigate('ProfileFontSize');
-              }}
-            />
+            {/*<ListRow*/}
+            {/*  activeOpacity={activeOpacity}*/}
+            {/*  title="字体大小"*/}
+            {/*  icon={*/}
+            {/*    <Entypo*/}
+            {/*      style={{marginRight: 6}}*/}
+            {/*      size={18}*/}
+            {/*      color={Theme.primaryColor}*/}
+            {/*      name="rss"*/}
+            {/*    />*/}
+            {/*  }*/}
+            {/*  onPress={() => {*/}
+            {/*    NavigationHelper.navigate('ProfileFontSize');*/}
+            {/*  }}*/}
+            {/*/>*/}
             <ListRow
               activeOpacity={activeOpacity}
               title="主题设置"

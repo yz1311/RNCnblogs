@@ -17,7 +17,7 @@ import produce from "immer";
 import {blogModel} from "../../api/blog";
 
 export interface IProps {
-  title: string;
+  title?: string;
   navigation: any,
   tabIndex: number,
   loadData?: Function,
@@ -117,7 +117,10 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getFollowingBlogList({
             request: {
-              CategoryType: 'following',
+              CategoryId: -4,
+              CategoryType: 'MyFollowing',
+              //@ts-ignore
+              CheckedGroupId: null,
               PageIndex: this.pageIndex,
             }
           })
@@ -130,7 +133,9 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getPickedBlogList({
             request: {
-              CategoryType: 'pick',
+              CategoryId: -2,
+              CategoryType: 'Picked',
+              ParentCategoryId: 0,
               PageIndex: this.pageIndex,
             }
           })
@@ -140,7 +145,9 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getPickedBlogList({
             request: {
-              CategoryType: 'candidate',
+              CategoryId: 108697,
+              CategoryType: 'HomeCandidate',
+              ParentCategoryId: 0,
               PageIndex: this.pageIndex,
             }
           })

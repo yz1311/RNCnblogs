@@ -43,9 +43,11 @@ export type blogCommentModel = {
 export type getBlogListRequest = RequestModel<{
   blogApp?: string;
   CategoryType?: string
+  ItemListActionName?: string;
   ParentCategoryId?: number,
   CategoryId?: number,
   PageIndex: number;
+  TotalPostCount?: number;
 }>;
 
 export type getBlogDetailRequest = RequestModel<{
@@ -72,8 +74,10 @@ export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSiz
 };
 
 export const getPickedBlogList = (data: getBlogListRequest) => {
-  let URL = `https://www.cnblogs.com/${data.request.CategoryType}/#p${data.request.PageIndex}`;
-  return RequestUtils.post(URL,data.request, {
+  data.request.ItemListActionName = 'AggSitePostList';
+  data.request.ParentCategoryId = 0;
+  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  return RequestUtils.post(URL, data.request, {
     resolveResult: resolveBlogHtml
   });
 };
@@ -93,15 +97,22 @@ export const getSearchBlogList = (data: RequestModel<{Keywords: string,
 
 
 export const getHomeBlogList = (data: getBlogListRequest) => {
-  const URL = `https://www.cnblogs.com/#p${data.request.PageIndex}`;
-  return RequestUtils.post(URL,data.request, {
+  data.request.CategoryId = 808;
+  data.request.CategoryType = 'SiteHome';
+  data.request.ItemListActionName = 'AggSitePostList';
+  data.request.ParentCategoryId = 0;
+  const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;
+  return RequestUtils.post(URL, data.request, {
     resolveResult: resolveBlogHtml
   });
 };
 
 export const getFollowingBlogList = (data: getBlogListRequest) => {
-  let URL = `https://www.cnblogs.com/${data.request.CategoryType}#/p${data.request.PageIndex}`;
-  return RequestUtils.post(URL,data.request, {
+  data.request.ItemListActionName = 'AggSitePostList';
+  data.request.ParentCategoryId = 0;
+  data.request.TotalPostCount = 80;
+  const URL = `https://www.cnblogs.com/aggsite/postlistbygroup`;
+  return RequestUtils.post(URL, data.request, {
     resolveResult: resolveBlogHtml
   });
 };
@@ -299,7 +310,7 @@ export const resolvePersonalBlogHtml = (result)=>{
     item.summary = (match.match(/class=\"c_b_p_desc\"[\s\S]+?(?=<a href[\s\S]+?c_b_p_desc_readmore)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
     //太突兀，加上...
     if(item.summary) {
-      item.summary += '...';
+      item.summary += ' ...';
     }
     item.author = {
       id: '',

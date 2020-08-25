@@ -69,11 +69,6 @@ interface IState {
   tabNames: Array<string>;
 }
 
-@(connect(
-  (state: ReduxState) => ({}),
-  dispatch => ({
-  }),
-) as any)
 export default class home_search extends Component<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {
@@ -339,7 +334,7 @@ export default class home_search extends Component<IProps, IState> {
       <View style={[Styles.container]}>
         <View
           style={{
-            position: 'absolute',
+            // position: 'absolute',
             width: gScreen.width,
             height: gScreen.statusBarHeight,
             backgroundColor: Theme.primaryColor,

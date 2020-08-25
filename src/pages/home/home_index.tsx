@@ -42,7 +42,8 @@ export default class home_index extends Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      tabNames: ['首页', '精华','候选', '关注', '知识库'],
+      // tabNames: ['首页', '精华','候选', '关注', '知识库'],
+      tabNames: ['首页', '精华','候选', '关注'],
     };
   }
 
@@ -74,7 +75,7 @@ export default class home_index extends Component<IProps, IState> {
               tabWidth={70}
               containerStyle={{backgroundColor: Theme.primaryColor}}
               tabDatas={tabNames}
-              showSearchButton
+              showSearchButton={false}
             />
           )}
           tabBarPosition="top"
@@ -102,11 +103,11 @@ export default class home_index extends Component<IProps, IState> {
             tabIndex={this.props.tabIndex}
             blogType={BlogTypes.关注}
           />
-          <BaseBlogList
-            navigation={this.props.navigation}
-            tabIndex={this.props.tabIndex}
-            blogType={BlogTypes.知识库}
-          />
+          {/*<BaseBlogList*/}
+          {/*  navigation={this.props.navigation}*/}
+          {/*  tabIndex={this.props.tabIndex}*/}
+          {/*  blogType={BlogTypes.知识库}*/}
+          {/*/>*/}
         </ScrollableTabView>
       </View>
     );
