@@ -13,6 +13,7 @@ import {newsModel} from "../../api/news";
 import moment from "moment";
 import {messageModel} from '../../api/message';
 import ServiceUtils from '../../utils/serviceUtils';
+import StringUtils from "../../utils/stringUtils";
 
 interface IProps extends IReduxProps{
   navigation: any;
@@ -108,7 +109,7 @@ export default class message_item extends PureComponent<IProps, IState> {
               <View />
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
+                  {StringUtils.formatDate(moment(item.published,'YYYY-MM-DD HH:mm').toDate())}
                 </Text>
               </View>
             </View>

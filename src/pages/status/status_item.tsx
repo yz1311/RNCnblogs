@@ -22,6 +22,8 @@ import {statusModel} from "../../api/status";
 import ToastUtils from '../../utils/toastUtils';
 import {Api} from '../../api';
 import Feather from "react-native-vector-icons/Feather";
+import StringUtils from "../../utils/stringUtils";
+import moment from "moment";
 
 interface IProps extends IReduxProps {
   item: statusModel;
@@ -204,7 +206,7 @@ export default class status_item extends PureComponent<IProps, IState> {
                   fontSize: gFont.size12,
                   marginLeft: 10,
                 }}>
-                {item.published}
+                {StringUtils.formatDate(moment(item.published,'YYYY-MM-DD HH:mm:ss').toDate())}
               </Text>
               {item.isPrivate ?
                 <Image style={{width: 18, height: 18,marginLeft:7}} resizeMode={'contain'}

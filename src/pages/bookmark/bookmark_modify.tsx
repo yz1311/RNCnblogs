@@ -7,12 +7,9 @@ import {
   Alert,
   Keyboard,
 } from 'react-native';
-import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {ListRow, Input, NavigationBar} from '@yz1311/teaset';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {ReduxState} from '../../reducers';
 import {bookmarkModel} from '../../api/bookmark';
 import {Api} from '../../api';
 

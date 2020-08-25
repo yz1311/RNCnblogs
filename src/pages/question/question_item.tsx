@@ -29,6 +29,7 @@ import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
 import Feather from "react-native-vector-icons/Feather";
 import {QuestionTypes} from "./question_index";
+import StringUtils from "../../utils/stringUtils";
 
 interface IProps extends IReduxProps {
   setSelectedQuestionFn?: any;
@@ -310,7 +311,7 @@ export default class question_item extends PureComponent<IProps, any> {
               </Text>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {moment(item.published,'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')}
+                  {StringUtils.formatDate(moment(item.published,'YYYY-MM-DD HH:mm').toDate())}
                 </Text>
               </View>
             </View>
