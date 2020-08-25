@@ -1,5 +1,4 @@
 import * as types from './actionTypes';
-import {createSagaAction} from '../utils/reduxUtils';
 
 export let changeAppNetInfo = connectionInfo => {
   return {
@@ -28,38 +27,3 @@ export let changeStatusBarHiddenStatus = data => {
   };
 };
 
-/**
- *
- * @param data
- * @returns {{type, payload: {isFetching,loadingTitle}}}
- */
-export const showLoading = data => {
-  return {
-    type: types.APP_SHOW_LOADING_REQUESTED,
-    payload: data,
-  };
-};
-
-export const hideLoading = data => {
-  return {
-    type: types.APP_HIDE_LOADING_REQUESTED,
-    payload: data,
-  };
-};
-
-export const showToast = (message, options = undefined) => {
-  return {
-    type: types.APP_SHOW_TOAST_REQUESTED,
-    payload: {
-      message,
-      options,
-    },
-  };
-};
-
-export const hideToast = data => {
-  return {
-    type: types.APP_HIDE_TOAST_REQUESTED,
-    payload: data,
-  };
-};

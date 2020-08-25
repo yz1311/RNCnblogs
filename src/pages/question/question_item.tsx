@@ -6,22 +6,15 @@ import {
   Image,
   Text,
   Alert,
-  DeviceEventEmitter, PixelRatio,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
-import {showToast} from '../../actions/app_actions';
 import {ReduxState} from '../../reducers';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ServiceUtils from '../../utils/serviceUtils';
 import {questionModel} from '../../api/question';
 import HTMLView from 'react-native-render-html';

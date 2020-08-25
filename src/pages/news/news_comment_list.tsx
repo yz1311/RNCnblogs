@@ -17,8 +17,6 @@ import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
-import {ListRow, Overlay} from '@yz1311/teaset';
-import {showToast} from '../../actions/app_actions';
 import PropTypes from 'prop-types';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';

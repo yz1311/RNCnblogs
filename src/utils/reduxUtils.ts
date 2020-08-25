@@ -1,6 +1,6 @@
 import {Action, ActionMeta} from "redux-actions";
-import YZStateView from "../components/YZStateView";
 import produce from "immer";
+import {LoadDataResultStates} from "./requestUtils";
 
 export const handleActions = <T = any>(
     actionsMap: {[key: string]: (state: T, action: SagaAction<any>) => void},
@@ -34,18 +34,18 @@ export const actionToResult = (action: ActionMeta<any,any>, props = undefined, d
     action.payload.showRefreshBtn = showRefreshBtn;
     return Object.assign({ success: action.error ? false : true, timestamp: new Date(),
       //payload是一个Error对象
-      msg: action.payload.message, error: action.payload, state: YZStateView.states.error,
+      msg: action.payload.message, error: action.payload, state: LoadDataResultStates.error,
       //将传递的参数也放进去
       parData: action.meta ? action.meta.parData : {} }, props);
   }
   else {
-    let state = YZStateView.states.content;
+    let state = LoadDataResultStates.content;
     //默认以主结果进行验证
     if (!dataToValidate) {
       dataToValidate = action.payload.result;
     }
     if (dataValidator) {
-      state = dataValidator();
+      state = dataValidator() as LoadDataResultStates;
     }
     //默认验证规则
     else {
@@ -53,11 +53,11 @@ export const actionToResult = (action: ActionMeta<any,any>, props = undefined, d
         //目前判空只针对数组
         //如果是数组，则空数据表示无数据
         if (Array.isArray(dataToValidate) && dataToValidate.length === 0) {
-          state = YZStateView.states.empty;
+          state = LoadDataResultStates.empty;
         }
       }
       else {
-        state = YZStateView.states.empty;
+        state = LoadDataResultStates.empty;
       }
     }
     return Object.assign({ success: action.error ? false : true, timestamp: new Date(), state: state,

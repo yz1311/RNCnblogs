@@ -15,18 +15,11 @@ import {connect} from 'react-redux';
 import {WebView} from 'react-native-webview';
 import YZStateView from '../../components/YZStateCommonView';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import YZFlatList from '../../components/YZFlatList';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import {Styles} from '../../common/styles';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ListRow, NavigationBar, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {showToast} from '../../actions/app_actions';
 import StringUtils from '../../utils/stringUtils';
 import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';

@@ -119,6 +119,13 @@ export default class YZFlatList extends Component<IProps,IState>
     }
   }
 
+  _scrollToTop = ()=>{
+    this.flatList.scrollToOffset({
+      animated: true,
+      offset: 0
+    });
+  }
+
   _onRefresh = () => {
     this.pageIndex = 1;
     this.onPageIndexChange();

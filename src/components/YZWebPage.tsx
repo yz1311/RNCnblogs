@@ -2,11 +2,8 @@ import React, {Component} from 'react';
 import {Clipboard, Linking, Share, View, TouchableOpacity} from 'react-native';
 import {WebView} from 'react-native-webview';
 import PropTypes from 'prop-types';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, NavigationBar, Overlay} from '@yz1311/teaset';
-import {connect} from 'react-redux';
-import {showToast} from '../actions/app_actions';
 import CommonUtils from '../utils/commonUtils';
 import YZBackHandler from './YZBackHandler';
 

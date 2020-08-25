@@ -43,7 +43,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
   private searchReloadListener: EmitterSubscription;
-  private _flatList: any;
+  private _flatList: YZFlatList;
 
   readonly state:IState = {
     dataList: [],

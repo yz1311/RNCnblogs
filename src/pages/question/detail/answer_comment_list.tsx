@@ -34,8 +34,6 @@ import {
   modifyAnswerComment,
 } from '../../../actions/question/question_detail_actions';
 import AnswerItem from './answer_item';
-import {showToast} from '../../../actions/app_actions';
-import StringUtils from '../../../utils/stringUtils';
 import CommentItem from '../../blog/comment_item';
 import {ReduxState} from '../../../reducers';
 import {ServiceTypes} from "../../YZTabBarView";

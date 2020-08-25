@@ -72,6 +72,12 @@ export default class AppNavigation extends Component {
                         },
                         //ios默认开启，android默认关闭,现在开启
                         gestureEnabled: true,
+                        gestureResponseDistance: {
+                            //默认值50距离太宽了
+                            horizontal: 30,
+                            //这是默认值
+                            vertical: 135,
+                        },
                         //5.x版本，必须要设置这个才能android下滑动关闭
                         gestureDirection: 'horizontal',
                         //统一两端的动画效果

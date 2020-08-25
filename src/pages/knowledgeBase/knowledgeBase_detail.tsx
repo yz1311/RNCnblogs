@@ -30,12 +30,10 @@ import {
   getKnowledgeBaseDetail,
   clearKnowledgeBaseDetail,
 } from '../../actions/knowledgeBase/knowledgeBase_index_actions';
-import {showToast} from '../../actions/app_actions';
 import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
-import {IImageInfo} from "react-native-image-zoom-viewer/built/image-viewer.type";
 
 export interface IProps extends IBaseDataPageProps {
   data?: any;

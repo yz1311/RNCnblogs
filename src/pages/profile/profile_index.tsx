@@ -11,8 +11,6 @@ import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
-import {logout} from '../../actions/login/login_index_actions';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
 import {BlogTypes} from "../home/home_index";
@@ -20,7 +18,6 @@ import {BlogTypes} from "../home/home_index";
 interface IProps extends IReduxProps {
   isLogin?: boolean;
   userInfo?: userInfoModel;
-  logoutFn?: any;
   navigation: any;
   tabIndex: number;
 }
@@ -31,10 +28,6 @@ interface IState {}
   (state: ReduxState) => ({
     userInfo: state.loginIndex.userInfo,
     isLogin: state.loginIndex.isLogin,
-  }),
-  dispatch => ({
-    dispatch,
-    logoutFn: data => dispatch(logout(data)),
   }),
 ) as any)
 export default class profile_index extends Component<IProps, IState> {

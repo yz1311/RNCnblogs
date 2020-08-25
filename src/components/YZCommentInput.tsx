@@ -14,8 +14,6 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {connect} from 'react-redux';
 // import YZLottieView from '../components/YZLottieView';
-import {showToast} from '../actions/app_actions';
-import {ReduxState} from '../reducers';
 import {Theme} from "@yz1311/teaset";
 import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 
@@ -107,7 +105,9 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
   }
 
   _keyboardDidShow = e => {
-    this._onToggle(true);
+    if(this.props.editable) {
+      this._onToggle(true);
+    }
   };
 
   _keyboardDidHide = () => {

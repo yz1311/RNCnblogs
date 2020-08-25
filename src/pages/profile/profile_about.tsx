@@ -10,11 +10,8 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import {Styles} from '../../common/styles';
-import YZHeader from './profile_index';
 import {ListRow, NavigationBar} from '@yz1311/teaset';
 import {connect} from 'react-redux';
-import {logout} from '../../actions/login/login_index_actions';
-import Entypo from 'react-native-vector-icons/Entypo';
 import {ReduxState} from '../../reducers';
 import Bugly, {logLevel} from 'rn-bugly';
 

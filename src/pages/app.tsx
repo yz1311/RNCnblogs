@@ -22,8 +22,6 @@ import {
   NavigationState,
 } from '@react-navigation/routers';
 import {
-  showToast,
-  showLoading,
   changeAppNetInfo,
   orientationInfoChanged,
 } from '../actions/app_actions';

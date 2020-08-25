@@ -9,16 +9,11 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
 import YZCheckbox from '../../components/YZCheckbox';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, NavigationBar} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {showToast} from '../../actions/app_actions';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
 import {StatusTypes} from './status_index';

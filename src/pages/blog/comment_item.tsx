@@ -12,14 +12,11 @@ import {connect} from 'react-redux';
 import {Alert, ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import {Styles} from '../../common/styles';
-import moment from 'moment';
 import StringUtils from '../../utils/stringUtils';
 import ServiceUtils from '../../utils/serviceUtils';
 import AnswerModify from '../question/detail/answer_modify';
 import HTMLView from 'react-native-render-html';
-import {showToast} from '../../actions/app_actions';
 import {ReduxState} from '../../reducers';
-import {getUserAliasByUserName} from '../../actions/profile/profile_index_actions';
 import Feather from "react-native-vector-icons/Feather";
 import ToastUtils from "../../utils/toastUtils";
 
@@ -289,41 +286,11 @@ export default class comment_item extends PureComponent<IProps, IState> {
             }
             //博客的没有alias信息
             else {
-              let userInfo = await this.searchUserAlias(
-                item.AuthorUrl || item.FaceUrl || item.UserIconUrl,
-              );
-              if (userInfo) {
-                alias = userInfo.alias;
-                iconUrl = userInfo.iconUrl;
-                ServiceUtils.viewProfileDetail(
+              ServiceUtils.viewProfileDetail(
                   this.props.dispatch,
-                  alias,
-                  iconUrl,
-                );
-                return;
-              } else {
-                this.props.dispatch(
-                  getUserAliasByUserName({
-                    request: {
-                      userName: item.UserName,
-                      fuzzy: false,
-                      userId: item.UserId,
-                    },
-                    successAction: result => {
-                      if (result && result.alias) {
-                        alias = result.alias;
-                        iconUrl = result.iconUrl;
-                        ServiceUtils.viewProfileDetail(
-                          this.props.dispatch,
-                          alias,
-                          iconUrl,
-                        );
-                        return;
-                      }
-                    },
-                  }),
-                );
-              }
+                  userId,
+                  iconName,
+              );
             }
           }}
           style={{flexDirection: 'row', alignSelf: 'stretch'}}>
