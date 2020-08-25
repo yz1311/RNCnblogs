@@ -171,7 +171,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
                                 }))"
                                 style="display: flex;height: 50px;justify-content: center;align-items: center;">
                                 <span style="color:${
-              gColors.themeColor
+              Theme.primaryColor
           };font-size: medium;">点击查看全部评论</span>
                             </div>`;
         }

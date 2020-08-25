@@ -10,7 +10,7 @@ import {
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {ListRow, NavigationBar} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
 import {logout} from '../../actions/login/login_index_actions';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {ReduxState} from "../../models";
@@ -172,7 +172,7 @@ export default class profile_index extends Component<IProps, IState> {
                 <Entypo
                   style={{marginRight: 6}}
                   size={18}
-                  color={gColors.themeColor}
+                  color={Theme.primaryColor}
                   name="rss"
                 />
               }
@@ -215,7 +215,7 @@ export default class profile_index extends Component<IProps, IState> {
                 <Entypo
                   style={{marginRight: 6}}
                   size={18}
-                  color={gColors.themeColor}
+                  color={Theme.primaryColor}
                   name="cog"
                 />
               }

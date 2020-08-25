@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   },
   titleDesc: {
     fontSize: gFont.size14,
-    color: gColors.themeColor,
+    color: Theme.primaryColor,
     fontWeight:'bold'
   },
 });

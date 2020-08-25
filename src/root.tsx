@@ -227,6 +227,8 @@ class Root extends PureComponent {
     //@ts-ignore
     HtmlView.defaultProps.renderers = {
         img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{
+            console.log(htmlAttribs)
+            console.log(convertedCSSStyles)
             return (
                 <TouchableOpacity
                     onPress={()=>{
@@ -239,7 +241,7 @@ class Root extends PureComponent {
                     }}
                 >
                     <AutoHeightImage
-                        width={Theme.deviceWidth-16}
+                        width={convertedCSSStyles.width || (Theme.deviceWidth-16)}
                         source={{uri: htmlAttribs.src}}
                         resizeMode="contain"
                     />

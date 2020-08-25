@@ -205,7 +205,7 @@ export default class profile_themeModal extends Component<IProps, IState> {
             DeviceEventEmitter.emit('reloadTheme');
             NavigationHelper.goBack();
           }}>
-          <Text style={{fontSize: gFont.size15, color: gColors.themeColor}}>
+          <Text style={{fontSize: gFont.size15, color: Theme.primaryColor}}>
             确定
           </Text>
         </TouchableOpacity>

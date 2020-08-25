@@ -3,6 +3,7 @@ import {StyleSheet, View, ActivityIndicator, Text, Alert} from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import {getToken} from '../../actions/login/login_index_actions';
+import {Theme} from "@yz1311/teaset";
 
 interface IProps {
   dispatch: any;
@@ -37,7 +38,7 @@ export default class app_entry extends Component<IProps, {}> {
     return (
       <View style={[Styles.container]}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size="large" color={gColors.themeColor} />
+          <ActivityIndicator size="large" color={Theme.primaryColor} />
           <Text style={{marginTop: 10}}>加载中...</Text>
         </View>
       </View>

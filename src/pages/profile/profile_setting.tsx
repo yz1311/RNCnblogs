@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {Styles} from '../../common/styles';
 import YZHeader from './profile_index';
-import {ListRow, NavigationBar} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import {logout} from '../../actions/login/login_index_actions';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -67,7 +67,7 @@ export default class profile_setting extends Component<IProps, IState> {
                 <Entypo
                   style={{marginRight: 6}}
                   size={18}
-                  color={gColors.themeColor}
+                  color={Theme.primaryColor}
                   name="rss"
                 />
               }
@@ -82,7 +82,7 @@ export default class profile_setting extends Component<IProps, IState> {
                 <Entypo
                   style={{marginRight: 6}}
                   size={18}
-                  color={gColors.themeColor}
+                  color={Theme.primaryColor}
                   name="rss"
                 />
               }
@@ -97,7 +97,7 @@ export default class profile_setting extends Component<IProps, IState> {
                 <Entypo
                   style={{marginRight: 6}}
                   size={18}
-                  color={gColors.themeColor}
+                  color={Theme.primaryColor}
                   name="info-with-circle"
                 />
               }

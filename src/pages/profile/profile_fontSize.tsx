@@ -13,7 +13,7 @@ import {Styles} from '../../common/styles';
 import {connect} from 'react-redux';
 import Slider from 'react-native-slider';
 import {ReduxState} from '../../reducers';
-import {NavigationBar} from "@yz1311/teaset";
+import {NavigationBar, Theme} from "@yz1311/teaset";
 
 interface IProps {
   dispatch: any;
@@ -87,7 +87,7 @@ export default class profile_fontSize extends Component<IProps, IState> {
             step={0.1}
             minimumTrackTintColor={gColors.color999}
             maximumTrackTintColor={gColors.color999}
-            thumbTintColor={gColors.themeColor}
+            thumbTintColor={Theme.primaryColor}
             onValueChange={async value => {
               this.setState({value});
               let themeInfo = await gStorage.load('themeInfo');

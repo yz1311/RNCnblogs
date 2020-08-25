@@ -19,7 +19,7 @@ import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ListRow, NavigationBar, Overlay} from '@yz1311/teaset';
+import {ListRow, NavigationBar, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {showToast} from '../../actions/app_actions';
@@ -310,7 +310,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                                 }))"
                                 style="display: flex;height: 50px;justify-content: center;align-items: center;">
                                 <span style="color:${
-                                  gColors.themeColor
+                                  Theme.primaryColor
                                 };font-size: medium;">点击查看全部评论</span>
                             </div>`;
       }

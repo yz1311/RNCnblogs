@@ -355,11 +355,11 @@ export default class comment_item extends PureComponent<IProps, IState> {
                   marginLeft: 5,
                   paddingVertical: 3,
                   paddingHorizontal: 4,
-                  borderColor: gColors.themeColor,
+                  borderColor: Theme.primaryColor,
                   borderWidth: gScreen.onePix,
                 }}>
                 <Text
-                  style={{fontSize: gFont.size10, color: gColors.themeColor}}>
+                  style={{fontSize: gFont.size10, color: Theme.primaryColor}}>
                   作者
                 </Text>
               </View>

@@ -282,14 +282,14 @@ export default class home_search extends Component<IProps, IState> {
                 {cancelable: false},
               );
             }}>
-            <Text style={{color: gColors.themeColor, fontSize: gFont.size15}}>
+            <Text style={{color: Theme.primaryColor, fontSize: gFont.size15}}>
               清空
             </Text>
             <EvilIcons
               style={[styles.icon, {marginLeft: 4}]}
               name="trash"
               size={24}
-              color={gColors.themeColor}
+              color={Theme.primaryColor}
             />
           </TouchableOpacity>
         </View>

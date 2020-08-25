@@ -70,6 +70,7 @@ export default class App extends Component<IProps, IState> {
       BackHandler.addEventListener('hardwareBackPress', this._onBackAndroid);
 
     this.requestPermission();
+    Platform.OS === 'android' && AppState.addEventListener('change', this._onStateChange);
   }
 
   shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
@@ -99,10 +100,17 @@ export default class App extends Component<IProps, IState> {
     __ANDROID__ &&
       BackHandler.removeEventListener('hardwareBackPress', this._onBackAndroid);
     this.reloadThemeListener && this.reloadThemeListener.remove();
+    Platform.OS === 'android' && AppState.removeEventListener('change', this._onStateChange);
   }
 
   handleOrientationChange = ({window}) => {
     gStore.dispatch(orientationInfoChanged(window));
+  };
+
+  _onStateChange = () => {
+    //在android下有个bug，app呆在后台一段时候后，返回到前台，状态栏会变成半透明
+    //并且将内容向下顶下去，该处就是修复该问题
+    StatusBar.setTranslucent(true);
   };
 
   _onBackAndroid = () => {

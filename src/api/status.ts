@@ -188,7 +188,7 @@ export const resolveStatusHtml = (result)=>{
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = '';
     //有一部分的内容里面是链接，所以不能按照贪婪匹配来replace
-    item.summary = (match.match(/class=\"ing_body\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+?>/,'')?.trim();
+    item.summary = (match.match(/<bdo>[\s\S]+?(?=<a class=\"ing_time gray)/)||[])[0]?.trim();
     item.author = {
       id: '',
       avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),

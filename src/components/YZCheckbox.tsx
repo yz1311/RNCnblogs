@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity, ViewPropTypes} from 'react-native';
 import PropTypes from 'prop-types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Theme} from "@yz1311/teaset";
 
 export interface IProps {
   wrapperStyle?: any;
@@ -41,7 +42,7 @@ export default class YZCheckbox extends Component<IProps, {}> {
     if (disabled) {
       color = gColors.borderColor;
     } else {
-      color = checked ? gColors.themeColor : gColors.color999;
+      color = checked ? Theme.primaryColor : gColors.color999;
     }
     return (
       <TouchableOpacity

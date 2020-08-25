@@ -22,7 +22,7 @@ import YZCommentInput from '../../../components/YZCommentInput';
 import YZCommonActionMenu from '../../../components/YZCommonActionMenu';
 import {Styles} from '../../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
@@ -266,7 +266,7 @@ export default class answer_comment_list extends YZBaseDataPage<
                     this.loadData,
                   );
                 }}
-                colors={[gColors.themeColor]}
+                colors={[Theme.primaryColor]}
               />
             }
             style={{flex: 1, overflow: 'hidden'}}>
