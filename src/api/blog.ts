@@ -113,7 +113,9 @@ export const getFollowingBlogList = (data: getBlogListRequest) => {
   data.request.TotalPostCount = 80;
   const URL = `https://www.cnblogs.com/aggsite/postlistbygroup`;
   return RequestUtils.post(URL, data.request, {
-    resolveResult: resolveBlogHtml
+    resolveResult: (result) => {
+      return resolveBlogHtml(result.postList);
+    }
   });
 };
 

@@ -65,7 +65,8 @@ export default class bookmark_index extends PureComponent<IProps, IState> {
                         inactiveTextFontSize={Theme.px2dp(30)}
                         underlineStyle={{
                             backgroundColor: gColors.bgColorF,
-                            height: 3
+                            height: 3,
+                            borderRadius: 1.5
                         }}
                     />
                 )}
