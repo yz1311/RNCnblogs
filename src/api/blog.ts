@@ -298,7 +298,7 @@ export const resolvePersonalBlogHtml = (result)=>{
     }
     item.summary = (match.match(/class=\"c_b_p_desc\"[\s\S]+?(?=<a href[\s\S]+?c_b_p_desc_readmore)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
     //太突兀，加上...
-    if(!item.summary) {
+    if(item.summary) {
       item.summary += '...';
     }
     item.author = {

@@ -3,9 +3,6 @@ import {StyleSheet, View, ActivityIndicator, Text, Platform} from 'react-native'
 import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import {setLoginCode} from '../../actions/login/login_index_actions';
-import moment from 'moment';
 import SplashScreen from 'react-native-splash-screen';
 import {ReduxState} from '../../reducers';
 import CookieManager from '@react-native-community/cookies';
@@ -52,6 +49,7 @@ export default class login_index extends Component<IProps, IState> {
       //后一个参数表示使用UIWebkit，否则ios获取的为空
       let res = await CookieManager.get('https://account.cnblogs.com/signin', true);
       if(res) {
+        //@ts-ignore
         if(this.props.deprecatedCookie==res['.Cnblogs.AspNetCore.Cookies'] || !res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
           return ;
         }
