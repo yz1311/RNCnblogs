@@ -56,8 +56,6 @@ let lastClickTime = 0;
     isLogin: state.loginIndex.isLogin,
   })
 ) as any)
-//@ts-ignore
-@YZBackHandler
 export default class YZTabBarView extends Component<IProps, IState> {
   static navigationOptions = ({navigation}) => {
     return {

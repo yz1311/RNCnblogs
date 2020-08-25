@@ -4,6 +4,7 @@ import RequestUtils from '../utils/requestUtils';
 import {MyQuestionTypes, QuestionTypes} from '../pages/question/question_index';
 import {SearchParams} from "../pages/home/home_search";
 import {resolveSearchNewsHtml} from "./news";
+import {bookmarkTagModel} from "./bookmark";
 
 export type questionModel = {
   id: string,
@@ -57,6 +58,11 @@ export type personQuestionIndex = {
   integral: number,   //园豆
   prestige: number,   //声望
   rank: string,  //排名
+};
+
+export type questionTagModel = {
+  name: string;
+  num: number;
 };
 
 export const getPersonQuestionIndex = (data:RequestModel<{userId: string}>) => {
@@ -207,29 +213,6 @@ export const getQuestionDetail = data => {
   });
 };
 
-export const getQuestionCommentList = data => {
-  const URL = `${gServerPath}/questions/answers/${data.request.id}/comments`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取问题评论失败!',
-    actionType: types.QUESTION_GET_COMMENT_LIST,
-  });
-};
-
-export const getQuestionAnswerList = data => {
-  const URL = `${gServerPath}/questions/${data.request.id}/answers`;
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取问题回答失败!',
-    actionType: types.QUESTION_GET_ANSWER_LIST,
-  });
-};
 
 export const addQuestion = (data:RequestModel<{Title: string,Content: string,
   Tags?: string,
@@ -279,6 +262,25 @@ export const closeQuestion = (data:RequestModel<{qid:number}>) => {
     formData.append(key,data.request[key]);
   }
   return RequestUtils.post(URL, formData);
+};
+
+//获取博问标签
+export const getQuestionTags = (data:RequestModel<{pageIndex}>) => {
+  //分页是60个
+  const URL = `https://q.cnblogs.com/tag/list?pageindex=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<questionTagModel>>(URL, {
+    resolveResult: (result) => {
+      let items:Array<questionTagModel> = [];
+      let matches = result.match(/<td width=\"33%\"[\s\S]+?(?=<\/td>)/g)|| [];
+      for (let match of matches) {
+        let item:Partial<questionTagModel> = {};
+        item.name = (match.match(/href=\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'');
+        item.num = (match.match(/\(\d+(?=\)<\/li>)/)||[])[0]?.replace(/\(/,'');
+        items.push(item as questionTagModel);
+      }
+      return items;
+    }
+  });
 };
 
 

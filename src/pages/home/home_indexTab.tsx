@@ -129,7 +129,7 @@ export default class home_indexTab extends YZTabItem<IProps, any> {
       tabDatas,
     } = this.props;
     const textColor = isTabActive ? activeTextColor : inactiveTextColor;
-    const fontSize = isTabActive ? Theme.px2dp(35) : Theme.px2dp(30);
+    const fontSize = isTabActive ? Theme.px2dp(36) : Theme.px2dp(30);
     const fontWeight = isTabActive ? 'bold' : 'normal';
     let tabContentStyle = {};
     if (this.props.tabDatas.length > 1) {

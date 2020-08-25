@@ -1,11 +1,4 @@
-import {requestWithTimeout, createOptions} from '../utils/request';
-import * as types from '../actions/actionTypes';
-import {StatusTypes} from "../pages/status/status_index";
 import RequestUtils from "../utils/requestUtils";
-import {questionModel} from "./question";
-import {resolveStatusHtml} from "./status";
-import {blogModel, resolveBlogHtml} from "./blog";
-import Axios from "axios";
 import {decode as atob, encode as btoa} from 'base-64'
 import {Alert} from "@yz1311/teaset";
 import {ServiceTypes} from "../pages/YZTabBarView";
@@ -25,6 +18,11 @@ export type bookmarkModel = {
   publishedDesc: string,
   collects: number
 }
+
+export type bookmarkTagModel = {
+  name: string;
+  num: number;
+};
 
 export type addBookmarkRequestModel = RequestModel<{
   wzLinkId?: string,
@@ -185,6 +183,26 @@ export const checkIsBookmarkMyId = (data: RequestModel<{id:string}>) => {
   });
 }
 
+export const getBookmarkTags = (data: RequestModel<{}>) => {
+  const URL = `https://wz.cnblogs.com/mytag/`;
+  return RequestUtils.get<Array<any>>(URL,{
+    resolveResult: resolveBookmarkTagHtml
+  });
+}
+
+//修改标签名称(不能跟原名称一样)
+export const modifyBookmarkTagName = (data: RequestModel<{tagName: string, newTagName: string}>) => {
+  const URL = `https://wz.cnblogs.com/api/tag`;
+  return RequestUtils.put<{success: boolean, message: string}>(URL,data.request);
+}
+
+//删除标签
+export const deleteBookmarkTag = (data: RequestModel<{tagName: string}>) => {
+  const URL = `https://wz.cnblogs.com/api/tag/?tagName=${data.request.tagName}`;
+  return RequestUtils.delete<{success: boolean, message: string}>(URL);
+}
+
+
 
 export const resolveBookmarkHtml = (result)=>{
   let items:Array<any> = [];
@@ -201,6 +219,19 @@ export const resolveBookmarkHtml = (result)=>{
     item.published = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
     item.publishedDesc = (match.match(/收藏于[\s\S]+?title=\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
     item.collects = parseInt((match.match(/wz_item_count\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,''));
+    items.push(item);
+  }
+  return items;
+}
+
+export const resolveBookmarkTagHtml = (result)=>{
+  let items:Array<any> = [];
+  let matches = result.match(/<li data-tagname[\s\S]+?(?=<\/a>)/g)|| [];
+  for (let match of matches) {
+    match = decode(match);
+    let item:Partial<bookmarkTagModel> = {};
+    item.name = (match.match(/data-tagname=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+    item.num = (match.match(/\"\(\d+(?=\)\")/)||[])[0]?.replace(/\"\(/,'');
     items.push(item);
   }
   return items;
