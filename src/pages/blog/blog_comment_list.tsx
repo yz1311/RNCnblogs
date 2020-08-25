@@ -119,6 +119,11 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
       this.setState({
           ...pagingResult
       });
+      if(pagingResult.dataList.length>parseInt(this.state.title)) {
+        this.setState({
+          title: pagingResult.dataList.length+''
+        });
+      }
     } catch (e) {
       this.setState({
         loadDataResult: dataToReducerResult(e)

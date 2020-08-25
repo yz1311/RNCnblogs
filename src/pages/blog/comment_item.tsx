@@ -9,8 +9,6 @@ import {
   Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Alert, ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import {Styles} from '../../common/styles';
@@ -353,10 +351,11 @@ export default class comment_item extends PureComponent<IProps, IState> {
               <View
                 style={{
                   marginLeft: 5,
-                  paddingVertical: 3,
+                  paddingVertical: 2,
                   paddingHorizontal: 4,
                   borderColor: Theme.primaryColor,
                   borderWidth: gScreen.onePix,
+                  borderRadius: 2
                 }}>
                 <Text
                   style={{fontSize: gFont.size10, color: Theme.primaryColor}}>

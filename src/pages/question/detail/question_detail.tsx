@@ -302,6 +302,7 @@ export default class question_detail extends Component<IProps, IState> {
               data={this.props.item}
               commentCount={this.props.item.comments}
               serviceType={ServiceTypes.博问}
+              showFavButton={false}
               onClickCommentList={() => {
                 this._flatList &&
                   this._flatList.flatList.scrollToIndex({

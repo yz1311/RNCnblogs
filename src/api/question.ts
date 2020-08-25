@@ -199,8 +199,6 @@ export const getQuestionDetail = data => {
               });
             }
           }
-          console.log('~~~~comments')
-          console.log(comments)
           return comments;
         })(),
       } as Partial<questionModel>;

@@ -231,6 +231,7 @@ class Root extends PureComponent {
             console.log(convertedCSSStyles)
             return (
                 <TouchableOpacity
+                    style={{alignSelf:'flex-start'}}
                     onPress={()=>{
                         DeviceEventEmitter.emit('showImageViewer', {
                             images: [{
