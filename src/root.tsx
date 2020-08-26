@@ -251,8 +251,8 @@ class Root extends PureComponent {
         }
     };
     Theme.set({
-      primaryColor: '#0d7dfa',
-      navColor: '#0d7dfa',
+      primaryColor: '#0288d1',
+      navColor: '#0288d1',
       navTitleColor: '#fff',
     })
       //@ts-ignore

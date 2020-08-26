@@ -1269,6 +1269,15 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@react-native-community/art@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npm.taobao.org/@react-native-community/art/download/@react-native-community/art-1.2.0.tgz#386d95393f6042d9006f9d4bc6063fb898794460"
+  integrity sha1-OG2VOT9gQtkAb51LxgY/uJh5RGA=
+  dependencies:
+    art "^0.10.3"
+    invariant "^2.2.4"
+    prop-types "^15.7.2"
+
 "@react-native-community/async-storage@^1.12.0":
   version "1.12.0"
   resolved "https://registry.npmjs.org/@react-native-community/async-storage/-/async-storage-1.12.0.tgz#d2fc65bc08aa1c3e9514bbe9fe7095eab8e8aca3"
@@ -2099,6 +2108,11 @@ array-unique@^0.3.2:
   version "0.3.2"
   resolved "https://registry.npmjs.org/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
+
+art@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.npm.taobao.org/art/download/art-0.10.3.tgz#b01d84a968ccce6208df55a733838c96caeeaea2"
+  integrity sha1-sB2EqWjMzmII31WnM4OMlsrurqI=
 
 asap@~2.0.3, asap@~2.0.6:
   version "2.0.6"
@@ -6793,26 +6807,12 @@ react-native-autogrow-textinput@^5.4.0:
   resolved "https://registry.npmjs.org/react-native-autogrow-textinput/-/react-native-autogrow-textinput-5.4.0.tgz#df3d7a549d20e8bf34f493d2eaa1839d3e48a319"
   integrity sha512-JnAPq0Oc+Q4gbMii+60Mk1Zep2ii3+bNHBffTMjH/vPQtpOH4bbgb+GQS9c+0uX51yuSxfbhIdgI7mvpj2f6ZA==
 
-react-native-autoheight-webview@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/react-native-autoheight-webview/-/react-native-autoheight-webview-1.5.2.tgz#ea70cad056a2ce46e9de18cba90624aa49668632"
-  integrity sha512-pgaLQ67wNE0VZOpvtCw7kbxJ4Cx38jgCjIOk3LfMf8uBxz+TP35QWGtSpf0NZ9sJifahU15t0Vd/8y/SGEUTCA==
-  dependencies:
-    prop-types "^15.7.2"
-
 react-native-cardview@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmjs.org/react-native-cardview/-/react-native-cardview-2.0.5.tgz#e7c112c15f7dafdf791e6ccba55b65a9e640ecef"
   integrity sha512-hjWwVakzg9XMZlfrHyUGuqTgyg600fdnKdJN1arbj4BXWFVoeDmlBy+sZPXTSMJTrWO0x3bSUsDhFXPzb9Q4Sg==
   dependencies:
     prop-types "^15.6.0"
-
-react-native-circular-progress@^1.3.6:
-  version "1.3.6"
-  resolved "https://registry.npmjs.org/react-native-circular-progress/-/react-native-circular-progress-1.3.6.tgz#023f74785274ea1a4473ca9291e600e5d33ee892"
-  integrity sha512-0P+RIZ1SdufLNI9oXhZCx1QBwvdkgJeyLHv+243jSvqrRVcfp6E31ktrdZr8QOpI2sG3g3n4NRrtjMxHKL7ryw==
-  dependencies:
-    prop-types "^15.7.2"
 
 react-native-code-push@6.2.1:
   version "6.2.1"
@@ -6917,10 +6917,10 @@ react-native-render-html@^4.2.3:
     html-entities "^1.2.0"
     htmlparser2 "3.10.1"
 
-react-native-safe-area-context@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-3.1.4.tgz#9b7f883a5ae8da6218d17467a350434005893602"
-  integrity sha512-bXx3hqz4LovFoMnJIRGIWL2oJ/PHadXviBKvgZV9yNErtURQLJSn0yfQytVtiqslhaBMZOJwH4R6HiClyofvBg==
+react-native-safe-area-context@^3.1.7:
+  version "3.1.7"
+  resolved "https://registry.npm.taobao.org/react-native-safe-area-context/download/react-native-safe-area-context-3.1.7.tgz#fc9e636dfb168f992a2172d363509ce0611a8403"
+  integrity sha1-/J5jbfsWj5kqIXLTY1Cc4GEahAM=
 
 react-native-safe-area-view@^0.14.1:
   version "0.14.8"
