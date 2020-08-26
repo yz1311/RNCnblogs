@@ -96,7 +96,7 @@ export default class home_search extends Component<IProps, IState> {
       keyword: '',
       showHistory: true,
       searchHistory: [],
-      tabNames: ['博客', '新闻', '博问', '闪存'],
+      tabNames: ['博客', '新闻', '博问', '闪存', '用户'],
     };
     this.storage_key = props.type + '_searchHistory';
   }
@@ -199,7 +199,6 @@ export default class home_search extends Component<IProps, IState> {
               ref={input => (this.textInput = input)}
               style={[styles.textInput]}
               placeholder="搜索"
-              autoFocus
               underlineColorAndroid="transparent"
               placeholderTextColor={gColors.color999}
               onChangeText={this.onChangeText}
@@ -335,8 +334,7 @@ export default class home_search extends Component<IProps, IState> {
         <View
           style={{
             // position: 'absolute',
-            width: gScreen.width,
-            height: gScreen.statusBarHeight,
+            height: Theme.statusBarHeight,
             backgroundColor: Theme.primaryColor,
           }}
         />
@@ -375,6 +373,11 @@ export default class home_search extends Component<IProps, IState> {
               navigation={this.props.navigation}
               keyword={this.state.keyword}
               statusType={StatusTypes.搜索}
+            />
+            <SearchStatusList
+                navigation={this.props.navigation}
+                keyword={this.state.keyword}
+                statusType={StatusTypes.搜索}
             />
           </ScrollableTabView>
           {this.state.showHistory ? this.renderNoContent() : null}

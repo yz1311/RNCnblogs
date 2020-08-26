@@ -1,7 +1,6 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from '../utils/requestUtils';
-import {questionModel} from './question';
 
 export interface rankModel {
   id: string,
@@ -13,6 +12,12 @@ export interface rankModel {
   lastUpdate: string,
   blogCount: number
 
+}
+
+export interface searchUserModal {
+  id: string;
+  name: string;
+  avatar: string;
 }
 
 export const searchData = data => {
@@ -82,5 +87,27 @@ export const uploadFile = (data: RequestModel<{file, fileName: string}>) => {
     options,
     errorMessage: '上传文件失败!',
     actionType: '',
+  });
+};
+
+export const searchUsers = (data:RequestModel<{name: string, pageIndex: number}>) => {
+  //分页是30个
+  const URL = `https://home.cnblogs.com/user/search.aspx?key=${data.request.name}&page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<searchUserModal>>(URL, {
+    resolveResult: (result) => {
+      let items:Array<searchUserModal> = [];
+      let matches = result.match(/class=\"d-flex flex-column max-width[\s\S]+?(?=<\/li>)/g)|| [];
+      for (let match of matches) {
+        let item:Partial<searchUserModal> = {};
+        item.name = (match.match(/target=\"_blank\" title=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+        item.avatar = (match.match(/<img src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+        if(item.avatar.indexOf('https:')===0) {
+          item.avatar = 'https:' + item.avatar;
+        }
+        item.id = (match.match(/href=\"\/u\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,'');
+        items.push(item as searchUserModal);
+      }
+      return items;
+    }
   });
 };

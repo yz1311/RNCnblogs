@@ -75,7 +75,7 @@ export default class home_index extends Component<IProps, IState> {
               tabWidth={70}
               containerStyle={{backgroundColor: Theme.primaryColor}}
               tabDatas={tabNames}
-              showSearchButton={false}
+              showSearchButton
             />
           )}
           tabBarPosition="top"

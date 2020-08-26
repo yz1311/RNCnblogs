@@ -166,6 +166,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
         };
         break;
       case BlogTypes.搜索:
+        pageSize = 10;
         action = ()=>{
           return Api.blog.getSearchBlogList({
             request: {

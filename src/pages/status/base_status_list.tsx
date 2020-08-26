@@ -100,6 +100,7 @@ export default class base_status_list extends PureComponent<IProps, IState> {
     let response:any = null;
     try {
       if(this.props.statusType==StatusTypes.搜索) {
+        this.pageSize = 10;
         response = await Api.status.getSearchStatusList({
           request: {
             pageIndex: this.pageIndex,
