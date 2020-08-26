@@ -196,7 +196,7 @@ export default class RequestUtils {
         axios.interceptors.request.use( async function (request:AxiosRequestConfigPatch) {
             if(!gUserData || !gUserData.token) {
                 let res = await StorageUtils.load('token');
-                if(res) {
+                if(res && res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
                     //@ts-ignore
                     gUserData = {
                         ...(gUserData || {}),

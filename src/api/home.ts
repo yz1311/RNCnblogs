@@ -101,7 +101,7 @@ export const searchUsers = (data:RequestModel<{name: string, pageIndex: number}>
         let item:Partial<searchUserModal> = {};
         item.name = (match.match(/target=\"_blank\" title=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
         item.avatar = (match.match(/<img src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
-        if(item.avatar.indexOf('https:')===0) {
+        if(item.avatar.indexOf('https:')<0) {
           item.avatar = 'https:' + item.avatar;
         }
         item.id = (match.match(/href=\"\/u\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,'');

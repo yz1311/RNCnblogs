@@ -4,7 +4,6 @@ import {Styles} from '../../common/styles';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {IBaseDataPageProps,} from '../../components/YZBaseDataPage';
-import {connect} from 'react-redux';
 import HomeTabBar from './home_indexTab';
 import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import SearchBlogList from '../blog/base_blog_list';
@@ -12,12 +11,12 @@ import SearchNewsList from '../news/base_news_list';
 import SearchQuestionList from '../question/base_question_list';
 import SearchStatusList from '../status/base_status_list';
 import PropTypes from 'prop-types';
-import {ReduxState} from '../../reducers';
 import {BlogTypes} from "./home_index";
 import {NewsTypes} from "../news/news_index";
 import {Theme} from "@yz1311/teaset";
 import {QuestionTypes} from "../question/question_index";
 import {StatusTypes} from "../status/status_index";
+import SearchUserList from './user/search_user_list';
 
 
 export interface SearchParams {
@@ -374,10 +373,9 @@ export default class home_search extends Component<IProps, IState> {
               keyword={this.state.keyword}
               statusType={StatusTypes.搜索}
             />
-            <SearchStatusList
+            <SearchUserList
                 navigation={this.props.navigation}
                 keyword={this.state.keyword}
-                statusType={StatusTypes.搜索}
             />
           </ScrollableTabView>
           {this.state.showHistory ? this.renderNoContent() : null}

@@ -63,7 +63,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
       },
     );
     this.refreshListener = DeviceEventEmitter.addListener(
-      ']',
+      'list_refresh',
       ({tabIndex}) => {
         if (tabIndex === this.props.tabIndex) {
           this._flatList._onRefresh();
