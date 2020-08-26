@@ -30,7 +30,7 @@ export default class app_entry extends Component<IProps, {}> {
       });
       return;
     }
-    NavigationHelper.push('Login');
+    NavigationHelper.resetTo('Login');
   }
 
   render() {

@@ -1,5 +1,3 @@
-import {requestWithTimeout, createOptions} from '../utils/request';
-import * as types from '../actions/actionTypes';
 import RequestUtils, {dataToReducerResult} from "../utils/requestUtils";
 import {SearchParams} from "../pages/home/home_search";
 
@@ -63,11 +61,21 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
-export const getPersonalBlogList = (data: RequestModel<{pageIndex:number,pageSize:number,userId?: string}>) => {
+export const getPersonalBlogList = async (data: RequestModel<{pageIndex:number,pageSize:number,userId?: string}>) => {
+  const URL = `https://www.cnblogs.com/${data.request.userId}/default.html?page=${data.request.pageIndex}`;
   if(!data.request.userId) {
     data.request.userId = gUserData.userId;
   }
-  const URL = `https://www.cnblogs.com/${data.request.userId}/default.html?page=${data.request.pageIndex}`;
+  //首先用head获取状态，如果为404则表示该用户没有开通博客
+  try {
+    let response = await RequestUtils.head(URL, null, {
+      showErrorToast: false
+    });
+  } catch (e) {
+    if(e.status === 404) {
+      return Promise.reject(new Error('该用户未开通博客！'))
+    }
+  }
   return RequestUtils.get(URL, {
     resolveResult: resolvePersonalBlogHtml
   });

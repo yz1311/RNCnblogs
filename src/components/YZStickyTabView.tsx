@@ -6,7 +6,6 @@ import {
 } from "react-native";
 import ScrollableTabView, {ChangeTabProperties} from '@yz1311/react-native-scrollable-tab-view';
 import {Theme} from "@yz1311/teaset";
-import YZStateCommonView from "./YZStateCommonView";
 import {ReducerResult} from "../utils/requestUtils";
 
 export type IStickyData = {
@@ -41,11 +40,14 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
     private isLoadingMoreArray: Array<boolean> = [];
     private pageIndexArray: Array<number> = [];
 
-    readonly state: IState = {
-        selectedTab: 0,
-        listHeight: 0,
-        listHeaderHeight: 0,
-        isRefreshingArray: []
+    constructor(props:IProps) {
+        super(props);
+        this.state = {
+            selectedTab: 0,
+            listHeight: 0,
+            listHeaderHeight: 0,
+            isRefreshingArray: Array.from({length: props.data.length,}, ()=> false)
+        } as IState;
     }
 
     componentDidMount(): void {
@@ -182,7 +184,7 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
                         <Image source={require('../resources/img/app_nocontent.png')}
                                style={[{width: Theme.px2dp(240), height: Theme.px2dp(240)}]} resizeMode="contain"/>
                         <Text style={[{color: gColors.color999, marginTop: 15, fontSize: Theme.px2dp(30)}]}>
-                            {'暂无数据'}
+                            {(loadDataResult as ReducerResult).msg || '暂无数据'}
                         </Text>
                     </View>
                 </TouchableOpacity>

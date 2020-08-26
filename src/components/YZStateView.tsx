@@ -408,4 +408,6 @@ const styles = StyleSheet.create({
   } as ImageStyle,
 });
 
+export const StateViewStyles = styles;
+
 export default YZStateView;

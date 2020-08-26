@@ -310,7 +310,10 @@ export default class profile_person extends PureComponent<IProps, IState> {
       });
     } catch (e) {
       this.setState({
-        loadBlogListResult: dataToReducerResult(e)
+        loadBlogListResult: {
+          ...dataToReducerResult([]),
+          msg: e.message
+        }
       });
     }
   }
