@@ -95,7 +95,8 @@ export const deleteBookmarkByTitle = (data:RequestModel<{title: string}>) => {
         request: {
           pageIndex: 1,
           keyword: data.request.title
-        }
+        },
+        showErrorToast: false
       });
       if(response.data.length==0) {
         Alert.alert('','修改过文章标题的收藏暂不支持取消，是否前往收藏中心进行取消?',[{

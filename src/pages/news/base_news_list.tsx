@@ -5,7 +5,13 @@ import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import NewsItem from './news_item';
 import {NewsTypes} from './news_index';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult
+} from '../../utils/requestUtils';
 import {Api} from '../../api';
 import {SearchParams} from "../home/home_search";
 
@@ -49,7 +55,14 @@ export default class base_news_list extends PureComponent<IProps, IState> {
       'list_refresh',
       ({tabIndex}) => {
         if (tabIndex === this.props.tabIndex) {
-          this._flatList && this._flatList._onRefresh();
+          //重新加载
+          this.setState({
+            loadDataResult: createReducerResult({
+              state: LoadDataResultStates.loading
+            })
+          });
+          this.pageIndex = 1;
+          this.loadData();
         }
       },
     );

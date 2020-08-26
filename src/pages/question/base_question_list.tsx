@@ -6,7 +6,13 @@ import {Styles} from '../../common/styles';
 import QuestionItem from './question_item';
 import QuestionReplyItem from './question_reply_item';
 import CommonUtils from '../../utils/commonUtils';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult
+} from '../../utils/requestUtils';
 import {QuestionTypes} from './question_index';
 import {Api} from '../../api';
 import {questionModel} from '../../api/question';
@@ -66,7 +72,14 @@ export default class base_question_list extends PureComponent<IProps,IState> {
       'question_list_refresh',
       ({tabIndex}) => {
         if (tabIndex==-1 || tabIndex === this.props.questionType) {
-          this._flatList && this._flatList._onRefresh();
+          //重新加载
+          this.setState({
+            loadDataResult: createReducerResult({
+              state: LoadDataResultStates.loading
+            })
+          });
+          this.pageIndex = 1;
+          this.loadData();
         }
       },
     );

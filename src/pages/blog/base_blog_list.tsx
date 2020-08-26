@@ -2,7 +2,13 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-native';
 import {Styles} from '../../common/styles';
 import BlogItem from './blog_item';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult
+} from "../../utils/requestUtils";
 import {BlogTypes} from "../home/home_index";
 import {connect} from "react-redux";
 import {ReduxState} from "../../models";
@@ -72,7 +78,14 @@ class base_blog_list extends PureComponent<IProps,IState> {
     );
     this.searchReloadListener = DeviceEventEmitter.addListener('search_blog_list_reload', ()=>{
       if(this.props.blogType==BlogTypes.搜索) {
-        this._flatList&&this._flatList._onRefresh();
+        //重新加载
+        this.setState({
+          loadDataResult: createReducerResult({
+            state: LoadDataResultStates.loading
+          })
+        });
+        this.pageIndex = 1;
+        this.loadData();
       }
     })
   }

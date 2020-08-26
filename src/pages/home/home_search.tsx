@@ -64,7 +64,7 @@ interface IProps extends IBaseDataPageProps {
 interface IState {
   keyword: string;
   showHistory: boolean;
-  searchHistory: Array<any>;
+  searchHistory: Array<string>;
   tabNames: Array<string>;
 }
 
@@ -137,6 +137,17 @@ export default class home_search extends Component<IProps, IState> {
     DeviceEventEmitter.emit('search_news_list_reload');
     DeviceEventEmitter.emit('search_question_list_reload');
     DeviceEventEmitter.emit('search_kb_list_reload');
+    DeviceEventEmitter.emit('search_user_list_reload');
+    //保存
+    let set = new Set(this.state.searchHistory);
+    if(this.state.keyword) {
+      set.delete(this.state.keyword);
+      set = new Set([this.state.keyword].concat(Array.from(set)));
+      gStorage.save(this.storage_key, Array.from(set));
+      this.setState({
+        searchHistory: Array.from(set)
+      });
+    }
   };
 
   onSearch = () => {

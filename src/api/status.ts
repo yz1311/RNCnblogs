@@ -230,9 +230,8 @@ export const resolveSearchStatusHtml = (result)=>{
   let matches = result.match(/class=\"searchItem searchItem-ing\"[\s\S]+?searchItem-time\"[\s\S]+?[\s\S]+?(?=<\/div>)/g)|| [];
   for (let match of matches) {
     let item:Partial<statusModel> = {};
-    item.id = '';
     item.link = (match.match(/class=\"searchItem-content\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
-    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.id = (item.link.match(/status\/[\s\S]+?(?=\/)/) || [])[0]?.replace(/[\s\S]+\//,'');
     item.title = '';
     item.summary = (match.match(/class=\"searchItem-content\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+?href=\"[\s\S]+?\">/,'');
     item.author = {

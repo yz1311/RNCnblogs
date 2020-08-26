@@ -17,7 +17,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, NavigationBar} from '@yz1311/teaset';
 import StatusItem from './status_item';
 import CommonUtils from '../../utils/commonUtils';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult
+} from "../../utils/requestUtils";
 import {StatusTypes} from "./status_index";
 import {Api} from "../../api";
 import {blogCommentModel} from "../../api/blog";
@@ -79,7 +85,14 @@ export default class base_status_list extends PureComponent<IProps, IState> {
       'status_list_refresh',
       (tabIndex) => {
         if(tabIndex==-1||tabIndex === this.props.statusType) {
-          this._flatList && this._flatList._onRefresh();
+          //重新加载
+          this.setState({
+            loadDataResult: createReducerResult({
+              state: LoadDataResultStates.loading
+            })
+          });
+          this.pageIndex = 1;
+          this.loadData();
         }
       },
     );

@@ -2,7 +2,13 @@ import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-native';
 import {Styles} from '../../../common/styles';
 import SearchUserListItem from './search_user_list_item';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
+import {
+    createReducerResult,
+    dataToPagingResult,
+    dataToReducerResult,
+    LoadDataResultStates,
+    ReducerResult
+} from "../../../utils/requestUtils";
 import YZStateView from "../../../components/YZStateCommonView";
 import YZFlatList from "../../../components/YZFlatList";
 import {Api} from "../../../api";
@@ -47,7 +53,14 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
     constructor(props) {
         super(props);
         this.searchReloadListener = DeviceEventEmitter.addListener('search_user_list_reload', ()=>{
-            this._flatList&&this._flatList._onRefresh();
+            //重新加载
+            this.setState({
+                loadDataResult: createReducerResult({
+                    state: LoadDataResultStates.loading
+                })
+            });
+            this.pageIndex = 1;
+            this.loadData();
         })
     }
 
