@@ -8,7 +8,6 @@ import {MessageTypes} from './message_index';
 import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
 import {Api} from '../../api';
 import {messageModel} from '../../api/message';
-import {blogCommentModel} from '../../api/blog';
 
 export interface IProps {
   tabIndex?: number;

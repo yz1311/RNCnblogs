@@ -38,8 +38,6 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
 
     protected mustLogin: boolean = false;
     pageIndex = 1;
-    private scrollListener: EmitterSubscription;
-    private refreshListener: EmitterSubscription;
     private searchReloadListener: EmitterSubscription;
     private _flatList: YZFlatList;
 

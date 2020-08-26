@@ -30,12 +30,6 @@ export enum BlogTypes {
   搜索
 }
 
-@(connect(
-  state => ({}),
-  dispatch => ({
-    dispatch,
-  }),
-) as any)
 export default class home_index extends Component<IProps, IState> {
   private tabBar: any;
 

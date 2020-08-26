@@ -1,5 +1,14 @@
 import React, {PureComponent} from 'react';
-import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  DeviceEventEmitter,
+  EmitterSubscription,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  InteractionManager
+} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
@@ -8,7 +17,6 @@ import {Api} from '../../api';
 import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
 import {Alert, Button, NavigationBar, Theme} from '@yz1311/teaset';
-import ToastUtils from '../../utils/toastUtils';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 export interface IProps {
@@ -57,7 +65,9 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
   }
 
   componentDidMount(): void {
-    this.loadData();
+    InteractionManager.runAfterInteractions(()=>{
+      this.loadData();
+    });
   }
 
   componentWillUnmount() {

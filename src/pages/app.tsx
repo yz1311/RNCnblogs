@@ -5,12 +5,7 @@ import {
   StatusBar,
   BackHandler,
   AppState,
-  NativeAppEventEmitter,
   StyleSheet,
-  Image,
-  Text,
-  TouchableOpacity,
-  Alert,
   Platform,
   Dimensions,
   DeviceEventEmitter,
@@ -26,8 +21,6 @@ import {
   orientationInfoChanged,
 } from '../actions/app_actions';
 import {CodePushHandler} from '@yz1311/teaset-code-push';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Permissions from 'react-native-permissions';
 import ToastUtils from "../utils/toastUtils";
 import {NavigationHelper} from '@yz1311/teaset-navigation';
@@ -165,42 +158,6 @@ export default class App extends Component<IProps, IState> {
   };
 
 }
-
-//只有更新后且id不一致才更新
-const UpdateInfoPromptView = ({onPress, onClose}) => {
-  return (
-    <View
-      style={[
-        styles.noNetworkWrapper,
-        {backgroundColor: gColors.oldThemeColor},
-      ]}>
-      <TouchableOpacity
-        activeOpacity={activeOpacity}
-        style={{flex: 1}}
-        onPress={onPress}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <SimpleLineIcons name="volume-2" color={gColors.bgColorF} size={22} />
-          <Text style={[styles.promptTitle]}>
-            <Text>版本已更新，</Text>
-            <Text style={[{textDecorationLine: 'underline'}]}>
-              点击查看更新日志
-            </Text>
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        activeOpacity={activeOpacity}
-        style={{
-          alignSelf: 'stretch',
-          justifyContent: 'center',
-          paddingHorizontal: 10,
-        }}
-        onPress={onClose}>
-        <EvilIcons name="close-o" color={gColors.bgColorF} size={25} />
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   noNetworkWrapper: {
