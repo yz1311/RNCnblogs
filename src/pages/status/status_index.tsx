@@ -18,6 +18,7 @@ import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from "@yz1311/teaset";
+import {Api} from "../../api";
 
 interface IProps extends IReduxProps {
   navigation: any;
@@ -48,9 +49,6 @@ export enum StatusTypes {
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin,
   }),
-  dispatch => ({
-    dispatch,
-  }),
 ) as any)
 export default class status_index extends Component<IProps, IState> {
 
@@ -79,6 +77,19 @@ export default class status_index extends Component<IProps, IState> {
         });
       },
     );
+  }
+
+  componentDidMount() {
+    this.loadOtherData();
+  }
+
+  loadOtherData = async ()=>{
+    try {
+      let response = await Api.status.getStatusOtherInfo({});
+      console.log(response.data)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   componentWillUnmount() {

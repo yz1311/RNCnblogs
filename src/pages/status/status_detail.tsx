@@ -149,7 +149,6 @@ export default class status_detail extends PureComponent<IProps, IState> {
               selectedCommentItem: item,
             },
             () => {
-              console.log(this._commentInput)
               this._commentInput &&
                 this._commentInput.show();
             },

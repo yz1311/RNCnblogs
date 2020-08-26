@@ -89,7 +89,6 @@ const markdownRules = {
   },
   link: async (node, children, parent, styles) => {
     //http://home.cnblogs.com/u/985807/
-    console.log(node.attributes.href);
     //说明是@个人用户
     if (
       node.attributes.href &&
@@ -101,7 +100,6 @@ const markdownRules = {
         let realm;
         try {
           let userId = matches[0].replace(/\//g, '').replace('u', '');
-          console.log(userId);
           // realm = await Realm.open({schema: [userSchema]});
           // let users = realm.objects(tables.user);
           // let curUsers = users.filtered(`id = '${userId}'`);
@@ -227,8 +225,6 @@ class Root extends PureComponent {
     //@ts-ignore
     HtmlView.defaultProps.renderers = {
         img: (htmlAttribs, children, convertedCSSStyles, passProps)=>{
-            console.log(htmlAttribs)
-            console.log(convertedCSSStyles)
             return (
                 <TouchableOpacity
                     style={{alignSelf:'flex-start'}}

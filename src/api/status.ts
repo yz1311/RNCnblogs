@@ -51,6 +51,39 @@ export type statusCommentModel = {
   Floor: number
 };
 
+export type statusOtherInfoModel = {
+  今日星星排行榜: Array<{
+    id: string;
+    name: string;
+    avatar: string;
+    //星星数量
+    starNum: number;
+  }>,
+  今日最热闪存: Array<{
+    author: {
+      id: string;
+      name: string;
+    },
+    id: string;
+    content: string;
+    replyCount: number;
+  }>,
+  今日闪存明星: Array<{
+    id: string;
+    name: string;
+    avatar: string;
+  }>,
+  最新幸运闪: Array<{
+    author: {
+      id: string;
+      name: string;
+    },
+    id: string;
+    content: string;
+    replyCount: number;
+  }>
+}
+
 export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number, tag?:string}>) => {
   const URL = `https://ing.cnblogs.com/ajax/ing/GetIngList?IngListType=${data.request.statusType}&PageIndex=${data.request.pageIndex}&PageSize=${data.request.pageSize}${data.request.tag?('&Tag='+data.request.tag):''}`;
   return RequestUtils.get<Array<questionModel>>(URL, {
@@ -96,6 +129,86 @@ export const getStatusDetail = data => {
     options,
     errorMessage: '获取闪存详情失败!',
     actionType: types.STATUS_GET_DETAIL,
+  });
+};
+
+export const getStatusOtherInfo = data => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/SideRight`;
+  return RequestUtils.get<statusOtherInfoModel>(URL, {
+    resolveResult: (result) => {
+      let info = {
+        今日星星排行榜: (()=>{
+          let tempMatch = (result.match(/今日星星排行榜[\s\S]+?<\/ul>/) || [])[0];
+          let items = [];
+          if(tempMatch) {
+            let matches = tempMatch.match(/class=\"avatar_block_wrapper\"[\s\S]+?<\/li>/g) || [];
+            for (let match of matches) {
+              items.push({
+                id: (match.match(/ing\.cnblogs\.com\/u\/[\s\S]+?(?=\/)/) || [])[0]?.replace(/[\s\S]+\//, ''),
+                avatar: (match.match(/<img src=\"[\s\S]+?(?=\" alt)/) || [])[0]?.replace(/[\s\S]+\"/, ''),
+                name: (match.match(/class=\"user_name_block[\s\S]+?(?=<\/a>)/) || [])[0]?.replace(/[\s\S]+>/, ''),
+                starNum: parseInt((match.match(/\d+?(?=颗星<\/span>)/) || [])[0]),
+              });
+            }
+          }
+          return items;
+        })(),
+        今日最热闪存: (()=>{
+          let tempMatch = (result.match(/今日最热闪存[\s\S]+?<\/ul>/) || [])[0];
+          let items = [];
+          if(tempMatch) {
+            let matches = tempMatch.match(/<li>[\s\S]+?<\/li>/g) || [];
+            for (let match of matches) {
+              items.push({
+                author: {
+                  id: (match.match(/home\.cnblogs\.com\/u\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,''),
+                  name: (match.match(/home\.cnblogs\.com\/u\/[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                },
+                id: (match.match(/\/status\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,''),
+                content: (match.match(/\/status\/[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                replyCount: (match.match(/\(\d+?(?=\))/)||[])[0]?.replace(/\(/,''),
+              });
+            }
+          }
+          return items;
+        })(),
+        今日闪存明星: (()=>{
+          let tempMatch = (result.match(/今日闪存明星[\s\S]+?<\/ul>/) || [])[0];
+          let items = [];
+          if(tempMatch) {
+            let matches = result.match(/class=\"avatar_block_wrapper\"[\s\S]+?<\/li>/g) || [];
+            for (let match of matches) {
+              items.push({
+                id: (match.match(/ing\.cnblogs\.com\/u\/[\s\S]+?(?=\/)/) || [])[0]?.replace(/[\s\S]+\//, ''),
+                avatar: (match.match(/<img src=\"[\s\S]+?(?=\" alt)/) || [])[0]?.replace(/[\s\S]+\"/, ''),
+                name: (match.match(/class=\"user_name_block[\s\S]+?(?=<\/a>)/) || [])[0]?.replace(/[\s\S]+>/, ''),
+              });
+            }
+          }
+          return items;
+        })(),
+        最新幸运闪: (()=>{
+          let tempMatch = (result.match(/最新幸运闪[\s\S]+?<\/ul>/) || [])[0];
+          let items = [];
+          if(tempMatch) {
+            let matches = tempMatch.match(/<li>[\s\S]+?<\/li>/g) || [];
+            for (let match of matches) {
+              items.push({
+                author: {
+                  id: (match.match(/home\.cnblogs\.com\/u\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,''),
+                  name: (match.match(/home\.cnblogs\.com\/u\/[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                },
+                id: (match.match(/\/status\/[\s\S]+?(?=\/)/)||[])[0]?.replace(/[\s\S]+\//,''),
+                content: (match.match(/\/status\/[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+                replyCount: (match.match(/\(\d+?(?=\))/)||[])[0]?.replace(/\(/,''),
+              });
+            }
+          }
+          return items;
+        })(),
+      }  as statusOtherInfoModel;
+      return info;
+    }
   });
 };
 
