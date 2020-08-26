@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {
   DeviceEventEmitter,
-  EmitterSubscription,
+  EmitterSubscription, Image,
   StyleSheet,
   TouchableOpacity,
   View,
+  Text
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
@@ -19,6 +20,12 @@ import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Theme} from "@yz1311/teaset";
 import {Api} from "../../api";
+import {Colors} from "react-native/Libraries/NewAppScreen";
+import StatusRankModal from "./other/status_rank_modal";
+import StatusStarModal from "./other/status_star_modal";
+import StatusHotModal from "./other/status_hot_modal";
+import StatusLuckModal from "./other/status_luck_modal";
+import {statusOtherInfoModel} from "../../api/status";
 
 interface IProps extends IReduxProps {
   navigation: any;
@@ -31,6 +38,11 @@ interface IProps extends IReduxProps {
 interface IState {
   tabNames: Array<string>;
   isActionButtonVisible: boolean;
+  isRankModalVisible: boolean;
+  isStarModalVisible: boolean;
+  isHotModalVisible: boolean;
+  isLuckModalVisible: boolean;
+  statusOtherInfo: Partial<statusOtherInfoModel>
 }
 
 export enum StatusTypes {
@@ -68,6 +80,11 @@ export default class status_index extends Component<IProps, IState> {
         '回复我',
       ],
       isActionButtonVisible: true,
+      isRankModalVisible: false,
+      isStarModalVisible: false,
+      isHotModalVisible: false,
+      isLuckModalVisible: false,
+      statusOtherInfo: {}
     };
     this.toggleActionButtonListener = DeviceEventEmitter.addListener(
       'toggleActionButton',
@@ -86,7 +103,9 @@ export default class status_index extends Component<IProps, IState> {
   loadOtherData = async ()=>{
     try {
       let response = await Api.status.getStatusOtherInfo({});
-      console.log(response.data)
+      this.setState({
+        statusOtherInfo: response.data
+      });
     } catch (e) {
       console.log(e)
     }
@@ -143,11 +162,75 @@ export default class status_index extends Component<IProps, IState> {
           scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
-          <BaseStatusList
-            tabLabel="全站"
-            navigation={this.props.navigation}
-            statusType={StatusTypes.全站}
-          />
+          {/*//@ts-ignore*/}
+          <View tabLabel="全站" style={[Styles.container]}>
+            <View style={{flexDirection:'row', height: Theme.px2dp(180), backgroundColor:'white', marginBottom: Theme.px2dp(20)}}>
+              {
+                [
+                  {
+                    title: '星星排行',
+                    icon: require('../../resources/ico/status_rank.png'),
+                    width: 70,
+                    onPress: ()=>{
+                      this.setState({
+                        isRankModalVisible: true
+                      });
+                    }
+                  },
+                  {
+                    title: '最热闪存',
+                    icon: require('../../resources/ico/status_hot.png'),
+                    width: 70,
+                    onPress: ()=>{
+                      this.setState({
+                        isHotModalVisible: true
+                      });
+                    }
+                  },
+                  {
+                    title: '闪存明星',
+                    icon: require('../../resources/ico/status_star.png'),
+                    width: 70,
+                    onPress: ()=>{
+                      this.setState({
+                        isStarModalVisible: true
+                      });
+                    }
+                  },
+                  {
+                    title: '幸运闪',
+                    icon: require('../../resources/ico/status_newest.png'),
+                    width: 70,
+                    onPress: ()=>{
+                      this.setState({
+                        isLuckModalVisible: true
+                      });
+                    }
+                  }
+                ].map((item,index)=>{
+                  return (
+                      <TouchableOpacity
+                          key={index}
+                          onPress={item.onPress}
+                          style={[{flex:1, justifyContent:"center", alignItems:'center'}]}
+                        >
+                        <Image
+                            style={{height: Theme.px2dp(item.width), width: Theme.px2dp(item.width)}}
+                            source={item.icon}
+                            resizeMode="contain"
+                        />
+                        <Text style={{...Theme.fontSizeAndColor(27, Colors.color333), marginTop: Theme.px2dp(15)}}>{item.title}</Text>
+                      </TouchableOpacity>
+                  );
+                })
+              }
+            </View>
+            <BaseStatusList
+              tabLabel="全站"
+              navigation={this.props.navigation}
+              statusType={StatusTypes.全站}
+            />
+          </View>
           <BaseStatusList
               tabLabel="新回应"
               navigation={this.props.navigation}
@@ -181,8 +264,8 @@ export default class status_index extends Component<IProps, IState> {
         </ScrollableTabView>
         {this.state.isActionButtonVisible ? (
           <ActionButton
+            fixNativeFeedbackRadius
             buttonColor="rgba(231,76,60,1)"
-            hideShadow={true}
             onPress={() => {
               if (!this.props.isLogin) {
                 NavigationHelper.navigate('Login');
@@ -192,6 +275,42 @@ export default class status_index extends Component<IProps, IState> {
             }}
           />
         ) : null}
+        <StatusRankModal
+          isVisible={this.state.isRankModalVisible}
+          statusOtherInfo={this.state.statusOtherInfo}
+          onVisibleChange={val => {
+            this.setState({
+              isRankModalVisible: val
+            });
+          }}
+          />
+        <StatusStarModal
+          isVisible={this.state.isStarModalVisible}
+          statusOtherInfo={this.state.statusOtherInfo}
+          onVisibleChange={val => {
+            this.setState({
+              isStarModalVisible: val
+            });
+          }}
+          />
+        <StatusHotModal
+          isVisible={this.state.isHotModalVisible}
+          statusOtherInfo={this.state.statusOtherInfo}
+          onVisibleChange={val => {
+            this.setState({
+              isHotModalVisible: val
+            });
+          }}
+          />
+        <StatusLuckModal
+          isVisible={this.state.isLuckModalVisible}
+          statusOtherInfo={this.state.statusOtherInfo}
+          onVisibleChange={val => {
+            this.setState({
+              isLuckModalVisible: val
+            });
+          }}
+          />
       </View>
     );
   }

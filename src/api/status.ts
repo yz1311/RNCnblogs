@@ -120,8 +120,9 @@ export const getSearchStatusList = (data: RequestModel<{Keywords: string,
   });
 };
 
-export const getStatusDetail = data => {
-  const URL = `${gServerPath}/statuses/${data.request.id}`;
+export const getStatusDetail = (data: RequestModel<{id: string, userId: string}>) => {
+  const URL = `https://ing.cnblogs.com/u/${data.request.userId}/status/${data.request.id}/`;
+  //Todo:获取详情
   const options = createOptions(data, 'GET');
   return requestWithTimeout({
     URL,

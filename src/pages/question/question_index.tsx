@@ -161,8 +161,8 @@ export default class question_index extends Component<IProps, IState> {
         </ScrollableTabView>
         {this.state.isActionButtonVisible ? (
           <ActionButton
+            fixNativeFeedbackRadius
             buttonColor="rgba(231,76,60,1)"
-            hideShadow={true}
             onPress={() => {
               if (!this.props.isLogin) {
                 NavigationHelper.navigate('Login');

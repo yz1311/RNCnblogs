@@ -152,12 +152,14 @@ export default class YZAnimatedModal extends Component<IProps, {}> {
         Animated.timing(this.state.opacityAnimatedValue, {
           toValue: 0,
           duration: 200,
+          useNativeDriver: true
         }),
         Animated.spring(this.state.scaleAnimatedValue, {
           toValue: 0,
           // duration: 200,
           // friction: 5
           tension: 10,
+          useNativeDriver: true
         }),
       ]).start(() => {
         this.setState({
