@@ -6,6 +6,7 @@ import {questionModel, resolveQuestion1Html, resolveQuestionHtml, resolveSearchQ
 import {StatusTypes} from "../pages/status/status_index";
 import moment from "moment";
 import {SearchParams} from "../pages/home/home_search";
+import {Api} from "./index";
 
 export type statusModel = {
   id: string,
@@ -59,29 +60,13 @@ export type statusOtherInfoModel = {
     //星星数量
     starNum: number;
   }>,
-  今日最热闪存: Array<{
-    author: {
-      id: string;
-      name: string;
-    },
-    id: string;
-    content: string;
-    replyCount: number;
-  }>,
+  今日最热闪存: Array<statusModel>,
   今日闪存明星: Array<{
     id: string;
     name: string;
     avatar: string;
   }>,
-  最新幸运闪: Array<{
-    author: {
-      id: string;
-      name: string;
-    },
-    id: string;
-    content: string;
-    replyCount: number;
-  }>
+  最新幸运闪: Array<statusModel>
 }
 
 export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageIndex:number,pageSize:number, tag?:string}>) => {
@@ -122,21 +107,36 @@ export const getSearchStatusList = (data: RequestModel<{Keywords: string,
 
 export const getStatusDetail = (data: RequestModel<{id: string, userId: string}>) => {
   const URL = `https://ing.cnblogs.com/u/${data.request.userId}/status/${data.request.id}/`;
-  //Todo:获取详情
-  const options = createOptions(data, 'GET');
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '获取闪存详情失败!',
-    actionType: types.STATUS_GET_DETAIL,
+  return RequestUtils.get<statusModel>(URL, {
+    resolveResult: (result)=>{
+      let detail = {
+        id: data.request.id,
+        link: URL,
+        title: '',
+        summary: (result.match(/id=\"ing_detail_body\"[\s\S]+?(?=<\/div>[\s\S]+?<span class=\"text_gray)/)||[])[0]
+            ?.replace(/[\s\S]+?>/,'').trim(),
+        author: {
+          id: data.request.userId,
+          name: (result.match(/class=\"ing_item_author\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+>/,''),
+          avatar: (result.match(/class=\"ing_item_face\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+          uri: `https://home.cnblogs.com/u/${data.request.userId}/`,
+        },
+        published: (result.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/)||[])[0],
+        publishedDesc: '',
+        commentCount: parseInt((result.match(/ing_comment_count\">\d{0,6}(?=个回应)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),),
+      } as Partial<statusModel>;
+      if(isNaN(detail.commentCount)) {
+        detail.commentCount = 0;
+      }
+      return detail;
+    }
   });
 };
 
 export const getStatusOtherInfo = data => {
   const URL = `https://ing.cnblogs.com/ajax/ing/SideRight`;
-  return RequestUtils.get<statusOtherInfoModel>(URL, {
-    resolveResult: (result) => {
+  return RequestUtils.get<statusOtherInfoModel>(URL,{
+    resolveResult: async (result) => {
       let info = {
         今日星星排行榜: (()=>{
           let tempMatch = (result.match(/今日星星排行榜[\s\S]+?<\/ul>/) || [])[0];
@@ -208,6 +208,36 @@ export const getStatusOtherInfo = data => {
           return items;
         })(),
       }  as statusOtherInfoModel;
+      let realItems1 = [];
+      for (let item of info.今日最热闪存) {
+        try {
+          let reponse = await Api.status.getStatusDetail({
+            request: {
+              userId: item.author.id,
+              id: item.id
+            }
+          });
+          realItems1.push(reponse.data);
+        } catch (e) {
+
+        }
+      }
+      info.今日最热闪存 = realItems1;
+      let realItems2 = [];
+      for (let item of info.最新幸运闪) {
+        try {
+          let reponse = await Api.status.getStatusDetail({
+            request: {
+              userId: item.author.id,
+              id: item.id
+            }
+          });
+          realItems2.push(reponse.data);
+        } catch (e) {
+
+        }
+      }
+      info.最新幸运闪 = realItems2;
       return info;
     }
   });

@@ -7,14 +7,19 @@ import ServiceUtils from "../../../utils/serviceUtils";
 import {Styles} from "../../../common/styles";
 import {Colors} from "react-native/Libraries/NewAppScreen";
 import Entypo from "react-native-vector-icons/Entypo";
+import StatusItem from "../status_item";
+import {ReducerResult} from "../../../utils/requestUtils";
+import YZStateView from "../../../components/YZStateCommonView";
 
 interface IProps {
     isVisible: boolean,
     onVisibleChange: (visible: boolean) => void;
-    statusOtherInfo: Partial<statusOtherInfoModel>
+    statusOtherInfo: Partial<statusOtherInfoModel>,
+    loadOtherInfoResult: ReducerResult,
+    loadData: ()=>void;
 }
 
-const StatusLuckModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo})=>{
+const StatusLuckModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo, loadOtherInfoResult, loadData})=>{
     return (
         <Modal
             style={{margin:0 , justifyContent:'center', alignItems:'center'}}
@@ -33,48 +38,26 @@ const StatusLuckModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo}
                 <Text style={{alignSelf:'center', ...Theme.fontSizeAndColor(40, gColors.color0),
                     fontWeight:"bold", marginTop:Theme.px2dp(10)}}>最新幸运闪</Text>
                 <View style={{height: 1, backgroundColor: Theme.primaryColor, marginTop: Theme.px2dp(20)}} />
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    style={{flex:1, marginTop: Theme.px2dp(15)}}
-                >
-                    {
-                        (statusOtherInfo.最新幸运闪||[]).map((item, index)=>{
-                            return (
-                                <TouchableOpacity
-                                    onPress={()=>{
-                                        // onVisibleChange&&onVisibleChange(false);
-                                        setTimeout(()=>{
-                                            NavigationHelper.navigate('StatusDetail', {
-                                                item: item,
-                                            });
-                                        }, 0);
-                                    }}
-                                    key={index} style={{paddingVertical: Theme.px2dp(20),
-                                    borderBottomWidth: Theme.onePix*1.5, borderBottomColor: gColors.borderColore5}}>
-                                    <TouchableOpacity
-                                        activeOpacity={activeOpacity}
-                                        disabled
-                                        style={{
-                                            flexDirection: 'row',
-                                            alignSelf: 'stretch',
-                                            alignItems: 'center',
-                                        }}>
-                                        <Image
-                                            style={[Styles.avator]}
-                                            resizeMode="contain"
-                                            source={{uri: '   '}}
-                                        />
-                                        <Text style={[Styles.userName]}>{item.author?.name}</Text>
-                                    </TouchableOpacity>
-                                    <View style={{flex:1}}>
-                                        <Text style={{...Theme.fontSizeAndColor(28, gColors.color666), marginVertical: Theme.px2dp(10)}}>{item.content}</Text>
-                                        <Text style={{...Theme.fontSizeAndColor(28, gColors.color666), textAlign:'right'}}>{item.replyCount}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        })
-                    }
-                </ScrollView>
+                <YZStateView
+                    loadDataResult={loadOtherInfoResult}
+                    placeholderTitle="暂无数据"
+                    errorButtonAction={loadData}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        style={{flex:1, marginTop: Theme.px2dp(15)}}
+                    >
+                        {
+                            (statusOtherInfo.最新幸运闪||[]).map((item, index)=>{
+                                return (
+                                    <StatusItem item={item}
+                                                key={index}
+                                                hasShadow={false}
+                                                navigation={NavigationHelper.navigation} />
+                                );
+                            })
+                        }
+                    </ScrollView>
+                </YZStateView>
             </View>
         </Modal>
     );

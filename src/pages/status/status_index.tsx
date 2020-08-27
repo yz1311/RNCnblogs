@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Text
+  Text, BackHandler, NativeEventSubscription
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
@@ -18,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from 'react-native-action-button';
 import {ReduxState} from '../../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {Theme} from "@yz1311/teaset";
+import {Overlay, Theme} from "@yz1311/teaset";
 import {Api} from "../../api";
 import {Colors} from "react-native/Libraries/NewAppScreen";
 import StatusRankModal from "./other/status_rank_modal";
@@ -26,6 +26,8 @@ import StatusStarModal from "./other/status_star_modal";
 import StatusHotModal from "./other/status_hot_modal";
 import StatusLuckModal from "./other/status_luck_modal";
 import {statusOtherInfoModel} from "../../api/status";
+import YZBackHandler from "../../components/YZBackHandler";
+import {createReducerResult, dataToReducerResult, LoadDataResultStates, ReducerResult} from "../../utils/requestUtils";
 
 interface IProps extends IReduxProps {
   navigation: any;
@@ -43,6 +45,7 @@ interface IState {
   isHotModalVisible: boolean;
   isLuckModalVisible: boolean;
   statusOtherInfo: Partial<statusOtherInfoModel>
+  loadOtherInfoResult: ReducerResult,
 }
 
 export enum StatusTypes {
@@ -66,6 +69,7 @@ export default class status_index extends Component<IProps, IState> {
 
   private toggleActionButtonListener: EmitterSubscription;
   private tabBar: any;
+  private backListener: NativeEventSubscription;
 
   constructor(props) {
     super(props);
@@ -84,7 +88,10 @@ export default class status_index extends Component<IProps, IState> {
       isStarModalVisible: false,
       isHotModalVisible: false,
       isLuckModalVisible: false,
-      statusOtherInfo: {}
+      statusOtherInfo: {},
+      loadOtherInfoResult: createReducerResult({
+        state: LoadDataResultStates.loading
+      })
     };
     this.toggleActionButtonListener = DeviceEventEmitter.addListener(
       'toggleActionButton',
@@ -98,21 +105,56 @@ export default class status_index extends Component<IProps, IState> {
 
   componentDidMount() {
     this.loadOtherData();
+    let backListener = BackHandler.addEventListener('hardwareBackPress', this._onBack);
   }
+
+  _onBack = () => {
+    if (this.state.isRankModalVisible) {
+      this.setState({
+        isRankModalVisible: false
+      });
+      return true;
+    }
+    if (this.state.isStarModalVisible) {
+      this.setState({
+        isStarModalVisible: false
+      });
+      return true;
+    }
+    if (this.state.isHotModalVisible) {
+      this.setState({
+        isHotModalVisible: false
+      });
+      return true;
+    }
+    if (this.state.isLuckModalVisible) {
+      this.setState({
+        isLuckModalVisible: false
+      });
+      return true;
+    }
+    NavigationHelper.goBack();
+    return true;
+  };
 
   loadOtherData = async ()=>{
     try {
       let response = await Api.status.getStatusOtherInfo({});
       this.setState({
-        statusOtherInfo: response.data
+        statusOtherInfo: response.data,
+        loadOtherInfoResult: dataToReducerResult(response.data)
       });
     } catch (e) {
       console.log(e)
+      this.setState({
+        loadOtherInfoResult: dataToReducerResult(e)
+      });
     }
   }
 
   componentWillUnmount() {
     this.toggleActionButtonListener && this.toggleActionButtonListener.remove();
+    this.backListener && this.backListener.remove();
   }
 
   _onChangeTab = obj => {
@@ -278,6 +320,8 @@ export default class status_index extends Component<IProps, IState> {
         <StatusRankModal
           isVisible={this.state.isRankModalVisible}
           statusOtherInfo={this.state.statusOtherInfo}
+          loadOtherInfoResult={this.state.loadOtherInfoResult}
+          loadData={this.loadOtherData}
           onVisibleChange={val => {
             this.setState({
               isRankModalVisible: val
@@ -287,6 +331,8 @@ export default class status_index extends Component<IProps, IState> {
         <StatusStarModal
           isVisible={this.state.isStarModalVisible}
           statusOtherInfo={this.state.statusOtherInfo}
+          loadOtherInfoResult={this.state.loadOtherInfoResult}
+          loadData={this.loadOtherData}
           onVisibleChange={val => {
             this.setState({
               isStarModalVisible: val
@@ -296,6 +342,8 @@ export default class status_index extends Component<IProps, IState> {
         <StatusHotModal
           isVisible={this.state.isHotModalVisible}
           statusOtherInfo={this.state.statusOtherInfo}
+          loadOtherInfoResult={this.state.loadOtherInfoResult}
+          loadData={this.loadOtherData}
           onVisibleChange={val => {
             this.setState({
               isHotModalVisible: val
@@ -305,6 +353,8 @@ export default class status_index extends Component<IProps, IState> {
         <StatusLuckModal
           isVisible={this.state.isLuckModalVisible}
           statusOtherInfo={this.state.statusOtherInfo}
+          loadOtherInfoResult={this.state.loadOtherInfoResult}
+          loadData={this.loadOtherData}
           onVisibleChange={val => {
             this.setState({
               isLuckModalVisible: val

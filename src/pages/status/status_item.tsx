@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
-import {ListRow, Overlay} from '@yz1311/teaset';
+import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import ServiceUtils from '../../utils/serviceUtils';
 import HTMLView from 'react-native-render-html';
 import {BorderShadow} from '@yz1311/react-native-shadow';
@@ -32,6 +32,7 @@ interface IProps extends IReduxProps {
   //是否点击头像查看详情
   canViewProfile: boolean;
   navigation: any;
+  hasShadow: boolean;
 }
 
 interface IState {}
@@ -43,7 +44,8 @@ interface IState {}
 export default class status_item extends PureComponent<IProps, IState> {
   static defaultProps = {
     clickable: true,
-    canViewProfile: true
+    canViewProfile: true,
+    hasShadow: true
   };
 
   private overlayKey: any;
@@ -149,9 +151,11 @@ export default class status_item extends PureComponent<IProps, IState> {
   };
 
   render() {
-    const {item, clickable, userInfo} = this.props;
+    const {item, clickable, userInfo, hasShadow} = this.props;
+    let Wrapper = hasShadow? BorderShadow: View;
     return (
-      <BorderShadow
+      <Wrapper
+        style={[!hasShadow && {borderBottomColor: gColors.borderColor, borderBottomWidth: Theme.onePix*1.5}]}
         setting={{width: gScreen.width, border: 3, color: gColors.color999}}>
         <TouchableOpacity
           activeOpacity={clickable ? activeOpacity : 1}
@@ -248,7 +252,7 @@ export default class status_item extends PureComponent<IProps, IState> {
             </TouchableOpacity>
           ) : null}
         </TouchableOpacity>
-      </BorderShadow>
+      </Wrapper>
     );
   }
 }

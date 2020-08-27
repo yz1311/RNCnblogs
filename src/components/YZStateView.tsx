@@ -64,6 +64,12 @@ class YZStateView extends Component<IProps, IState> {
 
   componentDidMount() {
     AppState.addEventListener('change', this._handleAppStateChange);
+    //可能已经加载过了
+    if(this.props.loadDataResult.state === LoadDataResultStates.content) {
+      this.setState({
+        dataState: LoadDataResultStates.content,
+      });
+    }
   }
 
   componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {

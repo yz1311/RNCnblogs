@@ -258,7 +258,7 @@ export default class RequestUtils {
             }
             //格式化数据
             if((response.config as AxiosRequestConfigPatch).resolveResult!=null) {
-                response.data =  (response.config as AxiosRequestConfigPatch).resolveResult(response.data);
+                response.data = await (response.config as AxiosRequestConfigPatch).resolveResult(response.data);
                 console.log('解析后:',response.data);
             } else {
                 console.log(response.data)
