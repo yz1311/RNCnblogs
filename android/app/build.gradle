@@ -172,6 +172,7 @@ android {
     }
     buildTypes {
         debug {
+            applicationIdSuffix ".debug"
             signingConfig signingConfigs.debug
             buildConfigField "String", "CODEPUSH_KEY", '"KLaJrUPOHEBHSUrFdEXkmcpCSSCC4ksvOXqog"'
         }
