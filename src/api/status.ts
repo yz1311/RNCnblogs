@@ -7,6 +7,7 @@ import {StatusTypes} from "../pages/status/status_index";
 import moment from "moment";
 import {SearchParams} from "../pages/home/home_search";
 import {Api} from "./index";
+import cheerio from "react-native-cheerio";
 
 export type statusModel = {
   id: string,
@@ -269,6 +270,8 @@ export const getStatusCommentList = (data:RequestModel<{id:string,userAlias:stri
         comment.published = (match.match(/title=\"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?=\")/)||[])[0]?.replace(/title=\"/,'');
         if(/^\d{2}:\d{2}$/.test(comment.published)) {
           comment.published =moment().format('YYYY-MM-DD ')+comment.published+':00';
+        } else if(/^\d{1,2}-\d{1,2} \d{2}:\d{2}$/.test(comment.published)) {
+          comment.published =moment(moment().year()+'-'+comment.published+':00').format('YYYY-MM-DD HH:mm:ss');
         }
         comment.Floor =  index;
         comments.push(comment)
@@ -322,22 +325,20 @@ export const addStatus = (data:RequestModel<{publicFlag: 1|0,content:string}>) =
 
 export const resolveStatusHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"entry_(a|b)\"[\s\S]+?clear[\s\S]+?(?=<\/li>[\s\S]*(<li|<\/ul))/g) || [];
-  for (let match of matches) {
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('li[class^=entry_]').each(function (index, element) {
     let item:Partial<statusModel> = {};
+    let match = $(this).html();
     //解析digg
-    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
     item.id = (match.match(/id=\"feed_content_\d+?(?=\")/)||[])[0]?.replace(/id=\"feed_content_/,'');
-    // item.link = `https://news.cnblogs.com/q/${item.id}/`;
-    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = '';
     //有一部分的内容里面是链接，所以不能按照贪婪匹配来replace
-    item.summary = (match.match(/<bdo>[\s\S]+?(?=<a class=\"ing_time gray)/)||[])[0]?.trim();
+    item.summary = $(this).find('span[class=ing_body][id^=ing_body_]').html();
     item.author = {
       id: '',
-      avatar: (match.match(/class=\"feed_avatar\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      avatar: $(this).find('div.feed_avatar').find('img').attr('src'),
       uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: (match.match(/class=\"ing-author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+      name: $(this).find('a.ing-author').text(),
       no: (match.match(/showCommentBox[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
     };
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
@@ -347,24 +348,22 @@ export const resolveStatusHtml = (result)=>{
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
     }
-    item.published = (match.match(/class=\"ing_time[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    item.published = $(this).find('a[class^="ing_time"]').text();
     if(/^\d{2}:\d{2}$/.test(item.published)) {
-        item.published =moment().format('YYYY-MM-DD ')+item.published+':00';
+      item.published =moment().format('YYYY-MM-DD ')+item.published+':00';
+    } else if(/^\d{1,2}-\d{1,2} \d{2}:\d{2}$/.test(item.published)) {
+      item.published =moment(moment().year()+'-'+item.published+':00').format('YYYY-MM-DD HH:mm:ss');
     }
     //Todo:
     item.publishedDesc = '';
-    item.reply = {
-      author: (match.match(/class=\"replyBox\"[\s\S]+?class=\"feed_author\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
-      authorUri: (match.match(/class=\"replyBox\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')?.trim(),
-    }
-    item.commentCount = parseInt((match.match(/\d{0,6}回应[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),)
+    item.commentCount = parseInt($(this).find('a[class^="ing_reply"]').text().replace(/回应/,'')?.trim());
     if(isNaN(item.commentCount)) {
       item.commentCount = 0;
     }
     item.comments = [];
     item.isPrivate = /title=\"私有闪存\"/.test(match);
     items.push(item);
-  }
+  });
   return items;
 }
 

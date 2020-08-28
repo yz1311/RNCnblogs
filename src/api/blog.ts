@@ -1,5 +1,6 @@
 import RequestUtils, {dataToReducerResult} from "../utils/requestUtils";
 import {SearchParams} from "../pages/home/home_search";
+const cheerio = require('react-native-cheerio');
 
 export type blogModel = {
   id: string;
@@ -253,32 +254,30 @@ export const resolveBlogHtml = (result)=>{
   if(Array.isArray(result)) {
     return result;
   }
-  let matches = result.match(/class=\"post-item\"[\s\S]+?(?=(<\/article>))/g)|| [];
-
-  for (let match of matches) {
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('article.post-item').each(function (index, element) {
     let item:Partial<blogModel> = {};
+    let match = $(this).html();
     //解析digg
-    item.diggs = parseInt((match.match(/id=\"digg_count[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,''));
-    item.link = (match.match(/class=\"post-item-title\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
-    //不能根据link来截取，部分link后面并不是id
-    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
-    item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
+    item.diggs = parseInt($(this).find('span[id^=digg_count_]').text()?.trim());
+    item.link = $(this).find('a.post-item-title').attr('href')?.trim();
+    item.id = $(this).find('span[id^=digg_count_]').attr('id')?.replace(/id=\"digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
-    item.title = (match.match(/class=\"post-item-title\"[\s\S]+?(?=<)/)||[])[0]?.replace(/[\s\S]+>/,'');
-    item.summary = (match.match(/post-item-summary\"[\s\S]+?(?=\<\/p)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+    item.title = $(this).find('a.post-item-title').html()?.trim();
+    item.summary = $(this).find('p.post-item-summary').html().replace(/[\s\S]+?>/,'').trim();
     item.author = {
       id: '',
-      avatar: (match.match(/class=\"post-item-summary\"[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: (match.match(/class=\"post-item-author\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),
+      avatar: $(this).find('p.post-item-summary').find('img.avatar').attr('src'),
+      name: $(this).find('a.post-item-author').text(),
       uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
     };
     item.author.id = (item.author?.uri?.replace(/^https:\/\/[\s\S]+?\//,'')?.match(/[\s\S]+?(?=\/)/)||[])[0];
-    item.published = (match.match(/class=\"post-meta-item\"[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.published = $(this).find('span.post-meta-item').text()?.trim()+':00',
     item.comments = parseInt((match.match(/href=\"#icon_comment[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     item.views = parseInt((match.match(/href=\"#icon_views[\s\S]+?(?=<\/span>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     items.push(item);
-  }
+  });
   return items;
 }
 

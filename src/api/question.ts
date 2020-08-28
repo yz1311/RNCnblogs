@@ -5,6 +5,7 @@ import {MyQuestionTypes, QuestionTypes} from '../pages/question/question_index';
 import {SearchParams} from "../pages/home/home_search";
 import {resolveSearchNewsHtml} from "./news";
 import {bookmarkTagModel} from "./bookmark";
+import cheerio from "react-native-cheerio";
 
 export type questionModel = {
   id: string,
@@ -393,25 +394,22 @@ export const modifyAnswerComment = data => {
 
 export const resolveQuestionHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"one_entity\"[\s\S]+?class=\"date\"[\s\S]+?(?=class=\"clear\")/g)|| [];
-  for (let match of matches) {
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('div.one_entity').each(function (index, element) {
     let item:Partial<questionModel> = {};
-    //解析digg
-    // item.link = match.match(((/class=\"titlelnk\" href=\"[\s\S]+?(?=\")/))||[])[0]?.replace(/[\s\S]+="/,'');
-    //不能根据link来截取，部分link后面并不是id
-    // item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
+    let match = $(this).html();
     item.id = (match.match(/id=\"news_item_\d+?(?=\")/)||[])[0]?.replace(/id=\"news_item_/,'');
     item.link = `https://news.cnblogs.com/q/${item.id}/`;
-    item.gold = parseInt((match.match(/class=\"gold\"[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim()||'0');
+    item.gold = parseInt($(this).find('span.gold').text());
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
-    item.title = (match.match(/class=\"news_entry\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'');
+    item.title = $(this).find('h2.news_entry').find('a').html()?.trim();
     //可能有图片，也可能没图片
-    item.summary = (match.match(/news_summary\"[\s\S]+?(?=\<\/div)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
+    item.summary = $(this).find('div.news_summary').html();
     item.author = {
       id: '',
-      avatar: (match.match(/的主页\"[\s\S]+?(?=\"\s{0,2}\/>)/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      avatar: $(this).find('a.author').find('img').attr('src'),
       uri: (match.match(/class=\"news_footer_user\"[\s\S]+?\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: (match.match(/class=\"news_contributor\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+>/,'')?.trim(),
+      name: $(this).find('a.news_contributor').text()?.trim(),
     };
     if(item.author.avatar!=undefined&&item.author.avatar!=''&&item.author.avatar.indexOf('http')!=0) {
       item.author.avatar = 'https:'+item.author.avatar;
@@ -428,12 +426,12 @@ export const resolveQuestionHtml = (result)=>{
         name: (tagMatch.match(/\">[\s\S]+?$/)||[])[0]?.replace(/[\s\S]+>/,''),
       });
     }
-    item.published = (match.match(/title=\"[\s\S]+?(?=class=\"date\")/)||[])[0]?.replace(/[\s\S]+?\"/,'').replace('"','');
-    item.publishedDesc = (match.match(/class=\"date\">[\s\S]+?(?=<\/)/)||[])[0]?.replace(/[\s\S]+>/,'').replace('"','');
+    item.published = $(this).find('span.date').attr('title')?.trim()+':00';
+    item.publishedDesc = $(this).find('span.date').text()?.trim();
     item.comments = parseInt((match.match(/class=\"diggnum (answered|unanswered)\"[\s\S]+?(?=<\/div>)/)||[])[0]?.replace(/[\s\S]+>/,''));
     item.views = parseInt((match.match(/浏览\([\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
-  }
+  });
   return items;
 }
 
