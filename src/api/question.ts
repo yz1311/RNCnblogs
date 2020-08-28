@@ -6,6 +6,7 @@ import {SearchParams} from "../pages/home/home_search";
 import {resolveSearchNewsHtml} from "./news";
 import {bookmarkTagModel} from "./bookmark";
 import cheerio from "react-native-cheerio";
+import {statusModel} from "./status";
 
 export type questionModel = {
   id: string,
@@ -438,11 +439,12 @@ export const resolveQuestionHtml = (result)=>{
 
 export const resolveSearchQuestionHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"searchItem\"[\s\S]+?(?=searchURL\"[\s\S]+?<\/div>)/g)|| [];
-  for (let match of matches) {
-    let item:Partial<questionModel> = {};
-    item.id = '';
-    item.link = (match.match(/class=\"searchItemTitle\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('div.searchItem').each(function (index, element) {
+    let item: Partial<questionModel> = {};
+    let match = $(this).html();
+    item.link = $(this).find('h3[class=searchItemTitle]').find('a').attr('href');
+    item.id = item.link.replace(/[\s\S]+q\//,'').replace('/','');
     item.gold = -1;
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.title = (match.match(/class=\"searchItemTitle\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+?href=\"[\s\S]+?\">/,'');
@@ -461,7 +463,7 @@ export const resolveSearchQuestionHtml = (result)=>{
     item.comments = parseInt((match.match(/评论\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'') || '0');
     item.views = parseInt((match.match(/浏览\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'') || '0');
     items.push(item);
-  }
+  });
   return items;
 }
 

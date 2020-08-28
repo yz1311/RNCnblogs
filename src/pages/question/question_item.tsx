@@ -239,29 +239,35 @@ export default class question_item extends PureComponent<IProps, any> {
                 </Text>
               </View>
             </View>
-            <Text
-                style={[
-                  {
-                    color: gColors.color0,
-                    fontSize: gFont.size16,
-                    fontWeight: 'bold',
-                    marginVertical: 7,
-                  },
-                  Styles.text4Pie,
-                ]}>
-              {item.gold > 0 ? (
-                  <Image
-                      style={{width:15,height:15}}
-                      source={{uri: 'https://common.cnblogs.com/images/icons/yuandou20170322.png'}}
-                  />
-              ) : null}
-              {item.gold > 0 ? (
-                  <Text style={{color: '#f47a20',fontSize:gFont.size15,marginLeft:3}}>
-                    {item.gold + '   '}
-                  </Text>
-              ) : null}
-              <Text selectable>{item.title}</Text>
-            </Text>
+            {/*<Text*/}
+            {/*    style={[*/}
+            {/*      {*/}
+            {/*        color: gColors.color0,*/}
+            {/*        fontSize: gFont.size16,*/}
+            {/*        fontWeight: 'bold',*/}
+            {/*        marginVertical: 7,*/}
+            {/*      },*/}
+            {/*      Styles.text4Pie,*/}
+            {/*    ]}>*/}
+            {/*  {item.gold > 0 ? (*/}
+            {/*      <Image*/}
+            {/*          style={{width:15,height:15}}*/}
+            {/*          source={{uri: 'https://common.cnblogs.com/images/icons/yuandou20170322.png'}}*/}
+            {/*      />*/}
+            {/*  ) : null}*/}
+            {/*  {item.gold > 0 ? (*/}
+            {/*      <Text style={{color: '#f47a20',fontSize:gFont.size15,marginLeft:3}}>*/}
+            {/*        {item.gold + '   '}*/}
+            {/*      </Text>*/}
+            {/*  ) : null}*/}
+            {/*  <Text selectable>{item.title}</Text>*/}
+            {/*</Text>*/}
+            <HTMLView
+                baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
+                containerStyle={{marginVertical: 7, width: Theme.deviceWidth-20}}
+                html={`<span style="display: flex;flex-direction: row;">${item.gold > 0?
+                    ('<img style="width: 15px;height: 15px;display: inline;" src="https://common.cnblogs.com/images/icons/yuandou20170322.png"></img><span style="color: #f47a20;font-size: 18px;font-weight: bold;">&nbsp;&nbsp;'+item.gold+'</span>'):''}${'  '+item.title}</span>`}
+            />
             <HTMLView
                 baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
                 containerStyle={{marginVertical: 4, marginHorizontal: -8, paddingHorizontal: 8}}

@@ -96,8 +96,10 @@ export default class base_question_list extends PureComponent<IProps,IState> {
 
   loadData = async ()=>{
     let response:any = null;
+    let pageSize = 25;
     try {
       if(this.props.questionType==QuestionTypes.搜索) {
+        pageSize = 10
         response = await Api.question.getSearchQuestionList({
           request: {
             pageIndex: this.pageIndex,
@@ -105,7 +107,7 @@ export default class base_question_list extends PureComponent<IProps,IState> {
             ...(this.props.searchParams||{})
           }
         });
-      } if(this.props.questionType==QuestionTypes.标签) {
+      } else if(this.props.questionType==QuestionTypes.标签) {
         response = await Api.question.getQuestionListByTag({
           request: {
             pageIndex: this.pageIndex,
@@ -121,7 +123,7 @@ export default class base_question_list extends PureComponent<IProps,IState> {
           }
         });
       }
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,25);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,pageSize);
       this.setState({
         ...pagingResult
       },()=>{
