@@ -94,6 +94,7 @@ export default {
                 });
                 let userId = response.data;
                 userInfo.id = userId as any;
+                gUserData.userId = userId;
                 //继续获取用户详情
                 let userInfoResponse = yield Api.profile.getPersonInfo({
                     request: {

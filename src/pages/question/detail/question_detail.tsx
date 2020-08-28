@@ -123,8 +123,6 @@ export default class question_detail extends Component<IProps, IState> {
 
   _renderCommentItem = ({item, index}:{item:questionCommentModel,index:number}) => {
     const {userInfo} = this.props;
-    console.log(item.level)
-    console.log(item.peans)
     return (
         <CommentItem
             item={item}
