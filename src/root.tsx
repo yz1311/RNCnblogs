@@ -244,6 +244,13 @@ class Root extends PureComponent {
                     />
                 </TouchableOpacity>
             );
+        },
+        strong: (htmlAttribs, children, convertedCSSStyles, passProps)=>{
+            return (
+                <Text style={[convertedCSSStyles, passProps.baseFontStyle, {color: '#dd4b39'}]}>
+                    {passProps.rawChildren[0]?.data}
+                </Text>
+            );
         }
     };
     Theme.set({
