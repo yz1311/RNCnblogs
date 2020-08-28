@@ -8,7 +8,6 @@ interface IProps {
   dispatch: any;
   loginCode: string | null;
   setLoginCodeFn: any;
-  getUserInfoFn: any;
 }
 
 export default class app_entry extends Component<IProps, {}> {

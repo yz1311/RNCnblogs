@@ -20,6 +20,8 @@ export type blogModel = {
   views: number;
   comments: number;
   diggs: number;
+  //是否喜欢
+  isLike: boolean;
 };
 
 export type blogCommentModel = {
@@ -177,11 +179,15 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
 
 export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:string}>) => {
   const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/GetCommentCount.aspx?postId=${data.request.postId}`;
-  console.log('------')
-  console.log(URL)
   return RequestUtils.get<number>(URL);
 }
 
+
+export const voteBlog = (data: RequestModel<{postId: string, isAbandoned:boolean, voteType?:string}>) => {
+  data.request.voteType = 'Digg';
+  const URL = `https://www.cnblogs.com/huaweiyun/ajax/vote/blogpost`;
+  return RequestUtils.get<{id: number, isSuccess: boolean, message: string}>(URL);
+}
 
 export const deleteBlog = (data:RequestModel<{postId: string}>) => {
   const URL = `https://i.cnblogs.com/api/posts/${data.request.postId}`;
@@ -260,6 +266,7 @@ export const resolveBlogHtml = (result)=>{
     let match = $(this).html();
     //解析digg
     item.diggs = parseInt($(this).find('span[id^=digg_count_]').text()?.trim());
+    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class').indexOf('active')>=0;
     item.link = $(this).find('a.post-item-title').attr('href')?.trim();
     item.id = $(this).find('span[id^=digg_count_]').attr('id')?.replace(/id=\"digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">

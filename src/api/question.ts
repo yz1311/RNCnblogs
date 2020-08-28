@@ -7,6 +7,7 @@ import {resolveSearchNewsHtml} from "./news";
 import {bookmarkTagModel} from "./bookmark";
 import cheerio from "react-native-cheerio";
 import {statusModel} from "./status";
+import {blogModel} from "./blog";
 
 export type questionModel = {
   id: string,
@@ -64,6 +65,30 @@ export type personQuestionIndex = {
 
 export type questionTagModel = {
   name: string;
+  num: number;
+};
+
+export type questionRankModel = {
+  rank: number;
+  userId: string;
+  userName: string;
+  num: number;
+};
+
+export type questionCurrentWeekRankModel = {
+  rank: number;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  total: number;
+  increase: number;
+};
+
+export type questionPeansRankModel = {
+  rank: number;
+  userId: string;
+  userName: string;
+  level: string;
   num: number;
 };
 
@@ -285,6 +310,78 @@ export const getQuestionTags = (data:RequestModel<{pageIndex}>) => {
   });
 };
 
+//获取博问声望排行
+export const getQuestionRepuRank = (data:RequestModel<{pageIndex}>) => {
+  //分页是60个
+  const URL = `https://q.cnblogs.com/q/RepuRank?page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<questionRankModel>>(URL, {
+    resolveResult: (result) => {
+      const $ = cheerio.load(result, { decodeEntities: false });
+      let items:Array<questionRankModel> = [];
+      $('div.rank-div tbody tr').each(function (index, element) {
+        //第一行是表头
+        if(index === 0) {
+          return;
+        }
+        let match = $(this).html();
+        let item:Partial<questionRankModel> = {};
+        item.rank = parseInt($(this).find('td[align=center] b.gray').text()?.trim())
+        item.userId = $(this).find('a[class="big bluebt"]').attr('href')?.replace(/\/u\//,'')?.replace('/', '')?.trim();
+        item.userName = $(this).find('a[class="big bluebt"]').text()?.trim();
+        item.num = parseInt($(this).find('td:last-child').text()?.trim());
+        items.push(item as questionRankModel);
+      });
+      return items;
+    }
+  });
+};
+
+//本周声望排行
+export const getQuestionCurrentWeekRepuRank = (data:RequestModel<{}>) => {
+  //分页是60个
+  const URL = `https://q.cnblogs.com/q/RepuRank`;
+  return RequestUtils.get<Array<questionCurrentWeekRankModel>>(URL, {
+    resolveResult: (result) => {
+      const $ = cheerio.load(result, { decodeEntities: false });
+      let items:Array<questionCurrentWeekRankModel> = [];
+      $('div.hotcate').each(function (index, element) {
+        let match = $(this).html();
+        let item:Partial<questionCurrentWeekRankModel> = {};
+        item.rank = parseInt($(this).find('td[align=center] b.gray').text()?.trim())
+        item.userId = $(this).find('div.icon_block a').attr('href')?.replace(/\/u\//,'')?.replace('/', '')?.trim();
+        item.userName = $(this).find('div.icon_username a').text()?.trim();
+        item.userAvatar = 'https:'+$(this).find('div.icon_block img').attr('src')?.trim();
+        item.total = parseInt(($(this).find('div.user_link').html().match(/声望：\d+/) || [])[0]?.replace('声望：', '')?.trim());
+        item.increase = parseInt($(this).find('div.user_link span').text()?.replace('&nbsp;：', '')?.trim());
+        items.push(item as questionCurrentWeekRankModel);
+      });
+      return items;
+    }
+  });
+};
+
+//园豆排行
+export const getQuestionPeansRank = (data:RequestModel<{pageIndex}>) => {
+  //分页是60个
+  const URL = `https://q.cnblogs.com/q/rank?page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<questionPeansRankModel>>(URL, {
+    resolveResult: (result) => {
+      const $ = cheerio.load(result, { decodeEntities: false });
+      let items:Array<questionPeansRankModel> = [];
+      $('div.hotcate').each(function (index, element) {
+        let match = $(this).html();
+        let item:Partial<questionPeansRankModel> = {};
+        item.rank = parseInt($(this).find('td[align=center] b.gray').text()?.trim())
+        item.userId = $(this).find('a[class="big bluebt"]').attr('href')?.replace(/\/u\//,'')?.replace('/', '')?.trim();
+        item.userName = $(this).find('a[class="big bluebt"]').text()?.trim();
+        item.level = $(this).find('td a.gray').text()?.trim();
+        item.num = parseInt($(this).find('td:last-child').text()?.trim());
+        items.push(item as questionPeansRankModel);
+      });
+      return items;
+    }
+  });
+};
 
 export const answerQuestion = data => {
   const URL = `${gServerPath}/questions/${data.request.id}/answers?loginName=${
