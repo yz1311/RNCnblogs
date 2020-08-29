@@ -1,23 +1,28 @@
+source 'https://cdn.cocoapods.org/'
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '10.0'
 
-target 'RnDiffApp' do
-   config = use_native_modules!
+target 'RNCnblogs' do
+  config = use_native_modules!
 
-   use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(:path => config["reactNativePath"])
+  # github的太大太慢，改为gitee的
+  pod 'boost-for-react-native', :git => 'https://gitee.com/damon-s/boost-for-react-native.git’
 
-   permissions_path = '../node_modules/react-native-permissions/ios'
-    pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-    pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts.podspec"
-    pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways.podspec"
-    pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse.podspec"
-    pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
-    pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
-    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+  pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts.podspec"
+  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways.podspec"
+  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse.podspec"
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
+  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
 
-  target 'RnDiffAppTests' do
+
+  target 'RNCnblogsTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -32,10 +37,10 @@ target 'RnDiffApp' do
   end
 end
 
-target 'RnDiffApp-tvOS' do
-  # Pods for RnDiffApp-tvOS
+target 'RNCnblogs-tvOS' do
+  # Pods for RNCnblogs-tvOS
 
-  target 'RnDiffApp-tvOSTests' do
+  target 'RNCnblogs-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

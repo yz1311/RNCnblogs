@@ -16,11 +16,9 @@ import YZStateView from "../../components/YZStateCommonView";
 import YZFlatList from "../../components/YZFlatList";
 import {Api} from "../../api";
 import {SearchParams} from "../home/home_search";
-import {messageModel} from "../../api/message";
 import {NavigationBar} from "@yz1311/teaset";
-import ProfileServices from "../../services/profileServices";
-import produce from "immer";
 import {blogModel} from "../../api/blog";
+import produce from 'immer';
 
 export interface IProps {
   title?: string;
@@ -49,6 +47,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
   private scrollListener: EmitterSubscription;
   private refreshListener: EmitterSubscription;
   private searchReloadListener: EmitterSubscription;
+  private updateDiggCountListener: EmitterSubscription;
   private _flatList: YZFlatList;
 
   readonly state:IState = {
@@ -87,7 +86,17 @@ class base_blog_list extends PureComponent<IProps,IState> {
         this.pageIndex = 1;
         this.loadData();
       }
-    })
+    });
+    this.updateDiggCountListener = DeviceEventEmitter.addListener('update_blog_item_digg_count', ({postId, count}) => {
+      let nextDataList = produce(this.state.dataList, draftState => {
+        for (let item of draftState) {
+         if(item.id+'' === postId+'') {
+           item.diggs = count;
+           break;
+         }
+        }
+      });
+    });
   }
 
   componentDidMount(): void {
@@ -99,6 +108,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
     this.scrollListener.remove();
     this.refreshListener.remove();
     this.searchReloadListener.remove();
+    this.updateDiggCountListener.remove();
   }
 
   loadData = async ()=>{

@@ -42,6 +42,7 @@ export default class login_index extends Component<IProps, IState> {
   }
 
   _onNavigationStateChange = async (event) => {
+    console.log(event)
     if(this.hasInvoked&&this.props.isLogin) {
       return ;
     }
@@ -53,7 +54,7 @@ export default class login_index extends Component<IProps, IState> {
         if(this.props.deprecatedCookie==res['.Cnblogs.AspNetCore.Cookies'] || !res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
           return ;
         }
-        gUserData.token = Object.keys(res).map(key=>key+'='+res[key]).join(';');
+        gUserData.token = Object.keys(res).map(key=>key+'='+res[key].value).join(';');
         gStorage.save('token', res);
         console.log(gUserData.token);
         gStore.dispatch({
@@ -81,7 +82,7 @@ export default class login_index extends Component<IProps, IState> {
     let uri = `https://account.cnblogs.com/signin`;
     return (
       <View style={[Styles.container]}>
-        <NavigationBar title="登录" />
+        <NavigationBar title="登录" leftView={null} />
         {this.state.isLoading ? (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

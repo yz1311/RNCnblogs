@@ -76,7 +76,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
       commentList_noMore: false,
       getCommentListResult: createReducerResult(),
       newsInfo: {},
-      title: '',
+      title: '新闻',
     };
   }
 

@@ -183,18 +183,18 @@ export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:st
 }
 
 
-export const voteBlog = (data: RequestModel<{postId: string, isAbandoned:boolean, voteType?:string}>) => {
+export const voteBlog = (data: RequestModel<{userId: string, postId: number, isAbandoned:boolean, voteType?:string}>) => {
   data.request.voteType = 'Digg';
-  const URL = `https://www.cnblogs.com/huaweiyun/ajax/vote/blogpost`;
-  return RequestUtils.get<{id: number, isSuccess: boolean, message: string}>(URL);
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/vote/blogpost`;
+  return RequestUtils.post<{id: number, isSuccess: boolean, message: string}>(URL, data.request);
 }
 
-export const deleteBlog = (data:RequestModel<{postId: string}>) => {
+export const deleteBlog = (data:RequestModel<{postId: number}>) => {
   const URL = `https://i.cnblogs.com/api/posts/${data.request.postId}`;
   return RequestUtils.delete<any>(URL);
 };
 
-export const getBlogViewCount = (data: RequestModel<{postId: string}>) => {
+export const getBlogViewCount = (data: RequestModel<{postId: number}>) => {
   const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetViewCount.aspx??postId=${data.request.postId}`;
   return RequestUtils.get<number>(URL);
 }
@@ -266,9 +266,10 @@ export const resolveBlogHtml = (result)=>{
     let match = $(this).html();
     //解析digg
     item.diggs = parseInt($(this).find('span[id^=digg_count_]').text()?.trim());
-    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class').indexOf('active')>=0;
+    //无效
+    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class')?.indexOf('active')>=0;
     item.link = $(this).find('a.post-item-title').attr('href')?.trim();
-    item.id = $(this).find('span[id^=digg_count_]').attr('id')?.replace(/id=\"digg_count_/,'');
+    item.id = $(this).find('span[id^=digg_count_]').attr('id')?.replace(/digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
     item.title = $(this).find('a.post-item-title').html()?.trim();

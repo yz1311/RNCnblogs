@@ -27,6 +27,7 @@ import {newsCommentModel, newsModel} from "../../api/news";
 import {userInfoModel} from "../../api/login";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
+import {NavigationBar} from "@yz1311/teaset";
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: userInfoModel;
@@ -39,7 +40,8 @@ interface IState {
   headerSubmit: string;
   dataList: Array<blogCommentModel>,
   noMore: boolean,
-  loadDataResult: ReducerResult
+  loadDataResult: ReducerResult;
+  title: string;
 }
 
 @(connect(
@@ -79,7 +81,8 @@ export default class news_comment_list extends Component<IProps, IState> {
       headerSubmit: '',
       dataList: [],
       noMore: false,
-      loadDataResult: createReducerResult()
+      loadDataResult: createReducerResult(),
+      title: ''
     };
   }
 
@@ -101,7 +104,7 @@ export default class news_comment_list extends Component<IProps, IState> {
 
   setTitle = (nextProps = undefined) => {
     nextProps = nextProps || this.props;
-    nextProps.navigation.setParams({
+    this.setState({
       title: nextProps.item.CommentCount,
     });
   };
@@ -307,8 +310,10 @@ export default class news_comment_list extends Component<IProps, IState> {
   };
 
   render() {
+    const {title} = this.state;
     return (
       <View style={[Styles.container]}>
+        <NavigationBar title={`${title ? title + '条' : ''}评论`} />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
@@ -329,13 +334,20 @@ export default class news_comment_list extends Component<IProps, IState> {
             )}
           />
         </YZStateView>
+        <NavigationBar style={{position:'absolute'}} title={`${title ? title + '条' : ''}评论`} />
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}
           isLogin={this.props.isLogin}
           onSubmit={this._onSubmit}
-          minLength={3}
-          placeholder="想说点什么"
+          onToggle={toggleState => {
+            if (!toggleState) {
+              this.setState({
+                headerTitle: '',
+                headerSubmit: '',
+              });
+            }
+          }}
           menuComponent={() => (
             <YZCommonActionMenu
               data={this.props.item}

@@ -1821,10 +1821,10 @@
   resolved "https://registry.npmjs.org/@yz1311/react-native-shadow/-/react-native-shadow-0.1.0.tgz#7c2eab30bac0025486525d52eb0902ec6e694b77"
   integrity sha512-0GPuh3dKhgyQqsa0NLwM/a/N6Y/vUAdwMTBA0TbBACLnxDBCRVmktoeJOd9ipXzzfS77t8nQakOkQf5dKMvaRg==
 
-"@yz1311/react-native-wheel-picker@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/@yz1311/react-native-wheel-picker/-/react-native-wheel-picker-0.2.0.tgz#46492e28ba943fa45b111b70c748ce13a24a5375"
-  integrity sha512-CkO8vgXBhDipQ1xHC2GX/ny+D4KcSC5xWuATdwzKHLo6Gu7Cb74wVXEmS2ef00BIpPUs1iKiDzWFoZ8xVSZM1w==
+"@yz1311/react-native-wheel-picker@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npm.taobao.org/@yz1311/react-native-wheel-picker/download/@yz1311/react-native-wheel-picker-0.2.1.tgz#471d3180c1c3526c5318de2db9022cb926c3f700"
+  integrity sha1-Rx0xgMHDUmxTGN4tuQIsuSbD9wA=
   dependencies:
     prop-types "^15.5.10"
 

@@ -1,11 +1,15 @@
 import React, {Component, PureComponent} from 'react';
-import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Image, Text, DeviceEventEmitter} from 'react-native';
 import {Styles} from '../../common/styles';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {blogModel} from '../../api/blog';
 import moment from "moment";
 import HTMLView from 'react-native-render-html';
 import StringUtils from "../../utils/stringUtils";
+import Feather from 'react-native-vector-icons/Feather';
+import {Api} from '../../api';
+import ToastUtils from '../../utils/toastUtils';
+import {Theme} from '@yz1311/teaset';
 
 interface IProps {
   item: blogModel;
@@ -105,15 +109,50 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 alignItems: 'center',
                 marginTop: 5,
               }}>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.diggs + ' 推荐 · '}
-              </Text>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.comments + ' 评论 · '}
-              </Text>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.views + ' 阅读'}
-              </Text>
+              <TouchableOpacity
+                onPress={()=>{
+                  //由于没有状态，目前只支持点赞，不支持取消
+                  Api.blog.voteBlog({
+                    request: {
+                      userId: item.author.id,
+                      postId: parseInt(item.id),
+                      isAbandoned: false
+                    }
+                  }).then(result => {
+                    if(result.data.isSuccess) {
+                      DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs+1});
+                    } else {
+                      ToastUtils.showToast(result.data.message || '操作失败!');
+                    }
+                  }).catch(err=>{
+
+                  })
+                }}
+                style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
+                >
+                <Feather name="thumbs-up" size={16} color={item.isLike?Theme.primaryColor:gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.diggs}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="message-circle" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.comments}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="eye" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.views}
+                </Text>
+              </TouchableOpacity>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
                   {StringUtils.formatDate(item.published)}

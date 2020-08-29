@@ -157,6 +157,30 @@ export default class profile_index extends Component<IProps, IState> {
               }}
             />
           </View>
+
+          <View style={{marginTop: 10}}>
+            <ListRow
+              activeOpacity={activeOpacity}
+              title="新闻中心"
+              icon={
+                <Entypo
+                  style={{marginRight: 6}}
+                  size={18}
+                  color={'brown'}
+                  name="news"
+                />
+              }
+              onPress={() => {
+                if (this.props.isLogin) {
+                  this.props.navigation.navigate('NewsIndex', {
+                    showHeader: true
+                  });
+                } else {
+                  NavigationHelper.navigate('Login');
+                }
+              }}
+            />
+          </View>
           <View style={{marginTop: 10}}>
             <ListRow
               activeOpacity={activeOpacity}

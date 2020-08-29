@@ -302,12 +302,24 @@ export default class question_item extends PureComponent<IProps, any> {
               {/*<Text style={{color: gColors.color666, fontSize: gFont.size12}}>*/}
               {/*  {item.DiggCount + ' 推荐 · '}*/}
               {/*</Text>*/}
-              <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                {item.comments + ' 回答 · '}
-              </Text>
-              <Text style={{color: gColors.color666, fontSize: gFont.size12}}>
-                {item.views + ' 阅读'}
-              </Text>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="message-circle" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.comments}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="eye" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.views}
+                </Text>
+              </TouchableOpacity>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
                   {StringUtils.formatDate(moment(item.published,'YYYY-MM-DD HH:mm').toDate())}

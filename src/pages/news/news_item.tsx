@@ -1,16 +1,19 @@
 import React, {Component, PureComponent} from 'react';
-import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Image, Text, DeviceEventEmitter} from 'react-native';
 import {connect} from 'react-redux';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
+import {ListRow, Theme} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {newsModel} from "../../api/news";
 import moment from "moment";
 import HTMLView from 'react-native-render-html';
+import {Api} from '../../api';
+import ToastUtils from '../../utils/toastUtils';
+import StringUtils from '../../utils/stringUtils';
 
 interface IProps {
   navigation: any;
@@ -44,7 +47,7 @@ export default class news_item extends PureComponent<IProps, IState> {
                   baseFontStyle={{fontWeight:'bold',color: gColors.color0,fontSize: gFont.size16,}}
                   containerStyle={{marginVertical: 7}}
                   html={item.title}
-                  stylesheet={styles}
+                  // stylesheet={styles}
               />
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {item.author?.avatar ? (
@@ -72,7 +75,7 @@ export default class news_item extends PureComponent<IProps, IState> {
               {/*</Text>*/}
                 <HTMLView
                     baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
-                    containerStyle={{marginVertical: 4,flex:1}}
+                    containerStyle={{marginVertical: 4,flex:1, marginLeft: 6}}
                     html={item.summary}
                 />
             </View>
@@ -82,18 +85,53 @@ export default class news_item extends PureComponent<IProps, IState> {
                 alignItems: 'center',
                 marginTop: 5,
               }}>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.diggs + ' 推荐 · '}
-              </Text>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.comments + ' 评论 · '}
-              </Text>
-              <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                {item.views + ' 阅读'}
-              </Text>
+              <TouchableOpacity
+                onPress={()=>{
+                  //由于没有状态，目前只支持点赞，不支持取消
+                  // Api.blog.voteBlog({
+                  //   request: {
+                  //     userId: item.author.id,
+                  //     postId: parseInt(item.id),
+                  //     isAbandoned: false
+                  //   }
+                  // }).then(result => {
+                  //   if(result.data.isSuccess) {
+                  //     DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs+1});
+                  //   } else {
+                  //     ToastUtils.showToast(result.data.message || '操作失败!');
+                  //   }
+                  // }).catch(err=>{
+                  //
+                  // })
+                }}
+                style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
+              >
+                <Feather name="thumbs-up" size={16} color={item.isLike?Theme.primaryColor:gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.diggs}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="message-circle" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.comments}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={true}
+                style={{flexDirection:'row',alignItems:'center', paddingLeft: 8, paddingRight: 10}}
+              >
+                <Feather name="eye" size={16} color={gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.views}
+                </Text>
+              </TouchableOpacity>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Text style={{color: gColors.color999, fontSize: gFont.size12}}>
-                  {moment(item.published).format('YYYY-MM-DD HH:mm')}
+                  {StringUtils.formatDate(item.published)}
                 </Text>
               </View>
             </View>

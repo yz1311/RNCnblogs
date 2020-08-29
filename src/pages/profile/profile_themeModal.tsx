@@ -17,7 +17,6 @@ interface IProps {
   dispatch?: any;
   userInfo?: any;
   title?: string | undefined;
-  message?: string | undefined;
 }
 
 interface IState {
@@ -28,7 +27,6 @@ interface IState {
 export default class profile_themeModal extends Component<IProps, IState> {
   static propTypes = {
     title: PropTypes.string,
-    message: PropTypes.string.isRequired,
   };
 
   static defaultProps = {};
@@ -113,7 +111,7 @@ export default class profile_themeModal extends Component<IProps, IState> {
   }
 
   renderContent() {
-    const {title, message} = this.props;
+    const {title} = this.props;
     const params = this.params;
     return (
       <View

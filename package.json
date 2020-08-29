@@ -27,7 +27,7 @@
     "@yz1311/react-native-intent-launcher": "^0.2.0",
     "@yz1311/react-native-scrollable-tab-view": "^1.0.5",
     "@yz1311/react-native-shadow": "^0.1.0",
-    "@yz1311/react-native-wheel-picker": "0.2.0",
+    "@yz1311/react-native-wheel-picker": "^0.2.1",
     "@yz1311/teaset": "^0.7.10",
     "@yz1311/teaset-code-push": "^0.3.0",
     "@yz1311/teaset-navigation": "^0.2.3",

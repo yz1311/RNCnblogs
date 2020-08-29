@@ -161,22 +161,23 @@ export default {
             }
         },
         * logout(action, effects) {
-            NavigationHelper.resetTo('Login', {
+            try {
+              //清除浏览器缓存
+              yield CookieManager.clearAll();
+              yield gStorage.remove('token');
+              ToastUtils.showToast('退出成功!');
+              NavigationHelper.resetTo('Login', {
                 deprecatedCookie: yield select((state:ReduxState)=>state.loginIndex.cookieValue)
-            });
-            yield effects.put({
+              });
+              yield effects.put({
                 type: 'setLogout',
                 payload: {
 
                 }
-            });
-            //清除浏览器缓存
-            CookieManager.clearAll()
-                .then((res) => {
-                    console.log('CookieManager.clearAll =>', res);
-                });
-            yield gStorage.remove('token');
-            ToastUtils.showToast('退出成功!');
+              });
+            } catch (e) {
+
+            }
         },
     }
 } as Model;

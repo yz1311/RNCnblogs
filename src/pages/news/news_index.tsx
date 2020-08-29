@@ -5,17 +5,19 @@ import {Styles} from '../../common/styles';
 import HomeTabBar from '../home/home_indexTab';
 import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseNewsList from './base_news_list';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
-import {Theme} from '@yz1311/teaset';
+import {NavigationBar, Theme} from '@yz1311/teaset';
+import SegmentedControlTab from 'react-native-segmented-control-tab';
 
 interface IProps {
   navigation: any;
   initialPage?: number;
   tabIndex: number;
+  showHeader: boolean;
 }
 
 interface IState {
   tabNames: Array<string>;
+  tabIndex: number;
 }
 
 export enum NewsTypes {
@@ -33,15 +35,20 @@ export enum NewsTypes {
 ) as any)
 export default class news_index extends Component<IProps, IState> {
   private tabBar: any;
+  private tabView: ScrollableTabView;
 
   constructor(props) {
     super(props);
     this.state = {
       tabNames: ['最新', '推荐', '热门'],
+      tabIndex: 0,
     };
   }
 
   _onChangeTab = obj => {
+    this.setState({
+      tabIndex: obj.i
+    });
     switch (obj.i) {
       case 0:
         break;
@@ -52,17 +59,44 @@ export default class news_index extends Component<IProps, IState> {
     }
   };
 
+  handleIndexChange = (index)=>{
+    this.setState({
+      tabIndex: index
+    });
+    //@ts-ignore
+    this.tabView.goToPage(index);
+  }
+
   render() {
     const {tabNames} = this.state;
     return (
       <View style={[Styles.container]}>
+        {
+          this.props.showHeader?
+            <NavigationBar title={
+              <SegmentedControlTab
+                tabsContainerStyle={{width: Theme.deviceWidth/2}}
+                tabStyle={{borderColor: 'purple'}}
+                activeTabStyle={{backgroundColor:'purple'}}
+                values={this.state.tabNames}
+                selectedIndex={this.state.tabIndex}
+                onTabPress={this.handleIndexChange}
+              />
+            } borderBottomWidth={0} />
+            :
+            null
+        }
         <ScrollableTabView
+          ref={ref=>this.tabView = ref}
           renderTabBar={() => (
-            <HomeTabBar
-              ref={bar => (this.tabBar = bar)}
-              containerStyle={{backgroundColor: Theme.navColor}}
-              tabDatas={tabNames}
-            />
+            this.props.showHeader?
+              <View />
+              :
+              <HomeTabBar
+                ref={bar => (this.tabBar = bar)}
+                containerStyle={{backgroundColor: Theme.navColor}}
+                tabDatas={tabNames}
+              />
           )}
           tabBarPosition="top"
           initialPage={this.props.initialPage || 0}
