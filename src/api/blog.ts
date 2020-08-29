@@ -39,6 +39,8 @@ export type blogCommentModel = {
   id: number;
   //本地新增
   UserId: number | string;
+  agreeCount: number;
+  antiCount: number;
 };
 
 export type getBlogListRequest = RequestModel<{

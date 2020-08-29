@@ -13,6 +13,7 @@ import {NewsTypes} from '../pages/news/news_index';
 import {Api} from "./index";
 import {AxiosResponse} from "axios";
 import {SearchParams} from "../pages/home/home_search";
+import cheerio from 'react-native-cheerio';
 
 export type newsModel = {
   tag: {
@@ -185,6 +186,17 @@ export const modifyNewsComment = (data:RequestModel<{ContentID:number,CommentID:
   });
 };
 
+export const isVoteNewsComment = (data: RequestModel<{contentId: string, commentId: number, action: 'agree' | 'anti'}>) => {
+  const URL = `https://news.cnblogs.com/Comment/IsVoteNewsComment`;
+  return RequestUtils.post<{IsSucceed: boolean, Message: string}>(URL, data.request);
+}
+
+//赞成和取消都是一个接口，会自动切换
+export const voteNews = (data: RequestModel<{contentId: number, commentId: number, action: 'agree' | 'anti'}>) => {
+  const URL = `https://news.cnblogs.com/Comment/VoteNewsComment`;
+  return RequestUtils.post<{AgreeCount: number, AntiCount: number, IsSucceed: boolean, Message: string}>(URL, data.request);
+}
+
 
 export const resolveNewsHtml = (result)=>{
   let items:Array<any> = [];
@@ -257,12 +269,12 @@ export const resolveSearchNewsHtml = (result)=>{
 
 export const resolveNewsCommentHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"user_comment\"[\s\S]+?class=\"comment_option\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
-  for (let match of matches) {
-    let item:Partial<blogCommentModel> = {};
-    item.title = '';
-    item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
-    item.content = (match.match(/id=\"comment_body_[\s\S]+?(?=<\/div>)/)||[])[0]?.replace(/[\s\S]+\>/,'').trim();
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('div.user_comment').each(function (index, element) {
+    let item: Partial<blogCommentModel> = {};
+    let match = $(this).html();
+    item.id = parseInt((match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,''));
+    item.content = $(this).find('div.comment_main[id^=comment_body]').html()?.trim();
     item.author = {
       id: '',
       uri: (match.match(/class=\"layer_num\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
@@ -274,7 +286,15 @@ export const resolveNewsCommentHtml = (result)=>{
     }
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.published = (match.match(/class=\"time[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'')?.replace('发表于 ','')?.trim();
+    item.agreeCount = parseInt($(this).find('span[id^=agree_]').text());
+    item.antiCount = parseInt($(this).find('span[id^=anti_]').text());
     items.push(item);
+  });
+  let matches = result.match(/class=\"user_comment\"[\s\S]+?class=\"comment_option\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
+  for (let match of matches) {
+    let item:Partial<blogCommentModel> = {};
+    item.title = '';
+
   }
   return items;
 }

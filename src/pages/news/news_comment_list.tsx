@@ -28,6 +28,7 @@ import {userInfoModel} from "../../api/login";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar} from "@yz1311/teaset";
+import produce from 'immer';
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: userInfoModel;
@@ -64,6 +65,7 @@ export default class news_comment_list extends Component<IProps, IState> {
   private reloadListener: EmitterSubscription;
   private _flatList: any;
   private _commentInput: any;
+  private updateDiggCountListener: EmitterSubscription;
 
   constructor(props) {
     super(props);
@@ -95,17 +97,34 @@ export default class news_comment_list extends Component<IProps, IState> {
   componentDidMount() {
     this.loadData();
     this.setTitle();
+    this.updateDiggCountListener = DeviceEventEmitter.addListener('update_news_item_digg_count', ({contentId, commentId, agreeCount, antiCount})=>{
+      if(this.props.item.id+'' === contentId+'') {
+        console.log(agreeCount+' '+antiCount)
+        let nextDataLst = produce(this.state.dataList, draftState => {
+          for (let item of draftState) {
+            if(item.id+'' === commentId+'') {
+              item.agreeCount = agreeCount;
+              item.antiCount = antiCount;
+            }
+          }
+        });
+        this.setState({
+          dataList: nextDataLst
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
     //退出不用清空列表
     this.reloadListener.remove();
+    this.updateDiggCountListener.remove();
   }
 
-  setTitle = (nextProps = undefined) => {
+  setTitle = (nextProps:IProps = undefined) => {
     nextProps = nextProps || this.props;
     this.setState({
-      title: nextProps.item.CommentCount,
+      title: nextProps.item.comments+'',
     });
   };
 
@@ -127,6 +146,11 @@ export default class news_comment_list extends Component<IProps, IState> {
       this.setState({
         ...pagingResult
       });
+      if(pagingResult.dataList.length>parseInt(this.state.title)) {
+        this.setState({
+          title: pagingResult.dataList.length+''
+        });
+      }
       //获取头像
       this.getUserAvatar();
     } catch (e) {
@@ -169,49 +193,6 @@ export default class news_comment_list extends Component<IProps, IState> {
     }
   }
 
-  renderNode = (node, index, siblings, parent, defaultRenderer) => {
-    if (node.name === 'fieldset') {
-      const a = node.attribs;
-      let text = ``;
-      let legend = '';
-      for (let child of node.children) {
-        if (child.type === 'tag') {
-          switch (child.name) {
-            case 'legend':
-              legend = child.children.length > 0 ? child.children[0].data : '';
-              break;
-            case 'br':
-              text += '\n';
-              break;
-          }
-        } else if (child.type === 'text') {
-          text += child.data;
-        }
-      }
-      return (
-        <View
-          style={{
-            borderColor: gColors.color999,
-            borderWidth: 1,
-            borderRadius: 6,
-            padding: 8,
-          }}>
-          <Text>{text}</Text>
-          <Text
-            style={{
-              position: 'absolute',
-              top: -7,
-              left: 15,
-              backgroundColor: gColors.bgColorF,
-              fontSize: gFont.size12,
-            }}>
-            {legend}
-          </Text>
-        </View>
-      );
-    }
-  };
-
   _renderItem = ({item, index}:{item:newsCommentModel,index:number}) => {
     const {userInfo} = this.props;
     return (
@@ -225,6 +206,7 @@ export default class news_comment_list extends Component<IProps, IState> {
         postDate={item.published}
         canDelete={item.author?.name === userInfo.nickName}
         canModify={item.author?.name === userInfo.nickName}
+        contentId={this.props.item.id}
         onComment={(item, userName) => {
           this.setState(
             {
@@ -311,6 +293,7 @@ export default class news_comment_list extends Component<IProps, IState> {
 
   render() {
     const {title} = this.state;
+    console.log(this.state.dataList)
     return (
       <View style={[Styles.container]}>
         <NavigationBar title={`${title ? title + '条' : ''}评论`} />

@@ -7,6 +7,7 @@ import {
   Text,
   Clipboard,
   Linking,
+  DeviceEventEmitter,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Alert, ListRow, Overlay, Theme} from '@yz1311/teaset';
@@ -19,6 +20,7 @@ import HTMLView from 'react-native-render-html';
 import {ReduxState} from '../../reducers';
 import Feather from "react-native-vector-icons/Feather";
 import ToastUtils from "../../utils/toastUtils";
+import {Api} from '../../api';
 
 interface IProps extends IReduxProps {
   item?: any;
@@ -45,6 +47,7 @@ interface IProps extends IReduxProps {
   userInfo?: any;
   questionLevel?: string;
   questionPeans?: string;
+  contentId?: string;
 }
 
 interface IState {}
@@ -335,9 +338,77 @@ export default class comment_item extends PureComponent<IProps, IState> {
             containerStyle={{marginVertical: 12}}
             html={content}
           />
-          <Text style={{fontSize: gFont.size13, color: gColors.color999}}>
-            {StringUtils.formatDate(postDate)}
-          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 5,
+            }}>
+            <Text style={{fontSize: gFont.size13, color: gColors.color999}}>
+              {StringUtils.formatDate(postDate)}
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity
+                onPress={()=>{
+                  //由于没有状态，目前只支持点赞，不支持取消
+                  Api.news.voteNews({
+                    request: {
+                      contentId: parseInt(this.props.contentId),
+                      commentId: parseInt(item.id),
+                      action: 'agree'
+                    },
+                    showLoading: true
+                  }).then(result => {
+                    if(result.data.IsSucceed) {
+                      DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
+                    } else {
+                      ToastUtils.showToast(result.data.Message || '操作失败!');
+                    }
+                  }).catch(err=>{
+
+                  })
+                }}
+                style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
+              >
+                <Feather name="thumbs-up" size={16} color={item.isLike?Theme.primaryColor:gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.agreeCount}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={()=>{
+                  //由于没有状态，目前只支持点赞，不支持取消
+                  Api.news.voteNews({
+                    request: {
+                      contentId: parseInt(this.props.contentId),
+                      commentId: parseInt(item.id),
+                      action: 'agree'
+                    },
+                    showLoading: true
+                  }).then(result => {
+                    if(result.data.IsSucceed) {
+                      DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
+                    } else {
+                      ToastUtils.showToast(result.data.Message || '操作失败!');
+                    }
+                  }).catch(err=>{
+
+                  })
+                }}
+                style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
+              >
+                <Feather name="thumbs-down" size={16} color={item.isLike?Theme.primaryColor:gColors.color999} />
+                <Text style={{marginLeft: 4, color: gColors.color999, fontSize: gFont.size12}}>
+                  {item.antiCount}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           {/*<div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>*/}
         </View>
         <TouchableOpacity
