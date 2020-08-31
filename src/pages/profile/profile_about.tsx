@@ -14,6 +14,7 @@ import {ListRow, NavigationBar} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import {ReduxState} from '../../reducers';
 import Bugly, {logLevel} from 'rn-bugly';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   dispatch: any;
@@ -43,7 +44,7 @@ export default class profile_about extends Component<IProps, IState> {
   render() {
     const {userInfo} = this.props;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="关于" />
         <ScrollView style={{flex: 1}}>
           <View style={{marginTop: 10, alignItems: 'center'}}>
@@ -85,7 +86,7 @@ export default class profile_about extends Component<IProps, IState> {
             </View>
           </View>
         </ScrollView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

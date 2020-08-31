@@ -33,6 +33,7 @@ import {BaseButton, RectButton} from "react-native-gesture-handler";
 import themeUtils from "./utils/themeUtils";
 import {StatusTypes} from "./pages/status/status_index";
 import AutoHeightImage from 'react-native-auto-height-image';
+import {SafeAreaView} from "react-native-safe-area-context";
 
 
 //必须要延后加载，否则Theme设置无效
@@ -309,6 +310,13 @@ class Root extends PureComponent {
           android_ripple: {
               color: 'yellow'
           }
+      };
+      //@ts-ignore
+      //无效，所以要封装YZSafeAreaView
+      SafeAreaView.defaultProps = {
+          //@ts-ignore
+          ...(SafeAreaView.defaultProps || {}),
+          edges: ['right', 'bottom', 'left']
       };
     // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
   }

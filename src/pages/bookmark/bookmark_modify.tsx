@@ -12,6 +12,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {ListRow, Input, NavigationBar} from '@yz1311/teaset';
 import {bookmarkModel} from '../../api/bookmark';
 import {Api} from '../../api';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   title: string;
@@ -104,7 +105,7 @@ export default class bookmark_modify extends Component<IProps, IState> {
 
   render() {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar
             title={this.props.title || '添加收藏'}
             rightView={
@@ -159,7 +160,7 @@ export default class bookmark_modify extends Component<IProps, IState> {
           value={this.state.Summary}
           onChangeText={value => this.setState({Summary: value})}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

@@ -7,6 +7,7 @@ import {Api} from "../../api";
 import ScrollableTabView, {ScrollableTabBar} from "@yz1311/react-native-scrollable-tab-view";
 import {NavigationHelper} from "@yz1311/teaset-navigation";
 import Entypo from "react-native-vector-icons/Entypo";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   dataList: Array<any>;
@@ -49,7 +50,7 @@ export default class bookmark_index extends PureComponent<IProps, IState> {
 
   render() {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
           <View style={{height: Theme.statusBarHeight, backgroundColor:Theme.primaryColor}} />
             <ScrollableTabView
                 renderTabBar={() => (
@@ -102,7 +103,7 @@ export default class bookmark_index extends PureComponent<IProps, IState> {
                   <Entypo name={'chevron-thin-left'} size={23} color="white" />
               </TouchableOpacity>
           </View>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

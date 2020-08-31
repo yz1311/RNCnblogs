@@ -20,6 +20,7 @@ import ProfilePersonTab from './profile_person_tab';
 import {statusModel} from '../../api/status';
 import {questionModel} from '../../api/question';
 import {MyQuestionTypes} from '../question/question_index';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 const avatorRadius = 40;
 
@@ -440,7 +441,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
   render() {
     const {personInfo} = this.state;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar style={{position:'relative', backgroundColor:'transparent'}} title={'详情'} />
         <YZStickyTabView
             ref={ref => this.stickyTabViewRef = ref}
@@ -489,7 +490,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
             data={this.getDataFromState()}
         />
         <NavigationBar style={{position:'absolute'}} title={'详情'}/>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

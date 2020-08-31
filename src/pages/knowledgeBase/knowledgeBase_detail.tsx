@@ -34,6 +34,7 @@ import CommonUtils from '../../utils/commonUtils';
 import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 export interface IProps extends IBaseDataPageProps {
   data?: any;
@@ -246,7 +247,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
     //去除最后的统计图片代码，因为会导致下面留下很大空白
     html = html.replace(/<img[\s\S]{1,10}:\/\/counter[\s\S]+?\/>/, '');
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title={this.state.title} rightView={
           <TouchableOpacity
               activeOpacity={activeOpacity}
@@ -287,7 +288,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

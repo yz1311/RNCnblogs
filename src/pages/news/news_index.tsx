@@ -7,6 +7,7 @@ import ScrollableTabView from '@yz1311/react-native-scrollable-tab-view';
 import BaseNewsList from './base_news_list';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   navigation: any;
@@ -70,7 +71,7 @@ export default class news_index extends Component<IProps, IState> {
   render() {
     const {tabNames} = this.state;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         {
           this.props.showHeader?
             <NavigationBar title={
@@ -119,7 +120,7 @@ export default class news_index extends Component<IProps, IState> {
             newsType={NewsTypes.热门}
           />
         </ScrollableTabView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

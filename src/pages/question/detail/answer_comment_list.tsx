@@ -37,6 +37,7 @@ import AnswerItem from './answer_item';
 import CommentItem from '../../blog/comment_item';
 import {ReduxState} from '../../../reducers';
 import {ServiceTypes} from "../../YZTabBarView";
+import YZSafeAreaView from "../../../components/YZSafeAreaView";
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -249,7 +250,7 @@ export default class answer_comment_list extends YZBaseDataPage<
       </View>
     );
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         {this.props.loadDataResult.success &&
         this.props.dataList.length == 0 ? (
           <ScrollView
@@ -329,7 +330,7 @@ export default class answer_comment_list extends YZBaseDataPage<
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

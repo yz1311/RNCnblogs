@@ -13,6 +13,7 @@ import {connect} from "react-redux";
 import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
 import Entypo from 'react-native-vector-icons/Entypo';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 export interface IProps {
   tabIndex?: number;
@@ -174,7 +175,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
   render() {
     console.log(this.state.dataList)
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="关注" />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
@@ -196,7 +197,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
             )}
           />
         </YZStateView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

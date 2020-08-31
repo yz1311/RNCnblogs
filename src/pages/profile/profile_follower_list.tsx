@@ -18,6 +18,7 @@ import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
 import {Alert, Button, NavigationBar, Theme} from '@yz1311/teaset';
 import Entypo from 'react-native-vector-icons/Entypo';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 export interface IProps {
   tabIndex?: number;
@@ -133,7 +134,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
   render() {
     console.log(this.state.dataList)
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="粉丝" />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
@@ -155,7 +156,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
             )}
           />
         </YZStateView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

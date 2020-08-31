@@ -25,6 +25,7 @@ import {Api} from '../../api';
 import ToastUtils from '../../utils/toastUtils';
 import SyanImagePicker from 'react-native-syan-image-picker';
 import UploadUtils from "../../utils/uploadUtils";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps extends IReduxProps {
   item: questionModel;
@@ -180,7 +181,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
     const {item, clickable} = this.props;
     const canAddTag = this.state.tagList.length < 5;
     return (
-        <View style={[Styles.container]}>
+        <YZSafeAreaView>
           <NavigationBar
               title={this.state.title || '提问'}
               rightView={
@@ -375,7 +376,7 @@ export default class QuestionAdd extends PureComponent<IProps, IState> {
               </View>
             </View>
           </KeyboardAwareScrollView>
-        </View>
+        </YZSafeAreaView>
     );
   }
 }

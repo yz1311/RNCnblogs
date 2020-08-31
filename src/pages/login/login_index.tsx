@@ -8,6 +8,7 @@ import {ReduxState} from '../../reducers';
 import CookieManager from '@react-native-community/cookies';
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar, Theme} from "@yz1311/teaset";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   dispatch: any;
@@ -81,7 +82,7 @@ export default class login_index extends Component<IProps, IState> {
   render() {
     let uri = `https://account.cnblogs.com/signin`;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="登录" leftView={null} />
         {this.state.isLoading ? (
           <View
@@ -98,7 +99,7 @@ export default class login_index extends Component<IProps, IState> {
             onNavigationStateChange={this._onNavigationStateChange}
           />
         )}
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

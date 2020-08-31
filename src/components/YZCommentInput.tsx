@@ -205,7 +205,7 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
-            this.input.blur();
+            this._keyboardDidHide();
           }}
           style={{flex: 1}}
         />
@@ -238,11 +238,10 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
                   if(canSubmit) {
                     onSubmit && onSubmit(this.state.comment, () => {
                       //清除评论并且收回键盘
-                      this._onToggle(false);
                       this.setState({
                         comment: '',
                       });
-                      this.input.blur();
+                      this._keyboardDidHide();
                     });
                   }
                 }}
@@ -297,6 +296,9 @@ export default class YZCommentInput extends PureComponent<IProps, IState> {
           )}
           {menu}
         </View>
+        {Platform.OS==='ios'?
+            <KeyboardSpacer />
+          :null}
       </View>
     );
   }

@@ -29,6 +29,7 @@ import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar} from "@yz1311/teaset";
 import produce from 'immer';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: userInfoModel;
@@ -295,7 +296,7 @@ export default class news_comment_list extends Component<IProps, IState> {
     const {title} = this.state;
     console.log(this.state.dataList)
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title={`${title ? title + '条' : ''}评论`} />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
@@ -349,7 +350,7 @@ export default class news_comment_list extends Component<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

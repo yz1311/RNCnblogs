@@ -25,6 +25,7 @@ import {ReduxState} from "../../models";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar} from "@yz1311/teaset";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps extends IBaseDataPageProps {
   blogCommentLists?: {[key: string]: any};
@@ -248,7 +249,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     const {item} = this.props;
     const {dataList, loadDataResult, noMore, title} = this.state;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title={`${title ? title + '条' : ''}评论`} />
         <YZStateView
           loadDataResult={loadDataResult}
@@ -296,7 +297,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

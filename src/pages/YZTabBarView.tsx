@@ -28,6 +28,9 @@ import {ReduxState} from '../reducers';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import ConfigServices from '../services/configServices';
 import YZImageViewer from "../components/YZImageViewer";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {Theme} from "@yz1311/teaset";
+import YZSafeAreaView from "../components/YZSafeAreaView";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -177,7 +180,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
     const {tabNames, tabIconNames, selectedTabIconNames} = this.state;
 
     return (
-      <View style={{flex: 1}}>
+      <YZSafeAreaView style={{backgroundColor: 'white'}}>
         <ScrollableTabView
           renderTabBar={() => (
             <YZTabBar
@@ -201,7 +204,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
         <YZImageViewer
 
           />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

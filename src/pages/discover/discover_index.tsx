@@ -3,6 +3,7 @@ import {TouchableOpacity, View, Text, StatusBar} from 'react-native';
 import {Styles} from '../../common/styles';
 import {Theme} from '@yz1311/teaset';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   tabIndex: number
@@ -32,7 +33,7 @@ export default class DiscoverIndex extends PureComponent<IProps,IState>{
   }
   render () {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <View style={{height: Theme.statusBarHeight,backgroundColor:gColors.bgColorF}}/>
         <View style={{flexDirection:'row',alignItems:'center',
           justifyContent:'space-between',
@@ -52,7 +53,7 @@ export default class DiscoverIndex extends PureComponent<IProps,IState>{
             })
           }
         </View>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

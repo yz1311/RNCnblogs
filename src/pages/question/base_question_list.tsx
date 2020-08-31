@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
+import {DeviceEventEmitter, EmitterSubscription, InteractionManager, StyleSheet, View} from 'react-native';
 import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
@@ -86,7 +86,9 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   }
 
   componentDidMount(): void {
-    this.loadData();
+    InteractionManager.runAfterInteractions(()=>{
+      this.loadData();
+    });
   }
 
   componentWillUnmount() {

@@ -30,6 +30,7 @@ import {blogCommentModel} from "../../api/blog";
 import {ServiceTypes} from "../YZTabBarView";
 import ToastUtils from "../../utils/toastUtils";
 import Feather from "react-native-vector-icons/Feather";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 export interface IProps {
   item?: newsModel;
@@ -383,7 +384,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
                 </body>
                 </html>`;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title={this.state.title} rightView={
           <TouchableOpacity
               activeOpacity={activeOpacity}
@@ -429,7 +430,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

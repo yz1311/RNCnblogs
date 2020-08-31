@@ -9,6 +9,7 @@ import {rankModel} from '../../api/home';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import ServiceUtils from '../../utils/serviceUtils';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 
 interface IProps {
@@ -81,7 +82,7 @@ export default class RankList extends PureComponent<IProps,IState>{
 
   render () {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="排行榜" />
         <YZStateView
           loadDataResult={this.state.loadDataResult}
@@ -100,7 +101,7 @@ export default class RankList extends PureComponent<IProps,IState>{
             )}
           />
         </YZStateView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

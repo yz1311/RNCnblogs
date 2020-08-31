@@ -15,6 +15,7 @@ import {Api} from "../../../api";
 import {SearchParams} from "../../home/home_search";
 import {NavigationBar} from "@yz1311/teaset";
 import {searchUserModal} from "../../../api/home";
+import YZSafeAreaView from "../../../components/YZSafeAreaView";
 
 export interface IProps {
     title?: string;
@@ -105,7 +106,7 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
 
     render() {
         return (
-            <View style={[Styles.container]}>
+            <YZSafeAreaView>
                 {this.props.title ?
                     <NavigationBar title={this.props.title}/>
                     :
@@ -132,7 +133,7 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
                         )}
                     />
                 </YZStateView>
-            </View>
+            </YZSafeAreaView>
         );
     }
 }

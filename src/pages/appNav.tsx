@@ -76,6 +76,9 @@ export default class AppNavigation extends Component {
                             //这是默认值
                             vertical: 135,
                         },
+                        // safeAreaInsets: {
+                        //   top: 0
+                        // },
                         //5.x版本，必须要设置这个才能android下滑动关闭
                         gestureDirection: 'horizontal',
                         //统一两端的动画效果

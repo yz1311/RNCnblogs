@@ -31,6 +31,7 @@ import ToastUtils from "../../utils/toastUtils";
 import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
 import ServiceUtils from "../../utils/serviceUtils";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -472,7 +473,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
     const {item} = this.props;
     const {getDetailResult, html} = this.state;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar
             title={this.state.title}
             rightView={
@@ -525,7 +526,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

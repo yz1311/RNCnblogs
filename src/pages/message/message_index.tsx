@@ -7,6 +7,7 @@ import BaseMessageList from './base_message_list';
 import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {NavigationBar, SegmentedBar, Theme} from '@yz1311/teaset';
 import SegmentedControlTab from "react-native-segmented-control-tab";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 
 interface IProps {
@@ -69,7 +70,7 @@ export default class news_index extends Component<IProps, IState> {
   render() {
     const {tabNames} = this.state;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title={
           <SegmentedControlTab
               tabsContainerStyle={{width: Theme.deviceWidth/2}}
@@ -105,7 +106,7 @@ export default class news_index extends Component<IProps, IState> {
           {/*  messageType={MessageTypes.未读消息}*/}
           {/*/>*/}
         </ScrollableTabView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

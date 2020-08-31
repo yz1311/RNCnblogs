@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import Slider from 'react-native-slider';
 import {ReduxState} from '../../reducers';
 import {NavigationBar, Theme} from "@yz1311/teaset";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   dispatch: any;
@@ -43,7 +44,7 @@ export default class profile_fontSize extends Component<IProps, IState> {
   render() {
     const {userInfo} = this.props;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="字体设置" />
         <ScrollView style={{flex: 1}}>
           <View style={{marginTop: 10, alignItems: 'center', minHeight: 200}}>
@@ -103,7 +104,7 @@ export default class profile_fontSize extends Component<IProps, IState> {
             }}
           />
         </ScrollView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

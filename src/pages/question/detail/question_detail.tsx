@@ -36,6 +36,7 @@ import ProfileServices from "../../../services/profileServices";
 import produce from "immer";
 import {ServiceTypes} from "../../YZTabBarView";
 import {statusCommentModel} from "../../../api/status";
+import YZSafeAreaView from "../../../components/YZSafeAreaView";
 
 interface IProps extends IBaseDataPageProps {
   item: questionModel;
@@ -227,7 +228,7 @@ export default class question_detail extends Component<IProps, IState> {
       </View>
     );
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title='博问' />
         <YZStateView
             loadDataResult={createReducerResult({state: 'content'})}
@@ -311,7 +312,7 @@ export default class question_detail extends Component<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

@@ -19,6 +19,8 @@ import {SearchParams} from "../home/home_search";
 import {NavigationBar} from "@yz1311/teaset";
 import {blogModel} from "../../api/blog";
 import produce from 'immer';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
+import {Edge} from "react-native-safe-area-context";
 
 export interface IProps {
   title?: string;
@@ -245,7 +247,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
 
   render() {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView edges={['left', 'right'].concat(this.props.title?['bottom']:[]) as Array<Edge>}>
         {this.props.title ?
             <NavigationBar title={this.props.title}/>
             :
@@ -272,7 +274,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
             )}
           />
         </YZStateView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

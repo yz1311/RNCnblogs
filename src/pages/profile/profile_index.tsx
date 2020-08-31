@@ -14,6 +14,7 @@ import {ListRow, NavigationBar, Theme} from '@yz1311/teaset';
 import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
 import {BlogTypes} from "../home/home_index";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -34,7 +35,7 @@ export default class profile_index extends Component<IProps, IState> {
   render() {
     const {userInfo} = this.props;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar
             style={{position:"relative"}}
             leftView={null}
@@ -242,7 +243,7 @@ export default class profile_index extends Component<IProps, IState> {
             />
           </View>
         </ScrollView>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

@@ -2,7 +2,7 @@ import React, {Component, PureComponent} from 'react';
 import {
   Animated,
   DeviceEventEmitter,
-  EmitterSubscription,
+  EmitterSubscription, InteractionManager,
   StyleSheet,
   View,
 } from 'react-native';
@@ -100,7 +100,9 @@ export default class base_status_list extends PureComponent<IProps, IState> {
   }
 
   componentDidMount(): void {
-    this.loadData();
+    InteractionManager.runAfterInteractions(()=>{
+      this.loadData();
+    });
   }
 
   componentWillUnmount() {

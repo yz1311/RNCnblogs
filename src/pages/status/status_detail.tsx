@@ -30,6 +30,7 @@ import {statusCommentModel, statusModel} from "../../api/status";
 import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar, Theme} from "@yz1311/teaset";
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: any;
@@ -245,7 +246,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
       </View>
     );
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="闪存" />
         <YZStateView
           loadDataResult={createReducerResult({state: 'content'})}
@@ -329,7 +330,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
             />
           )}
         />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

@@ -17,6 +17,7 @@ import {Theme} from "@yz1311/teaset";
 import {QuestionTypes} from "../question/question_index";
 import {StatusTypes} from "../status/status_index";
 import SearchUserList from './user/search_user_list';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 
 export interface SearchParams {
@@ -340,7 +341,7 @@ export default class home_search extends Component<IProps, IState> {
 
   render() {
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <View
           style={{
             // position: 'absolute',
@@ -391,7 +392,7 @@ export default class home_search extends Component<IProps, IState> {
           </ScrollableTabView>
           {this.state.showHistory ? this.renderNoContent() : null}
         </View>
-      </View>
+      </YZSafeAreaView>
     );
   }
 }
@@ -399,9 +400,7 @@ export default class home_search extends Component<IProps, IState> {
 const styles = StyleSheet.create({
   header: {
     //2018/04/09 由于有SafeAreaView的存在，所以现在不采用paddingTop的方式了
-    height: __ANDROID__ ? 50 : 44 + gScreen.statusBarHeight,
-    // width: screenW,
-    paddingTop: __ANDROID__ ? 0 : gScreen.statusBarHeight,
+    height: __ANDROID__ ? 50 : 44,
     backgroundColor: Theme.primaryColor,
     flexDirection: 'row',
     // justifyContent: 'center',

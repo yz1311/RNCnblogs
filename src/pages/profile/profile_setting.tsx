@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import ThemeModal from './profile_themeModal';
 import {ReduxState} from '../../reducers';
+import YZSafeAreaView from "../../components/YZSafeAreaView";
 
 interface IProps {
   dispatch: any;
@@ -55,7 +56,7 @@ export default class profile_setting extends Component<IProps, IState> {
   render() {
     const {userInfo} = this.props;
     return (
-      <View style={[Styles.container]}>
+      <YZSafeAreaView>
         <NavigationBar title="设置" />
         <ScrollView style={{flex: 1}}>
           <View style={{marginTop: 10}}>
@@ -141,7 +142,7 @@ export default class profile_setting extends Component<IProps, IState> {
           ) : null}
         </ScrollView>
         <ThemeModal ref={ref => (this.themeModal = ref)} />
-      </View>
+      </YZSafeAreaView>
     );
   }
 }

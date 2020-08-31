@@ -25,6 +25,7 @@ import Permissions from 'react-native-permissions';
 import ToastUtils from "../utils/toastUtils";
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import {Theme} from "@yz1311/teaset";
+import {SafeAreaProvider} from "react-native-safe-area-context";
 
 let lastClickTime = 0;
 
@@ -129,17 +130,19 @@ export default class App extends Component<IProps, IState> {
     const AppNavigator = this.props.AppNavigator;
     return (
       <View style={{flex: 1}}>
-        <NavigationContainer onStateChange={(state: NavigationState) => {
-          //这个是跳转了才去回调，所以不能利用routes来判断路由栈
-          NavigationHelper.navRouters = state.routes;
-        }}>
-          <AppNavigator />
-        </NavigationContainer>
-        {Theme.isIPhoneX ? (
-            <View
-                style={{height: 34, backgroundColor: Theme.navColor}}
-            />
-        ) : null}
+        <SafeAreaProvider>
+          <NavigationContainer onStateChange={(state: NavigationState) => {
+            //这个是跳转了才去回调，所以不能利用routes来判断路由栈
+            NavigationHelper.navRouters = state.routes;
+          }}>
+            <AppNavigator />
+          </NavigationContainer>
+        </SafeAreaProvider>
+        {/*{Theme.isIPhoneX ? (*/}
+        {/*    <View*/}
+        {/*        style={{height: 34, backgroundColor: Theme.navColor}}*/}
+        {/*    />*/}
+        {/*) : null}*/}
         {/*由于NavigationContainer有针对StatusBar的处理，覆盖需要放在后面*/}
         <StatusBar
             barStyle="light-content"
