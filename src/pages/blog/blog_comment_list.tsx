@@ -58,6 +58,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
   private _commentInput: any;
   private _flatList: any;
   private updateCountListener:EmitterSubscription;
+  private reloadListener:EmitterSubscription;
 
   constructor(props) {
     super(props);
@@ -86,11 +87,16 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
         title: count
       });
     });
+    this.reloadListener = DeviceEventEmitter.addListener('reload_blog_comment_list',count=>{
+      this.pageIndex = 1;
+      this.loadData();
+    });
   }
 
   componentWillUnmount() {
     //退出不用清空列表
     this.updateCountListener&&this.updateCountListener.remove();
+    this.reloadListener&&this.reloadListener.remove();
   }
 
   setTitle = (nextProps:IProps = null) => {

@@ -371,8 +371,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
                         }
                       }).then(result => {
                         if(result.data.isSuccess) {
-                          //Todo:
-                          // DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs+1});
+                          DeviceEventEmitter.emit('reload_blog_comment_list');
                         } else {
                           ToastUtils.showToast(result.data.message || '操作失败!');
                         }
@@ -421,8 +420,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
                         }
                       }).then(result => {
                         if(result.data.isSuccess) {
-                          //Todo:
-                          // DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs-1});
+                          DeviceEventEmitter.emit('reload_blog_comment_list');
                         } else {
                           ToastUtils.showToast(result.data.message || '操作失败!');
                         }
