@@ -110,8 +110,6 @@ export const getSearchBlogList = (data: RequestModel<{Keywords: string,
 
 
 export const getHomeBlogList = (data: getBlogListRequest) => {
-  data.request.CategoryId = 808;
-  data.request.CategoryType = 'SiteHome';
   data.request.ItemListActionName = 'AggSitePostList';
   data.request.ParentCategoryId = 0;
   const URL = `https://www.cnblogs.com/AggSite/AggSitePostList`;

@@ -32,6 +32,7 @@ export interface IProps {
   keyword?: string,
   searchParams?: SearchParams,
   userAvatar?: string;
+  tabLabel?: string;
 }
 
 export interface IState {
@@ -130,9 +131,30 @@ class base_blog_list extends PureComponent<IProps,IState> {
         action = ()=>{
           return Api.blog.getHomeBlogList({
             request: {
-              ParentCategoryId: 0,
               CategoryId: 808,
               CategoryType: 'SiteHome',
+              PageIndex: this.pageIndex,
+            }
+          })
+        };
+        break;
+      case BlogTypes.我评:
+        action = ()=>{
+          return Api.blog.getHomeBlogList({
+            request: {
+              CategoryId: 0,
+              CategoryType: 'MyCommented',
+              PageIndex: this.pageIndex,
+            }
+          })
+        };
+        break;
+      case BlogTypes.我赞:
+        action = ()=>{
+          return Api.blog.getHomeBlogList({
+            request: {
+              CategoryId: 0,
+              CategoryType: 'MyDigged',
               PageIndex: this.pageIndex,
             }
           })
@@ -160,7 +182,6 @@ class base_blog_list extends PureComponent<IProps,IState> {
             request: {
               CategoryId: -2,
               CategoryType: 'Picked',
-              ParentCategoryId: 0,
               PageIndex: this.pageIndex,
             }
           })
@@ -172,7 +193,6 @@ class base_blog_list extends PureComponent<IProps,IState> {
             request: {
               CategoryId: 108697,
               CategoryType: 'HomeCandidate',
-              ParentCategoryId: 0,
               PageIndex: this.pageIndex,
             }
           })
