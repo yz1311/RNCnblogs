@@ -21,6 +21,7 @@ import {ReduxState} from '../../reducers';
 import Feather from "react-native-vector-icons/Feather";
 import ToastUtils from "../../utils/toastUtils";
 import {Api} from '../../api';
+import {ServiceTypes} from "../YZTabBarView";
 
 interface IProps extends IReduxProps {
   item?: any;
@@ -48,6 +49,8 @@ interface IProps extends IReduxProps {
   questionLevel?: string;
   questionPeans?: string;
   contentId?: string;
+  showThumbAction?: boolean;
+  serviceType: ServiceTypes;
 }
 
 interface IState {}
@@ -335,7 +338,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
             ) : null}
           </View>
           <HTMLView
-            containerStyle={{marginVertical: 12}}
+            containerStyle={{marginVertical: 12, marginTop: 20}}
             html={content}
           />
           <View
@@ -348,6 +351,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
             <Text style={{fontSize: gFont.size13, color: gColors.color999}}>
               {StringUtils.formatDate(postDate)}
             </Text>
+            {this.props.showThumbAction?
             <View
               style={{
                 flexDirection: 'row',
@@ -356,22 +360,45 @@ export default class comment_item extends PureComponent<IProps, IState> {
               <TouchableOpacity
                 onPress={()=>{
                   //由于没有状态，目前只支持点赞，不支持取消
-                  Api.news.voteNews({
-                    request: {
-                      contentId: parseInt(this.props.contentId),
-                      commentId: parseInt(item.id),
-                      action: 'agree'
-                    },
-                    showLoading: true
-                  }).then(result => {
-                    if(result.data.IsSucceed) {
-                      DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
-                    } else {
-                      ToastUtils.showToast(result.data.Message || '操作失败!');
-                    }
-                  }).catch(err=>{
+                  switch (this.props.serviceType) {
+                    case ServiceTypes.博客:
+                      Api.blog.voteBlogComment({
+                        request: {
+                          userId: this.props.userId,
+                          postId: parseInt(this.props.contentId),
+                          commentId: parseInt(item.id),
+                          isAbandoned: false
+                        }
+                      }).then(result => {
+                        if(result.data.isSuccess) {
+                          //Todo:
+                          // DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs+1});
+                        } else {
+                          ToastUtils.showToast(result.data.message || '操作失败!');
+                        }
+                      }).catch(err=>{
 
-                  })
+                      })
+                      break;
+                    case ServiceTypes.新闻:
+                      Api.news.voteNews({
+                        request: {
+                          contentId: parseInt(this.props.contentId),
+                          commentId: parseInt(item.id),
+                          action: 'agree'
+                        },
+                        showLoading: true
+                      }).then(result => {
+                        if(result.data.IsSucceed) {
+                          DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
+                        } else {
+                          ToastUtils.showToast(result.data.Message || '操作失败!');
+                        }
+                      }).catch(err=>{
+
+                      })
+                      break;
+                  }
                 }}
                 style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
               >
@@ -383,22 +410,45 @@ export default class comment_item extends PureComponent<IProps, IState> {
               <TouchableOpacity
                 onPress={()=>{
                   //由于没有状态，目前只支持点赞，不支持取消
-                  Api.news.voteNews({
-                    request: {
-                      contentId: parseInt(this.props.contentId),
-                      commentId: parseInt(item.id),
-                      action: 'agree'
-                    },
-                    showLoading: true
-                  }).then(result => {
-                    if(result.data.IsSucceed) {
-                      DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
-                    } else {
-                      ToastUtils.showToast(result.data.Message || '操作失败!');
-                    }
-                  }).catch(err=>{
+                  switch (this.props.serviceType) {
+                    case ServiceTypes.博客:
+                      Api.blog.voteBlogComment({
+                        request: {
+                          userId: this.props.userId,
+                          postId: parseInt(this.props.contentId),
+                          commentId: parseInt(item.id),
+                          isAbandoned: true
+                        }
+                      }).then(result => {
+                        if(result.data.isSuccess) {
+                          //Todo:
+                          // DeviceEventEmitter.emit('update_blog_item_digg_count', {postId: item.id, count: item.diggs-1});
+                        } else {
+                          ToastUtils.showToast(result.data.message || '操作失败!');
+                        }
+                      }).catch(err=>{
 
-                  })
+                      })
+                      break;
+                    case ServiceTypes.新闻:
+                      Api.news.voteNews({
+                        request: {
+                          contentId: parseInt(this.props.contentId),
+                          commentId: parseInt(item.id),
+                          action: 'agree'
+                        },
+                        showLoading: true
+                      }).then(result => {
+                        if(result.data.IsSucceed) {
+                          DeviceEventEmitter.emit('update_news_item_digg_count', {contentId: this.props.contentId, commentId: item.id, agreeCount: result.data.AgreeCount, antiCount: result.data.AntiCount,});
+                        } else {
+                          ToastUtils.showToast(result.data.Message || '操作失败!');
+                        }
+                      }).catch(err=>{
+
+                      })
+                      break;
+                  }
                 }}
                 style={{flexDirection:'row',alignItems:'center', paddingRight: 10}}
               >
@@ -407,7 +457,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
                   {item.antiCount}
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View>:null}
           </View>
           {/*<div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>*/}
         </View>

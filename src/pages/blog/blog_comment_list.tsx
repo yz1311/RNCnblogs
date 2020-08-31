@@ -139,12 +139,15 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     return (
       <CommentItem
         item={item}
+        serviceType={ServiceTypes.博客}
+        showThumbAction={true}
         iconName={item.author?.avatar||''}
         authorUserId={this.props.item.author?.id}
         userId={item.author?.id}
         userName={item.author?.name}
         floor={item.Floor}
         content={item.content}
+        contentId={this.props.item.id}
         postDate={item.published}
         canDelete={(item.author?.id+'') === userInfo.id}
         canModify={(item.author?.id+'') === userInfo.id}

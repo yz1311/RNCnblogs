@@ -199,6 +199,8 @@ export default class news_comment_list extends Component<IProps, IState> {
     return (
       <CommentItem
         item={item}
+        serviceType={ServiceTypes.新闻}
+        showThumbAction={true}
         iconName={item.author?.avatar}
         userId={item.author?.id}
         userName={item.author?.name}

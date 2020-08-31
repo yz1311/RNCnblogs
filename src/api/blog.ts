@@ -244,6 +244,13 @@ export const commentBlog = (data:RequestModel<{userId:string,postId:number,body:
   return RequestUtils.post<{isSuccess:boolean,message:string,duration:number}>(URL,data.request);
 };
 
+//赞成和取消都是一个接口，会自动切换
+export const voteBlogComment = (data: RequestModel<{userId: string,postId: number, commentId: number, isAbandoned: boolean, voteType?: string}>) => {
+  data.request.voteType = 'Digg';
+  const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/vote/comment`;
+  return RequestUtils.post<{ isSuccess: boolean, message: string}>(URL, data.request);
+}
+
 
 export const deleteComment = (data:RequestModel<{parentId:number,commentId?:number,pageIndex?:number}>) => {
   data.request.pageIndex = 0;
@@ -380,9 +387,10 @@ export const resolveSearchBlogHtml = (result)=>{
 
 export const resolveBlogCommentHtml = (result)=>{
   let items:Array<any> = [];
-  let matches = result.match(/class=\"feedbackItem\"[\s\S]+?class=\"comment_vote\"[\s\S]+?<\/div[\s\S]+?(?=<\/div)/g)|| [];
-  for (let match of matches) {
-    let item:Partial<blogCommentModel> = {};
+  const $ = cheerio.load(result, { decodeEntities: false });
+  $('div.feedbackItem').each(function (index, element) {
+    let item: Partial<blogCommentModel> = {};
+    let match = $(this).html();
     item.title = '';
     item.id = (match.match(/id=\"comment_body_\d+?(?=\")/)||[])[0]?.replace(/id=\"comment_body_/,'');
     item.content = (match.match(/class=\"blog_comment_body[\s\S]+?(?=\<\/div>[\s\S]+?<div class=\"comment_vote)/)||[])[0]?.replace(/[\s\S]+?\>/,'').trim();
@@ -394,7 +402,9 @@ export const resolveBlogCommentHtml = (result)=>{
     };
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.published = (match.match(/class=\"comment_date[\s\S]+?(?=<\/span)/)||[])[0]?.replace(/[\s\S]+>/,'');
+    item.agreeCount = parseInt((match.match(/支持\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.antiCount = parseInt((match.match(/反对\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
     items.push(item);
-  }
+  });
   return items;
 }

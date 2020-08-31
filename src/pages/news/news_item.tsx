@@ -75,7 +75,7 @@ export default class news_item extends PureComponent<IProps, IState> {
               {/*</Text>*/}
                 <HTMLView
                     baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
-                    containerStyle={{marginVertical: 4,flex:1, marginLeft: 6}}
+                    containerStyle={{marginVertical: 4,flex:1, marginLeft: 10}}
                     html={item.summary}
                 />
             </View>
@@ -144,7 +144,7 @@ export default class news_item extends PureComponent<IProps, IState> {
 
 const styles = StyleSheet.create({
   icon: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
   },
 });

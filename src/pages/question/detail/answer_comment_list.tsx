@@ -146,6 +146,7 @@ export default class answer_comment_list extends YZBaseDataPage<
     return (
       <CommentItem
         item={item}
+        serviceType={ServiceTypes.博问}
         iconName={PostUserInfo.IconName}
         floor={item.Floor}
         authorUserId={QuestionUserInfo.UserID}

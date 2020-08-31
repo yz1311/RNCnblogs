@@ -270,9 +270,9 @@ export default class question_item extends PureComponent<IProps, any> {
             />
             <HTMLView
                 baseFontStyle={{color: gColors.color4c,fontSize: gFont.sizeDetail,}}
-                containerStyle={{marginVertical: 4, marginHorizontal: -8, paddingHorizontal: 8}}
+                containerStyle={{marginVertical: 6, marginHorizontal: -8, paddingHorizontal: 8}}
                 imagesMaxWidth={Theme.deviceWidth - 16}
-                html={item.summary}
+                html={item.summary?.trim()}
             />
             <View
               style={{

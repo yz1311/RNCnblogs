@@ -223,6 +223,10 @@ export const resolveNewsHtml = (result)=>{
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
     }
+    //部分图片链接没有协议头
+    if(item.author?.avatar?.indexOf('https:')<0) {
+      item.author.avatar = 'https:' + item.author?.avatar;
+    }
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
     item.tag = {
       name: (match.match(/class=\"tag\"[\s\S]+?(?=<\/a)/)||[])[0]?.replace(/[\s\S]+\>/,'')?.trim(),

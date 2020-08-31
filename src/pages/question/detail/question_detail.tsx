@@ -127,6 +127,7 @@ export default class question_detail extends Component<IProps, IState> {
     return (
         <CommentItem
             item={item}
+            serviceType={ServiceTypes.博问}
             iconName={item?.avatar||''}
             authorUserId={item.userId}
             userId={''}

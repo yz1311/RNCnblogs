@@ -132,6 +132,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
     return (
       <CommentItem
         item={item}
+        serviceType={ServiceTypes.闪存}
         iconName={item.author?.avatar}
         authorUserId={this.props.item.author?.id}
         userId={item.author?.id}
