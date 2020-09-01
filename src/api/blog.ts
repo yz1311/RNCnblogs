@@ -43,6 +43,13 @@ export type blogCommentModel = {
   antiCount: number;
 };
 
+
+export type blogTagModel = {
+  id: string;
+  name: string;
+  num: number;
+};
+
 export type getBlogListRequest = RequestModel<{
   blogApp?: string;
   CategoryType?: string
@@ -159,22 +166,6 @@ export const getBlogCommentList = (data: getBlogCommentListRequest) => {
       return dataList;
     }
   });
-  //# region  wcf的这个评论接口刷新不及时,废弃掉
-  // const URL = `http://wcf.open.cnblogs.com/blog/post/${data.request.postId}/comments/${data.request.pageIndex}/${data.request.pageSize}`;
-  // return RequestUtils.get<Array<blogCommentModel>>(URL, {
-  //   resolveResult: (result)=>{
-  //     //说明是空数据
-  //     if(result.hasOwnProperty('feed')) {
-  //       result = [];
-  //     }
-  //     //要重新计算楼层，返回的数据的Floor都只是本页的序号
-  //     result = (result || []).map((x, xIndex) => ({
-  //       ...x,
-  //       Floor: (data.request.pageIndex - 1) * data.request.pageSize + xIndex + 1 }));
-  //     return result;
-  //   }
-  // });
-  //# endregion
 };
 
 export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:string}>) => {
@@ -197,6 +188,25 @@ export const deleteBlog = (data:RequestModel<{postId: number}>) => {
 export const getBlogViewCount = (data: RequestModel<{postId: number}>) => {
   const URL = `https://www.cnblogs.com/xiaoyangjia/ajax/GetViewCount.aspx??postId=${data.request.postId}`;
   return RequestUtils.get<number>(URL);
+}
+
+export const getBlogTags = (data: RequestModel<{pageIndex: number}>) => {
+  const URL = `https://i.cnblogs.com/tags?page=${data.request.pageIndex}`;
+  return RequestUtils.get<Array<blogTagModel>>(URL, {
+    resolveResult: result => {
+      let items:Array<any> = [];
+      const $ = cheerio.load(result, { decodeEntities: false });
+      $('tr.ng-star-inserted').each(function (index, element) {
+        let item: Partial<blogTagModel> = {};
+        let match = $(this).html();
+        item.id = $(this).find('a[href^="/tags/posts"]').attr('ref').replace(/[\s\S]+=/, '');
+        item.name = $(this).find('a[href^="/tags/posts"]').text();
+        item.num = parseInt((match.match(/\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+        items.push(item);
+      });
+      return items;
+    }
+  });
 }
 
 
