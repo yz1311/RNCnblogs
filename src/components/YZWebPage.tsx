@@ -22,6 +22,7 @@ export interface IProps {
   content: string;
   navigation: any;
   title: string;
+  injectedJavaScript: string;
 }
 
 //@ts-ignore
@@ -135,7 +136,7 @@ export default class YZWebPage extends Component<IProps, any> {
             source={{uri: this.props.uri}}
             automaticallyAdjustContentInsets
             // scalesPageToFit
-            injectedJavaScript={injectedJsCode}
+            injectedJavaScript={injectedJsCode+';'+this.props.injectedJavaScript}
             style={{flex: 1}}
           />
         </View>

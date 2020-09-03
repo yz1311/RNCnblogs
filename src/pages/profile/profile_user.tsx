@@ -25,6 +25,11 @@ const notifyTypeDict = {
     3: '邮件和短消息',
 };
 
+const injectedJavaScript = `
+    document.getElementsByTagName('app-navbar')[0].setAttribute("style", "display: none");
+    document.getElementsByTagName('mat-sidenav-container')[0].setAttribute("class", "");
+`;
+
 function ProfileUser(props: IProps) {
     const [notiTypeArray, setNotiTypeArray] = useState<Array<string>>(Object.values(notifyTypeDict));
     const [notiTypeModalVisible, setNotiTypeModalVisible] = useState(false);
@@ -101,23 +106,58 @@ function ProfileUser(props: IProps) {
                 <ListRow
                     title="用户名"
                     detail={userInfo.loginName}
+                    onPress={()=>{
+                        NavigationHelper.push('YZWebPage', {
+                            uri: 'https://account.cnblogs.com/settings/account',
+                            title: '账户设置',
+                            injectedJavaScript: injectedJavaScript
+                        });
+                    }}
                 />
                 <ListRow
                     title="昵称"
                     detail={userInfo.displayName}
+                    onPress={()=>{
+                        NavigationHelper.push('YZWebPage', {
+                            uri: 'https://account.cnblogs.com/settings/account',
+                            title: '账户设置',
+                            injectedJavaScript: injectedJavaScript
+                        });
+                    }}
                     />
                 <ListRow
                     title="手机"
                     detail={userInfo.phoneNum}
+                    onPress={()=>{
+                        NavigationHelper.push('YZWebPage', {
+                            uri: 'https://account.cnblogs.com/settings/account',
+                            title: '账户设置',
+                            injectedJavaScript: injectedJavaScript
+                        });
+                    }}
                 />
                 <ListRow
                     title="邮箱"
                     detail={userInfo.email}
+                    onPress={()=>{
+                        NavigationHelper.push('YZWebPage', {
+                            uri: 'https://account.cnblogs.com/settings/account',
+                            title: '账户设置',
+                            injectedJavaScript: injectedJavaScript
+                        });
+                    }}
                 />
                 <Text style={[styles.sectionTitle]}>通知</Text>
                 <ListRow
                     title="通知邮箱"
                     detail={userInfo.notificationEmail}
+                    onPress={()=>{
+                        NavigationHelper.push('YZWebPage', {
+                            uri: 'https://account.cnblogs.com/settings/account',
+                            title: '账户设置',
+                            injectedJavaScript: injectedJavaScript
+                        });
+                    }}
                 />
                 <ListRow
                     title="回复通知类型"
