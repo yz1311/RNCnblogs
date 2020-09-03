@@ -56,7 +56,7 @@ function ProfileUser(props: IProps) {
 
     return (
         <YZSafeAreaView>
-            <NavigationBar title={''} />
+            <NavigationBar title={'账户设置'} />
             <ScrollView style={{flex:1}}>
                 <Text style={[styles.sectionTitle]}>账户与安全</Text>
                 <ListRow
@@ -77,6 +77,7 @@ function ProfileUser(props: IProps) {
 
                         }, async (photos)=>{
                             console.log(photos)
+                            ToastUtils.showLoading('上传中...');
                             try {
                                 let response = await Api.home.uploadAvatarFile({
                                     request: {
@@ -84,12 +85,15 @@ function ProfileUser(props: IProps) {
                                     }
                                 });
                                 if(response.data.Success) {
+                                    ToastUtils.showToast('更新成功!');
                                     ProfileServices.getFullUserInfo();
                                 } else {
                                     ToastUtils.showToast(response.data.Message);
                                 }
                             } catch (e) {
 
+                            } finally {
+                                ToastUtils.hideLoading();
                             }
                         })
                     }}

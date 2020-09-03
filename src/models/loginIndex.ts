@@ -58,6 +58,10 @@ export default {
             gUserData.userId = (userInfo as userInfoModel).id
             state.userInfo = userInfo;
         },
+        setUserAvatar: (state:IState, action) => {
+            const {userAvatar} = action.payload;
+            state.userInfo.avatar = userAvatar;
+        }
     },
     effects: {
         * userLogin(action, effects) {

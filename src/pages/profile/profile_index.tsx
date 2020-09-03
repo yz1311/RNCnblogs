@@ -69,7 +69,7 @@ export default class profile_index extends Component<IProps, IState> {
                         fontSize: gFont.size17,
                         color: gColors.color0,
                       }}>
-                      {userInfo.nickName}
+                      {userInfo.displayName}
                     </Text>
                     <Text
                       style={{
@@ -80,7 +80,7 @@ export default class profile_index extends Component<IProps, IState> {
                       {userInfo.seniority}
                     </Text>
                   </View>
-                  {/*<Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>*/}
+                  <Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>
                 </View>
                 <View style={{flexDirection:'row',marginBottom:15,marginTop:15}}>
                   <TouchableOpacity

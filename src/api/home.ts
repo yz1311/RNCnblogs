@@ -133,8 +133,24 @@ export const uploadAvatarFile = (data: RequestModel<{file: SelectedPhoto}>) => {
       // part file from storage
       { name : 'avatar', filename : fileName, type: mime.getType(fileName), data: RNFetchBlob.wrap(filePath)},
     ]).then((resp) => {
+      let result = resp.json() as {
+        Message: string;
+        Success: boolean;
+        Value: {
+          AvatarName: string;
+          IconName: string;
+        }
+      };
+      if(result.Success) {
+        gStore.dispatch({
+          type: 'loginIndex/setUserAvatar',
+          payload: {
+            userAvatar: result.Value.AvatarName
+          }
+        });
+      }
       resolve({
-        data: resp.json(),
+        data: result,
         status: resp.respInfo.status,
         statusText: resp.respInfo.state,
         headers: resp.respInfo.headers,
