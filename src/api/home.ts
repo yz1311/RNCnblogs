@@ -1,6 +1,11 @@
 import {requestWithTimeout, createOptions} from '../utils/request';
 import * as types from '../actions/actionTypes';
 import RequestUtils from '../utils/requestUtils';
+import {SelectedPhoto} from "react-native-syan-image-picker";
+import {Platform} from "react-native";
+const mime = require('mime');
+import RNFetchBlob from 'rn-fetch-blob';
+import {AxiosResponse} from "axios";
 
 export interface rankModel {
   id: string,
@@ -11,7 +16,6 @@ export interface rankModel {
   link: string,
   lastUpdate: string,
   blogCount: number
-
 }
 
 export interface searchUserModal {
@@ -65,28 +69,81 @@ export const rankList = (data:RequestModel<{}>) => {
 };
 
 
-export const uploadFile = (data: RequestModel<{file, fileName: string}>) => {
-  const URL = `https://upload.cnblogs.com/imageuploader/processupload?host=q.cnblogs.com&qqfile=${data.request.fileName}`;
-  let formData = new FormData();
-  formData.append('file', {
-    uri: data.request.file.path,
-    type: 'application/octet-stream',
-    name: data.request.fileName
+export const uploadFile = (data: RequestModel<{file: SelectedPhoto}>) => {
+  let filePath = data.request.file.uri;
+  if(Platform.OS === 'android') {
+    filePath = filePath.replace('file://', '');
+  }
+  let fileName = filePath.substr(filePath.lastIndexOf('/')+1);
+  const URL = `https://upload.cnblogs.com/imageuploader/processupload?host=q.cnblogs.com&qqfile=${fileName}`;
+  return new Promise<AxiosResponse<{
+    Message: string;
+    Success: boolean;
+  }>>((resolve, reject) => {
+    RNFetchBlob.fetch('POST', URL, {
+      'Content-Type' : 'application/octet-stream',
+      Accept: "*/*",
+      Referer: "https://www.cnblogs.com",
+      Origin: "https://upload.cnblogs.com",
+      "X-Requested-With": "XMLHttpRequest",
+      'cookie': gUserData.token,
+      'x-file-name': encodeURI(fileName),
+      'x-mime-type': mime.getType(fileName)
+      // Change BASE64 encoded data to a file path with prefix `RNFetchBlob-file://`.
+      // Or simply wrap the file path with RNFetchBlob.wrap().
+    }, RNFetchBlob.wrap(filePath))
+        .then((resp) => {
+          console.log(resp.json())
+          resolve({
+            data: resp.json(),
+            status: resp.respInfo.status,
+            statusText: resp.respInfo.state,
+            headers: resp.respInfo.headers,
+            config: {}
+          } as AxiosResponse);
+        })
+        .catch((err) => {
+          // error handling ..
+          reject(err);
+        })
   });
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data;charset=utf-8',
-      Authorization: 'Bearer ' + gUserData.token,
-    },
-    body: formData,
-  };
-  return requestWithTimeout({
-    URL,
-    data,
-    options,
-    errorMessage: '上传文件失败!',
-    actionType: '',
+};
+
+export const uploadAvatarFile = (data: RequestModel<{file: SelectedPhoto}>) => {
+  let filePath = data.request.file.uri;
+  if(Platform.OS === 'android') {
+    filePath = filePath.replace('file://', '');
+  }
+  //不能上传非png图片，所以手动改为png后缀
+  // let fileName = filePath.substr(filePath.lastIndexOf('/')+1);
+  let fileName = filePath.substr(0, filePath.lastIndexOf('.'))+'.png';
+  const URL = `https://upload.cnblogs.com/avatar/upload`;
+  return new Promise<AxiosResponse<{
+    Message: string;
+    Success: boolean;
+    Value: {
+      AvatarName: string;
+      IconName: string;
+    }
+  }>>((resolve, reject) => {
+    RNFetchBlob.fetch('POST', URL, {
+      'cookie': gUserData.token,
+      'Content-Type' : 'multipart/form-data',
+    }, [
+      // part file from storage
+      { name : 'avatar', filename : fileName, type: mime.getType(fileName), data: RNFetchBlob.wrap(filePath)},
+    ]).then((resp) => {
+      resolve({
+        data: resp.json(),
+        status: resp.respInfo.status,
+        statusText: resp.respInfo.state,
+        headers: resp.respInfo.headers,
+        config: {}
+      } as AxiosResponse);
+    }).catch((err) => {
+      // ...
+      reject(err);
+    })
   });
 };
 

@@ -11,6 +11,7 @@ import Model from 'dva-core';
 import CookieManager from '@react-native-community/cookies';
 import state from "@react-native-community/netinfo/lib/typescript/src/internal/state";
 import {ReduxState} from "./index";
+import ProfileServices from "../services/profileServices";
 
 export interface IState {
     isLogin: boolean;
@@ -86,79 +87,7 @@ export default {
         },
         * getUserInfo(action, effects) {
             console.log('getUserInfo ----------')
-            let userInfo:Partial<userInfoModel> = {};
-            //首先获取userId
-            try {
-                let response = yield Api.login.getUserAlias({
-                    request: {}
-                });
-                let userId = response.data;
-                userInfo.id = userId as any;
-                gUserData.userId = userId;
-                //继续获取用户详情
-                let userInfoResponse = yield Api.profile.getPersonInfo({
-                    request: {
-                        userAlias: userId
-                    }
-                });
-                userInfo = {
-                    ...userInfo,
-                    ...userInfoResponse.data
-                };
-                console.log(userInfo)
-                yield Promise.all([
-                    (
-                         async ()=>{
-                            let signature = '';
-                            try {
-                                //继续获取签名
-                                let signature = await Api.profile.getPersonSignature({
-                                    request: {
-                                        userAlias: userId
-                                    }
-                                });
-                                //@ts-ignore
-                                userInfo.signature = signature.data;
-                            } catch (e) {
-
-                            }
-                        }
-                    )(),
-                    (
-                        async ()=> {
-                            //Todo:修复该接口
-                            // try {
-                            //     let aliasResponse = await Api.profile.getUserAliasByUserName({
-                            //         request: {
-                            //             userName: userInfo.nickName,
-                            //             fuzzy: false,
-                            //         }
-                            //     });
-                            //     if(aliasResponse.data.length>0) {
-                            //         userInfo = {
-                            //             ...userInfo,
-                            //             ...userInfoResponse.data[0]
-                            //         };
-                            //     }
-                            // } catch (e) {
-                            //
-                            // }
-                        }
-                    )(),
-                ])
-
-                gStorage.save(gStorageKeys.CurrentUser,userInfo);
-                yield effects.put({
-                    type: 'setUserInfo',
-                    payload: {
-                        userInfo: userInfo
-                    }
-                });
-            } catch (e) {
-
-            } finally {
-
-            }
+            yield ProfileServices.getFullUserInfo();
         },
         * logout(action, effects) {
             try {

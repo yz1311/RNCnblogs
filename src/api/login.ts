@@ -16,7 +16,7 @@ export type userInfoModel = {
   blogapp: string,
   avatar: string,
   postcount: string,
-};
+} & accountInfoModel;
 
 
 export type accountInfoModel = {
@@ -111,6 +111,14 @@ export type basicProfileModel = {
   IsHome_Company: boolean;  //false
   IsHome_WorkStatus: boolean;  //false
 };
+
+
+export enum NotificationTypes {
+  无,
+  邮件,
+  短消息,
+  邮件和短消息
+}
 
 
 //为0的时候表示可以连通
@@ -236,6 +244,11 @@ export const changeDisplayName = (data:RequestModel<{displayName: string}>) => {
   return RequestUtils.put<{message: string, success: boolean}>(URL, data.request);
 };
 
+
+export const changeNotificationType = (data:RequestModel<{notificationType: NotificationTypes}>) => {
+  const URL = `https://account.cnblogs.com/api/account/notification-type`;
+  return RequestUtils.put<{message: string, success: boolean}>(URL, data.request);
+};
 
 //绑定手机号时，需要验证密码 (密码是加密的，目前不知道加密方式)
 export const checkPassword = (data:RequestModel<{password: string}>) => {

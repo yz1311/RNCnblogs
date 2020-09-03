@@ -33,6 +33,7 @@ import StarList from '../pages/profile/profile_star_list';
 import FollowerList from '../pages/profile/profile_follower_list';
 import NewsIndex from '../pages/news/news_index';
 import RankList from '../pages/discover/rank_list';
+import ProfileUser from "./profile/profile_user";
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -232,6 +233,10 @@ export default class AppNavigation extends Component {
                 <Stack.Screen
                     name="RankList"
                     component={withMappedNavigationParams()(RankList)}
+                />
+                <Stack.Screen
+                    name="ProfileUser"
+                    component={withMappedNavigationParams()(ProfileUser)}
                 />
                 <Stack.Screen
                     name="StarList"

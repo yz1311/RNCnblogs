@@ -221,27 +221,6 @@ export default class RequestUtils {
         axios.interceptors.response.use(async (response) => {
             console.log(response.config.method+'  '+response.config.url)
             console.log(response.config.data)
-            //如果是字符串，尝试转换成js对象
-            if(typeof response.data == 'string'
-                && ((response.config as AxiosRequestConfigPatch).autoResolveXML == true || (response.config as AxiosRequestConfigPatch).autoResolveXML == undefined)
-                && response.config.url.indexOf(gServerPath)>=0) {
-                await new Promise(resolve => {
-                    parseString(response.data, function (err, result) {
-                        if (!err) {
-                            if (result.feed && result.feed.entry && Array.isArray(result.feed.entry)) {
-                                result = result.feed.entry.map(x => {
-                                    //遍历所有属性，将数组拆分成属性
-                                    x = resolveXmlObject(x);
-                                    return x;
-                                })
-                            }
-                            response.data = result;
-                            console.log(result)
-                        }
-                        resolve(true);
-                    });
-                })
-            }
             //如果是未登录
             if(typeof response.data == 'string' && response.data.indexOf(`<a href="javascript:void(0);" onclick="return login();">登录`)>=0) {
                 let error = new Error("");
@@ -262,6 +241,32 @@ export default class RequestUtils {
                 console.log('解析后:',response.data);
             } else {
                 console.log(response.data)
+            }
+            //如果存在 set-cookie,则需要更新cookie
+            if(response.headers['set-cookie'] &&
+                response.headers['set-cookie'].length > 0 ) {
+                let tokenStr = response.headers['set-cookie'][0]?.replace(/path=\/,/g, '')?.replace(/Path=\//g, '');
+                let res = await gStorage.load('token');
+                console.log('------')
+                console.log(tokenStr)
+                let nextTokenObj = {} as any;
+                for (let item of tokenStr.split(';')) {
+                    let pair = item.split('=');
+                    if(pair.length === 2 && pair[0] && pair[1]) {
+                        nextTokenObj = {
+                            ...nextTokenObj,
+                            [pair[0].trim()]: pair[1].trim()
+                        };
+                    }
+                }
+                if (res && res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
+                    res = {
+                        ...res,
+                        ...nextTokenObj
+                    };
+                    gStorage.save('token', res);
+                    gUserData.token = Object.keys(res).map(key => key + '=' + res[key].value).join(';');
+                }
             }
             //部分接口没有result字段，直接返回data
             if(response.data.status=='OK'||(response.data.status===undefined&&response.data!=undefined)) {

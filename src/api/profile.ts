@@ -1,5 +1,3 @@
-import {requestWithTimeout, createOptions} from '../utils/request';
-import * as types from '../actions/actionTypes';
 import RequestUtils from "../utils/requestUtils";
 
 

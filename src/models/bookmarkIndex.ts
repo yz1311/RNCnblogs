@@ -1,5 +1,4 @@
 import Model from "dva-core";
-import {userInfoModel} from "../api/login";
 
 export interface IState {
 

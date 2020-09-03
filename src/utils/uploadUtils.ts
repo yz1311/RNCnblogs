@@ -1,15 +1,15 @@
 import PermissionUtils from "./permissionUtils";
-import SyanImagePicker from 'react-native-syan-image-picker';
+import SyanImagePicker, {ImagePickerOption, SelectedPhoto} from 'react-native-syan-image-picker';
 
 
 export default class UploadUtils {
-    static openImagePicker (params, callback, error?) {
+    static openImagePicker (params: Partial<ImagePickerOption> | null, callback: (photos: Array<SelectedPhoto>)=>void, error?) {
         PermissionUtils.requestPhotoPermission(() => {
             let options = {
                 imageCount: 9,
                 isCamera: true,
                 enableBase64: false,
-                ...params,
+                ...(params || {}),
             }
             SyanImagePicker.showImagePicker(options, (err, selectedPhotos) => {
                 if (err) {

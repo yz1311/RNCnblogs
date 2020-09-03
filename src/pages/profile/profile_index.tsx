@@ -34,6 +34,7 @@ interface IState {}
 export default class profile_index extends Component<IProps, IState> {
   render() {
     const {userInfo} = this.props;
+    console.log(userInfo)
     return (
       <YZSafeAreaView>
         <NavigationBar
@@ -44,6 +45,9 @@ export default class profile_index extends Component<IProps, IState> {
         <ScrollView style={{flex: 1}}>
           {this.props.isLogin ? (
             <TouchableOpacity
+              onPress={()=>{
+                NavigationHelper.push('ProfileUser');
+              }}
               activeOpacity={activeOpacity}
               style={{marginTop: 10}}>
               <View style={{backgroundColor: gColors.bgColorF,}}>

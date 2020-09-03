@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {StyleSheet, View, ActivityIndicator, Text, Platform} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
-import {Styles} from '../../common/styles';
 import SplashScreen from 'react-native-splash-screen';
 import {ReduxState} from '../../reducers';
 import CookieManager from '@react-native-community/cookies';
