@@ -23,6 +23,7 @@ export interface IProps {
   navigation: any;
   title: string;
   injectedJavaScript: string;
+  onFinish: () => void;
 }
 
 //@ts-ignore
@@ -38,7 +39,12 @@ export default class YZWebPage extends Component<IProps, any> {
   private webView: any;
 
 
-  _onCopy = () => {
+  componentWillUnmount() {
+      this.props.onFinish && this.props.onFinish();
+  }
+
+
+    _onCopy = () => {
     Overlay.hide(this.overlayKey);
     this.overlayKey = null;
     CommonUtils.copyText(this.props.content);

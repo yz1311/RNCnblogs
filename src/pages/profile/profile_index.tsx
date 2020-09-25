@@ -15,6 +15,7 @@ import {ReduxState} from "../../models";
 import {userInfoModel} from "../../api/login";
 import {BlogTypes} from "../home/home_index";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import ProfileServices from "../../services/profileServices";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -46,7 +47,21 @@ export default class profile_index extends Component<IProps, IState> {
           {this.props.isLogin ? (
             <TouchableOpacity
               onPress={()=>{
-                NavigationHelper.push('ProfileUser');
+                // NavigationHelper.push('ProfileUser');
+                const injectedJavaScript = `
+                      document.getElementsByTagName('app-navbar')[0].setAttribute("style", "display: none");
+                      document.getElementsByTagName('app-footer')[0].setAttribute("style", "display: none");
+                      document.getElementsByTagName('mat-sidenav-container')[0].setAttribute("class", "");
+                    `;
+                NavigationHelper.push('YZWebPage', {
+                  uri: 'https://account.cnblogs.com/settings/account',
+                  title: '账户设置',
+                  injectedJavaScript: injectedJavaScript,
+                  onFinish: ()=>{
+                    //刷新信息
+                    ProfileServices.getFullUserInfo();
+                  }
+                });
               }}
               activeOpacity={activeOpacity}
               style={{marginTop: 10}}>

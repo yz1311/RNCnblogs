@@ -3,8 +3,6 @@ import YZStateView from "../components/YZStateView";
 import axios, {AxiosProxyConfig, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {NavigationHelper} from '@yz1311/teaset-navigation';
 import ToastUtils from "./toastUtils";
-import {parseString} from 'react-native-xml2js';
-import {err} from "react-native-svg/lib/typescript/xml";
 import StorageUtils from "./storageUtils";
 
 

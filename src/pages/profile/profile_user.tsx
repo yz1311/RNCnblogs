@@ -27,6 +27,7 @@ const notifyTypeDict = {
 
 const injectedJavaScript = `
     document.getElementsByTagName('app-navbar')[0].setAttribute("style", "display: none");
+    document.getElementsByTagName('app-footer')[0].setAttribute("style", "display: none");
     document.getElementsByTagName('mat-sidenav-container')[0].setAttribute("class", "");
 `;
 
@@ -110,7 +111,7 @@ function ProfileUser(props: IProps) {
                         NavigationHelper.push('YZWebPage', {
                             uri: 'https://account.cnblogs.com/settings/account',
                             title: '账户设置',
-                            injectedJavaScript: injectedJavaScript
+                            injectedJavaScript: injectedJavaScript,
                         });
                     }}
                 />

@@ -10,6 +10,7 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.microsoft.codepush.react.CodePush;
+import com.reactlibrary.bugly.RNBuglyModule;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -50,5 +51,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    //初始化并且自动检查更新
+    RNBuglyModule.init(getApplicationContext(),"f697123ac7",false);
   }
 }
