@@ -1,36 +1,33 @@
-import React, {Component, PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Image,
-  Text,
-  Alert,
-  Share,
   DeviceEventEmitter,
-  ScrollView,
-  RefreshControl,
   EmitterSubscription,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import YZBaseDataPage, {
-  IBaseDataPageProps,
-} from '../../components/YZBaseDataPage';
+import {IBaseDataPageProps} from '../../components/YZBaseDataPage';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
-import {Styles} from '../../common/styles';
 import StatusItem from './status_item';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
-import {ServiceTypes} from "../YZTabBarView";
-import {Api} from "../../api";
-import {statusCommentModel, statusModel} from "../../api/status";
-import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
-import ToastUtils from "../../utils/toastUtils";
-import {NavigationBar, Theme} from "@yz1311/teaset";
-import YZSafeAreaView from "../../components/YZSafeAreaView";
+import {ServiceTypes} from '../YZTabBarView';
+import {Api} from '../../api';
+import {statusCommentModel, statusModel} from '../../api/status';
+import {
+  createReducerResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
+import ToastUtils from '../../utils/toastUtils';
+import {NavigationBar, Theme} from '@yz1311/teaset';
+import YZSafeAreaView from '../../components/YZSafeAreaView';
 
 interface IProps extends IBaseDataPageProps {
   userInfo?: any;
@@ -249,8 +246,8 @@ export default class status_detail extends PureComponent<IProps, IState> {
     return (
       <YZSafeAreaView>
         <NavigationBar title="闪存" />
-        <YZStateView
-          loadDataResult={createReducerResult({state: 'content'})}
+        <StateView
+          loadDataResult={createReducerResult({state: LoadDataResultStates.content})}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
           {this.state.getCommentListResult.success &&
@@ -277,7 +274,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
               </View>
             </ScrollView>
           ) : (
-            <YZStateView
+            <StateView
               loadDataResult={this.state.getCommentListResult}
               placeholderTitle="-- 暂无评论 --"
               errorButtonAction={this.loadData}>
@@ -297,9 +294,9 @@ export default class status_detail extends PureComponent<IProps, IState> {
                   />
                 )}
               />
-            </YZStateView>
+            </StateView>
           )}
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}

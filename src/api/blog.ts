@@ -1,4 +1,4 @@
-import RequestUtils, {dataToReducerResult} from "../utils/requestUtils";
+import RequestUtils, {} from "../utils/requestUtils";
 import {SearchParams} from "../pages/home/home_search";
 const cheerio = require('react-native-cheerio');
 

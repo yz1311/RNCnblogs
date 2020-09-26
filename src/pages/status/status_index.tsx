@@ -27,7 +27,7 @@ import StatusHotModal from "./other/status_hot_modal";
 import StatusLuckModal from "./other/status_luck_modal";
 import {statusOtherInfoModel} from "../../api/status";
 import YZBackHandler from "../../components/YZBackHandler";
-import {createReducerResult, dataToReducerResult, LoadDataResultStates, ReducerResult} from "../../utils/requestUtils";
+import {createReducerResult, dataToReducerResult, LoadDataResultStates, ReducerResult} from "@yz1311/react-native-state-view";
 
 interface IProps extends IReduxProps {
   navigation: any;
@@ -204,7 +204,7 @@ export default class status_index extends Component<IProps, IState> {
           scrollWithoutAnimation={true}
           locked={false}
           onChangeTab={this._onChangeTab}>
-          {/*//@ts-ignore*/}
+          {/*@ts-ignore*/}
           <View tabLabel="全站" style={[Styles.container]}>
             <View style={{flexDirection:'row', height: Theme.px2dp(180), backgroundColor:'white', marginBottom: Theme.px2dp(20)}}>
               {

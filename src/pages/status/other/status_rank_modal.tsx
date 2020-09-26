@@ -7,8 +7,7 @@ import ServiceUtils from "../../../utils/serviceUtils";
 import {Styles} from "../../../common/styles";
 import {Colors} from "react-native/Libraries/NewAppScreen";
 import Entypo from "react-native-vector-icons/Entypo";
-import {ReducerResult} from "../../../utils/requestUtils";
-import YZStateView from "../../../components/YZStateCommonView";
+import {ReducerResult, StateView} from '@yz1311/react-native-state-view';
 
 interface IProps {
     isVisible: boolean,
@@ -37,7 +36,7 @@ const StatusRankModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo,
                 <Text style={{alignSelf:'center', ...Theme.fontSizeAndColor(40, gColors.color0),
                     fontWeight:"bold", marginTop:Theme.px2dp(10)}}>今日星星排行榜TOP12</Text>
                 <View style={{height: 1, backgroundColor: Theme.primaryColor, marginTop: Theme.px2dp(20)}} />
-                <YZStateView
+                <StateView
                     loadDataResult={loadOtherInfoResult}
                     placeholderTitle="暂无数据"
                     errorButtonAction={loadData}>
@@ -91,7 +90,7 @@ const StatusRankModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo,
                             })
                         }
                     </ScrollView>
-                </YZStateView>
+                </StateView>
             </View>
         </Modal>
     );

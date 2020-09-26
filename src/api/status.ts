@@ -84,7 +84,7 @@ export const getStatusList = (data:RequestModel<{statusType:StatusTypes,pageInde
 
 export const getOtherStatusList = (data:RequestModel<{userId:string,pageIndex:number,pageSize:number}>) => {
   const URL = `https://ing.cnblogs.com/u/${data.request.userId}/${data.request.pageIndex}`;
-  return RequestUtils.get<Array<questionModel>>(URL, {
+  return RequestUtils.get<Array<statusModel>>(URL, {
     headers: {
       //必须要加这个，否则请求失败
       "x-requested-with": 'XMLHttpRequest'

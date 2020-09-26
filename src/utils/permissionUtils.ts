@@ -4,7 +4,6 @@ import DeviceInfo from 'react-native-device-info';
 import IntentLauncher, {
     IntentConstant,
 } from '@yz1311/react-native-intent-launcher';
-import requestUtils from "./requestUtils";
 const {displayName: appName} = require('../../app.json');
 
 export default class PermissionUtils {

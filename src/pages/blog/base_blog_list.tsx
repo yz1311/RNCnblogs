@@ -7,12 +7,11 @@ import {
   dataToPagingResult,
   dataToReducerResult,
   LoadDataResultStates,
-  ReducerResult
-} from "../../utils/requestUtils";
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import {BlogTypes} from "../home/home_index";
 import {connect} from "react-redux";
 import {ReduxState} from "../../models";
-import YZStateView from "../../components/YZStateCommonView";
 import YZFlatList from "../../components/YZFlatList";
 import {Api} from "../../api";
 import {SearchParams} from "../home/home_search";
@@ -273,10 +272,10 @@ class base_blog_list extends PureComponent<IProps,IState> {
             :
             null
         }
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
-          mustLogin={this.mustLogin || false}
+          // mustLogin={this.mustLogin || false}
           errorButtonAction={this.loadData}>
           <YZFlatList
             ref={ref => (this._flatList = ref)}
@@ -293,7 +292,7 @@ class base_blog_list extends PureComponent<IProps,IState> {
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </YZSafeAreaView>
     );
   }

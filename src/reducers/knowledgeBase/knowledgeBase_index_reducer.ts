@@ -4,7 +4,7 @@ import {
   handleActions,
 } from '../../utils/reduxUtils';
 import StringUtils from '../../utils/stringUtils';
-import {createReducerResult} from "../../utils/requestUtils";
+import {createReducerResult} from "@yz1311/react-native-state-view";
 
 export interface State {
   kbList: Array<any>;

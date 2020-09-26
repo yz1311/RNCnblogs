@@ -1,6 +1,5 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, InteractionManager, StyleSheet, View} from 'react-native';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import QuestionItem from './question_item';
@@ -11,8 +10,8 @@ import {
   dataToPagingResult,
   dataToReducerResult,
   LoadDataResultStates,
-  ReducerResult
-} from '../../utils/requestUtils';
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import {QuestionTypes} from './question_index';
 import {Api} from '../../api';
 import {questionModel} from '../../api/question';
@@ -210,10 +209,10 @@ export default class base_question_list extends PureComponent<IProps,IState> {
             :
             null
         }
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
-          mustLogin={this.mustLogin || false}
+          // mustLogin={this.mustLogin || false}
           errorButtonAction={this.loadData}>
           <YZFlatList
             ref={ref => (this._flatList = ref)}
@@ -231,7 +230,7 @@ export default class base_question_list extends PureComponent<IProps,IState> {
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </View>
     );
   }

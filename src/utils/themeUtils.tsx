@@ -1,7 +1,4 @@
-import YZStateView from '../components/YZStateCommonView';
-// import YZLottieView from "../components/YZLottieView";
 import React from 'react';
-import {Platform} from 'react-native';
 import {Theme} from "@yz1311/teaset";
 
 export default class themeUtils {

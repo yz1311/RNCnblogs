@@ -1,9 +1,7 @@
 import React, {PureComponent} from 'react';
 import {TouchableOpacity, View, Text} from 'react-native';
-import {Styles} from '../../common/styles';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
-import {createReducerResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {createReducerResult, dataToReducerResult, ReducerResult, StateView} from '@yz1311/react-native-state-view';
 import {Api} from '../../api';
 import {rankModel} from '../../api/home';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -84,7 +82,7 @@ export default class RankList extends PureComponent<IProps,IState>{
     return (
       <YZSafeAreaView>
         <NavigationBar title="排行榜" />
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -100,7 +98,7 @@ export default class RankList extends PureComponent<IProps,IState>{
               <View style={{height: Theme.onePix*2, backgroundColor: gColors.borderColorE5}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </YZSafeAreaView>
     );
   }

@@ -1,6 +1,5 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View} from 'react-native';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import NewsItem from './news_item';
@@ -10,8 +9,8 @@ import {
   dataToPagingResult,
   dataToReducerResult,
   LoadDataResultStates,
-  ReducerResult
-} from '../../utils/requestUtils';
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import {Api} from '../../api';
 import {SearchParams} from "../home/home_search";
 
@@ -161,7 +160,7 @@ export default class base_news_list extends PureComponent<IProps, IState> {
     console.log(this.state.dataList)
     return (
       <View style={[Styles.container]}>
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -180,7 +179,7 @@ export default class base_news_list extends PureComponent<IProps, IState> {
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </View>
     );
   }

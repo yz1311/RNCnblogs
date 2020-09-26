@@ -1,6 +1,6 @@
 import {Action, ActionMeta} from "redux-actions";
 import produce from "immer";
-import {LoadDataResultStates} from "./requestUtils";
+import {LoadDataResultStates} from "@yz1311/react-native-state-view";
 
 export const handleActions = <T = any>(
     actionsMap: {[key: string]: (state: T, action: SagaAction<any>) => void},
@@ -11,6 +11,35 @@ export const handleActions = <T = any>(
       const action = actionsMap[type];
       action && action(draft, preAction);
     });
+
+
+export const PROMISE_TYPE_SUFFIXES = {
+  PENDING: '_PENDING',
+  RESOLVED: '_RESOLVED',
+  REJECTED: '_REJECTED'
+};
+
+const addPendingSuffix = (type) => {
+  return type + PROMISE_TYPE_SUFFIXES.PENDING;
+};
+
+/**
+ * 创建符合当前设计的sagaAction(该action作用只用于触发redux-saga中的事件)
+ * 1.type后面必须添加_PENDING后缀
+ * 2.payload的必须是传递过来的参数,如果有多个值，则需要自己手动组合成一个对象
+ * @param type action的type类型
+ * @param data 传递给action的参数
+ */
+export const createSagaAction = (type, data: RequestModel<any>|undefined) : SagaAction<RequestModel<any>|undefined> => {
+  return {
+    type: addPendingSuffix(type),
+    payload: data,
+    //将传递的参数放在meta中,防止出现saga中获取的action在调用前后的meta值不一样的情况
+    meta: {
+      parData: data
+    }
+  };
+};
 
 /**
  * 将action对象转换成,redux中将action转换成结果

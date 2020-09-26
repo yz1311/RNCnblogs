@@ -12,7 +12,6 @@ import {connect} from 'react-redux';
 import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
-import YZStateView from '../../components/YZStateCommonView';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import YZFlatList from '../../components/YZFlatList';
@@ -21,7 +20,13 @@ import PropTypes from 'prop-types';
 import CommentItem from '../blog/comment_item';
 import {ReduxState} from '../../reducers';
 import {blogCommentModel, getBlogCommentListRequest} from "../../api/blog";
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  ReducerResult,
+  StateView,
+} from '@yz1311/react-native-state-view';
 import {Api} from "../../api";
 import {newsCommentModel, newsModel} from "../../api/news";
 import {userInfoModel} from "../../api/login";
@@ -300,7 +305,7 @@ export default class news_comment_list extends Component<IProps, IState> {
     return (
       <YZSafeAreaView>
         <NavigationBar title={`${title ? title + '条' : ''}评论`} />
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -319,7 +324,7 @@ export default class news_comment_list extends Component<IProps, IState> {
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
+        </StateView>
         <NavigationBar style={{position:'absolute'}} title={`${title ? title + '条' : ''}评论`} />
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}

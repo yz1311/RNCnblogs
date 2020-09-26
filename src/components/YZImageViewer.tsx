@@ -41,7 +41,7 @@ function YZImageViewer(props:IProps, ref) {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastTitle, setToastTitle] = useState('');
 
-  const toastTimeoutRef = useRef<NodeJS.Timeout>();
+  const toastTimeoutRef = useRef<number>();
 
   const showToast = (title)=>{
     toastTimeoutRef.current && clearTimeout(toastTimeoutRef.current);

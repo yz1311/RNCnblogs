@@ -54,6 +54,7 @@ class YZCollapsableWrapper extends Component<IProps, IState> {
           Animated.timing(this.state.heightAnimatedValue, {
             toValue: isToggle ? 1 : 0,
             duration: 300,
+            useNativeDriver: false
           }).start();
         }
         this.setState({maxHeight, isToggle});

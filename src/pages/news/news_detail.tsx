@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {WebView} from 'react-native-webview';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
@@ -24,7 +23,7 @@ import CommonUtils from '../../utils/commonUtils';
 import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
 import {Api} from "../../api";
-import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {createReducerResult, dataToReducerResult, ReducerResult, StateView} from "@yz1311/react-native-state-view";
 import {newsCommentModel, newsInfoModel, newsModel} from "../../api/news";
 import {blogCommentModel} from "../../api/blog";
 import {ServiceTypes} from "../YZTabBarView";
@@ -396,7 +395,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
             <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
           </TouchableOpacity>
         } />
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -411,7 +410,7 @@ export default class news_detail extends PureComponent<IProps, IState> {
               style={{flex: 1}}
             />
           </View>
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
           isLogin={this.props.isLogin}

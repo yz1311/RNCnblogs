@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import ScrollableTabView, {ChangeTabProperties} from '@yz1311/react-native-scrollable-tab-view';
 import {Theme} from "@yz1311/teaset";
-import {ReducerResult} from "../utils/requestUtils";
+import {ReducerResult} from '@yz1311/react-native-state-view';
 
 export type IStickyData = {
     noMore?: boolean,
@@ -114,7 +114,9 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
         if (this.props.data !== nextProps.data) {
             for (let i = 0; i < nextProps.data.length; i++) {
                 if (this.props.data[i] !== nextProps.data[i] && nextProps.data[i].loadDataResult.success) {
+                    //@ts-ignore
                     if (nextProps.data[i].loadDataResult.pageIndex) {
+                        //@ts-ignore
                         this.pageIndexArray[i] = nextProps.data[i].loadDataResult.pageIndex + 1;
                     } else {
                         this.pageIndexArray[i] = this.pageIndexArray[i] + 1;
@@ -184,7 +186,7 @@ export default class YZStickyTabView extends PureComponent<IProps, IState> {
                         <Image source={require('../resources/img/app_nocontent.png')}
                                style={[{width: Theme.px2dp(240), height: Theme.px2dp(240)}]} resizeMode="contain"/>
                         <Text style={[{color: gColors.color999, marginTop: 15, fontSize: Theme.px2dp(30)}]}>
-                            {(loadDataResult as ReducerResult).msg || '暂无数据'}
+                          {(loadDataResult as ReducerResult).error?.message || '暂无数据'}
                         </Text>
                     </View>
                 </TouchableOpacity>

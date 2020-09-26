@@ -3,13 +3,12 @@ import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View,} from 'react-
 import {Styles} from '../../../common/styles';
 import SearchUserListItem from './search_user_list_item';
 import {
-    createReducerResult,
-    dataToPagingResult,
-    dataToReducerResult,
-    LoadDataResultStates,
-    ReducerResult
-} from "../../../utils/requestUtils";
-import YZStateView from "../../../components/YZStateCommonView";
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import YZFlatList from "../../../components/YZFlatList";
 import {Api} from "../../../api";
 import {SearchParams} from "../../home/home_search";
@@ -112,10 +111,10 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
                     :
                     null
                 }
-                <YZStateView
+                <StateView
                     loadDataResult={this.state.loadDataResult}
                     placeholderTitle="暂无数据"
-                    mustLogin={this.mustLogin || false}
+                    // mustLogin={this.mustLogin || false}
                     errorButtonAction={this.loadData}>
                     <YZFlatList
                         ref={ref => (this._flatList = ref)}
@@ -132,7 +131,7 @@ export default class SearchUserList extends PureComponent<IProps,IState> {
                             <View style={{height: 10, backgroundColor: 'transparent'}} />
                         )}
                     />
-                </YZStateView>
+                </StateView>
             </YZSafeAreaView>
         );
     }

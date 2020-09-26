@@ -1,9 +1,5 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View, TouchableOpacity, Image, Text, DeviceEventEmitter} from 'react-native';
-import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
-import {Styles} from '../../common/styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {ListRow, Theme} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';

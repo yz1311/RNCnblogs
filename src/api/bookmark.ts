@@ -16,7 +16,8 @@ export type bookmarkModel = {
   summary: string,
   published: string,
   publishedDesc: string,
-  collects: number
+  collects: number;
+  Tags: Array<any>;
 }
 
 export type bookmarkTagModel = {
