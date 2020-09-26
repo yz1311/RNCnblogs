@@ -90,7 +90,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           pageIndex: this.pageIndex
         }
       });
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,30);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,45);
       this.setState({
         ...pagingResult
       });
