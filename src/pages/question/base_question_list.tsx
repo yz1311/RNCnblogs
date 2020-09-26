@@ -21,6 +21,7 @@ import {userInfoModel} from '../../api/login';
 import {connect} from 'react-redux';
 import {ReduxState} from '../../models';
 import {NavigationBar} from "@yz1311/teaset";
+import YZSafeAreaView from '../../components/YZSafeAreaView';
 
 export interface IProps {
   questionType: QuestionTypes;
@@ -30,6 +31,8 @@ export interface IProps {
   searchParams?: SearchParams;
   tabLabel?: string;
   tagName?: string;
+  //是否是页面组件
+  isPage?: boolean;
 }
 
 interface IState {
@@ -202,8 +205,9 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   };
 
   render() {
+    const Wrapper = this.props.isPage?YZSafeAreaView:View;
     return (
-      <View style={[Styles.container]}>
+      <Wrapper style={[Styles.container]}>
         {this.props.questionType === QuestionTypes.标签 ?
             <NavigationBar title={this.props.tagName}/>
             :
@@ -231,7 +235,7 @@ export default class base_question_list extends PureComponent<IProps,IState> {
             )}
           />
         </StateView>
-      </View>
+      </Wrapper>
     );
   }
 }

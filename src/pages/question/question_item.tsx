@@ -353,7 +353,8 @@ const Tag = ({item, index, style,uri}) => {
         NavigationHelper.push('BaseQuestionList', {
           tagName: item,
           questionType: QuestionTypes.标签,
-          keyword: ''
+          keyword: '',
+          isPage: true
         });
       }}
       style={[
