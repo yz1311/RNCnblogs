@@ -117,7 +117,7 @@ export default class profile_index extends Component<IProps, IState> {
                     }}
                     style={[styles.topButtonContainer]}
                   >
-                    <Text style={[styles.topButtonDetail]}>{userInfo.stars}</Text>
+                    <Text style={[styles.topButtonDetail]}>{userInfo.follows}</Text>
                     <Text style={[styles.topButtonTitle]}>我的粉丝</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
