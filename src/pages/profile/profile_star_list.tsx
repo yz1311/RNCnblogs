@@ -1,9 +1,14 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  ReducerResult,
+  StateView,
+} from '@yz1311/react-native-state-view';
 import {Api} from '../../api';
 import {followingModel} from '../../api/profile';
 import ServiceUtils from '../../utils/serviceUtils';
@@ -85,7 +90,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           pageIndex: this.pageIndex
         }
       });
-      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,30);
+      let pagingResult = dataToPagingResult(this.state.dataList,response.data || [],this.pageIndex,45);
       this.setState({
         ...pagingResult
       });
@@ -177,7 +182,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
     return (
       <YZSafeAreaView>
         <NavigationBar title="关注" />
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -196,7 +201,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
               <View style={{height: Theme.onePix, backgroundColor: gColors.borderColor}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </YZSafeAreaView>
     );
   }

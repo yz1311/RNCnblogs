@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {WebView} from 'react-native-webview';
-import YZStateView from '../../components/YZStateCommonView';
 import YZBackHandler from '../../components/YZBackHandler';
 import YZBaseDataPage, {
   IBaseDataPageProps,
@@ -35,6 +34,7 @@ import {ReduxState} from '../../reducers';
 import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import {StateView} from '@yz1311/react-native-state-view';
 
 export interface IProps extends IBaseDataPageProps {
   data?: any;
@@ -259,7 +259,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
             <Feather name="more-horizontal" size={32} color={gColors.bgColorF} />
           </TouchableOpacity>
         } />
-        <YZStateView
+        <StateView
           loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -275,7 +275,7 @@ export default class knowledgeBase_detail extends YZBaseDataPage<IProps, any> {
               style={{flex: 1}}
             />
           </View>
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           editable={false}
           isLogin={this.props.isLogin}

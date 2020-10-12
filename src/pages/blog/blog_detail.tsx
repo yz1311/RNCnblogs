@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {WebView} from 'react-native-webview';
-import YZStateView from '../../components/YZStateCommonView';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import YZCommentInput from '../../components/YZCommentInput';
 import {Styles} from '../../common/styles';
@@ -26,7 +25,7 @@ import YZBackHandler from '../../components/YZBackHandler';
 import {ReduxState} from '../../reducers';
 import {blogCommentModel, blogModel, getBlogDetailRequest} from '../../api/blog';
 import {Api} from "../../api";
-import {createReducerResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {createReducerResult, dataToReducerResult, ReducerResult, StateView} from '@yz1311/react-native-state-view';
 import ToastUtils from "../../utils/toastUtils";
 import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
@@ -488,7 +487,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
               </TouchableOpacity>
             }
         />
-        <YZStateView
+        <StateView
           loadDataResult={getDetailResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -504,7 +503,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
               style={{flex: 1}}
             />
           </View>
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           onSubmit={this.onSubmit}
           isLogin={this.props.isLogin}

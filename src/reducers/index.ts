@@ -4,8 +4,6 @@ import homeIndex, {State as homeIndexState} from './home/home_index_reducer';
 import loginIndex, {
   State as loginIndexState,
 } from './login/login_index_reducer';
-import blogIndex, {State as blogIndexState} from './blog/blog_index_reducer';
-import newsIndex, {State as newsIndexState} from './news/news_index_reducer';
 import statusIndex from './status/status_index_reducer';
 import bookmarkIndex, {
   State as bookmarkIndexState,
@@ -24,8 +22,6 @@ export type ReduxState = {
   app: appState;
   homeIndex: homeIndexState;
   loginIndex: loginIndexState;
-  blogIndex: blogIndexState;
-  newsIndex: newsIndexState;
   statusIndex: any;
   bookmarkIndex: bookmarkIndexState;
   questionIndex: any;
@@ -40,8 +36,6 @@ export const getRootReducer = navReducer => {
     app,
     homeIndex,
     loginIndex,
-    blogIndex,
-    newsIndex,
     statusIndex,
     bookmarkIndex,
     questionIndex,
@@ -58,8 +52,6 @@ export const rootReducers = navReducer => {
     app,
     homeIndex,
     loginIndex,
-    blogIndex,
-    newsIndex,
     statusIndex,
     bookmarkIndex,
     questionIndex,

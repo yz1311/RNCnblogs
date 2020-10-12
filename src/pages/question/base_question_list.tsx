@@ -1,6 +1,5 @@
 import React, {PureComponent} from 'react';
 import {DeviceEventEmitter, EmitterSubscription, InteractionManager, StyleSheet, View} from 'react-native';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import QuestionItem from './question_item';
@@ -11,8 +10,8 @@ import {
   dataToPagingResult,
   dataToReducerResult,
   LoadDataResultStates,
-  ReducerResult
-} from '../../utils/requestUtils';
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import {QuestionTypes} from './question_index';
 import {Api} from '../../api';
 import {questionModel} from '../../api/question';
@@ -22,6 +21,7 @@ import {userInfoModel} from '../../api/login';
 import {connect} from 'react-redux';
 import {ReduxState} from '../../models';
 import {NavigationBar} from "@yz1311/teaset";
+import YZSafeAreaView from '../../components/YZSafeAreaView';
 
 export interface IProps {
   questionType: QuestionTypes;
@@ -31,6 +31,8 @@ export interface IProps {
   searchParams?: SearchParams;
   tabLabel?: string;
   tagName?: string;
+  //是否是页面组件
+  isPage?: boolean;
 }
 
 interface IState {
@@ -203,17 +205,18 @@ export default class base_question_list extends PureComponent<IProps,IState> {
   };
 
   render() {
+    const Wrapper = this.props.isPage?YZSafeAreaView:View;
     return (
-      <View style={[Styles.container]}>
+      <Wrapper style={[Styles.container]}>
         {this.props.questionType === QuestionTypes.标签 ?
             <NavigationBar title={this.props.tagName}/>
             :
             null
         }
-        <YZStateView
+        <StateView
           loadDataResult={this.state.loadDataResult}
           placeholderTitle="暂无数据"
-          mustLogin={this.mustLogin || false}
+          // mustLogin={this.mustLogin || false}
           errorButtonAction={this.loadData}>
           <YZFlatList
             ref={ref => (this._flatList = ref)}
@@ -231,8 +234,8 @@ export default class base_question_list extends PureComponent<IProps,IState> {
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
-      </View>
+        </StateView>
+      </Wrapper>
     );
   }
 }

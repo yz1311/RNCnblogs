@@ -8,13 +8,6 @@ import {
   Alert, DeviceEventEmitter,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
-import {Styles} from '../../common/styles';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import PropTypes from 'prop-types';
-import StringUtils from '../../utils/stringUtils';
-import moment from 'moment';
 import {Overlay, Label, ListRow, Theme} from '@yz1311/teaset';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {setSelectedQuestion} from '../../actions/question/question_detail_actions';

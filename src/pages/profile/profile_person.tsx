@@ -4,12 +4,17 @@ import {Styles} from '../../common/styles';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import YZStateView from '../../components/YZStateCommonView';
 import BlogItem from '../blog/blog_item';
 import StatusItem from '../status/status_item';
 import QuestionItem from '../question/question_item';
 import {ReduxState} from '../../reducers';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from '../../utils/requestUtils';
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  ReducerResult,
+  StateView,
+} from '@yz1311/react-native-state-view';
 import {Api} from '../../api';
 import {fullUserInfoModel} from '../../api/profile';
 import {BlurView} from '@react-native-community/blur';
@@ -169,7 +174,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
     const {avatorUrl} = this.props;
     const {personInfo} = this.state;
     return (
-      <YZStateView
+      <StateView
         loadDataResult={this.state.loadDataResult}
         placeholderTitle="暂无数据"
         errorButtonAction={this.loadData}>
@@ -270,7 +275,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
           />
           <View style={{height: 15,backgroundColor:gColors.backgroundColor}} />
         </View>
-      </YZStateView>
+      </StateView>
     );
   };
 
@@ -313,6 +318,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
       this.setState({
         loadBlogListResult: {
           ...dataToReducerResult([]),
+          //@ts-ignore
           msg: e.message
         }
       });
@@ -364,7 +370,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
           myQuestionType: myQuestionType
         }
       });
-      let pagingResult = dataToPagingResult(this.state.statusList,response.data || [],this.questionPageIndex,25);
+      let pagingResult = dataToPagingResult(this.state.questionList,response.data || [],this.questionPageIndex,25);
       this.setState({
         questionList: pagingResult.dataList,
         questionListNoMore: pagingResult.noMore,

@@ -11,14 +11,19 @@ import {connect} from 'react-redux';
 import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import YZCommentInput from '../../components/YZCommentInput';
 import YZCommonActionMenu from '../../components/YZCommonActionMenu';
 import {Styles} from '../../common/styles';
 import CommentItem from './comment_item';
 import {blogCommentModel, blogModel, getBlogCommentListRequest} from '../../api/blog';
-import {createReducerResult, dataToPagingResult, dataToReducerResult, ReducerResult} from "../../utils/requestUtils";
+import {
+  createReducerResult,
+  dataToPagingResult,
+  dataToReducerResult,
+  ReducerResult,
+  StateView,
+} from '@yz1311/react-native-state-view';
 import {Api} from "../../api";
 import {userInfoModel} from "../../api/login";
 import {ReduxState} from "../../models";
@@ -260,7 +265,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
     return (
       <YZSafeAreaView>
         <NavigationBar title={`${title ? title + '条' : ''}评论`} />
-        <YZStateView
+        <StateView
           loadDataResult={loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -281,7 +286,7 @@ export default class blog_comment_list extends PureComponent<IProps, IState> {
                 />
             )}
           />
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}

@@ -9,11 +9,11 @@ import {connect} from 'react-redux';
 import YZBaseDataPage, {
   IBaseDataPageProps,
 } from '../../components/YZBaseDataPage';
-import YZStateView from '../../components/YZStateCommonView';
 import YZFlatList from '../../components/YZFlatList';
 import {Styles} from '../../common/styles';
 import {ListRow} from '@yz1311/teaset';
 import KnowledgeBaseItem from './knowledgeBase_item';
+import {StateView} from '@yz1311/react-native-state-view';
 
 export interface IBaseKnowledgeProps extends IBaseDataPageProps {
   dataList?: Array<any>;
@@ -77,7 +77,7 @@ export default class base_knowledgeBase_list<
   render() {
     return (
       <View style={[Styles.container]}>
-        <YZStateView
+        <StateView
           loadDataResult={this.props.loadDataResult}
           placeholderTitle="暂无数据"
           errorButtonAction={this.loadData}>
@@ -96,7 +96,7 @@ export default class base_knowledgeBase_list<
               <View style={{height: 10, backgroundColor: 'transparent'}} />
             )}
           />
-        </YZStateView>
+        </StateView>
       </View>
     );
   }

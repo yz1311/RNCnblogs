@@ -12,7 +12,6 @@ import {Styles} from '../../common/styles';
 import {ListRow, Overlay, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {setSelectedQuestion} from '../../actions/question/question_detail_actions';
 import {BorderShadow} from '@yz1311/react-native-shadow';
 import {ReduxState} from '../../reducers';
 import ServiceUtils from '../../utils/serviceUtils';
@@ -25,7 +24,6 @@ import {QuestionTypes} from "./question_index";
 import StringUtils from "../../utils/stringUtils";
 
 interface IProps extends IReduxProps {
-  setSelectedQuestionFn?: any;
   item: questionModel;
   showAll?: boolean;
   clickable: boolean;
@@ -44,7 +42,6 @@ interface IProps extends IReduxProps {
   }),
   dispatch => ({
     dispatch,
-    setSelectedQuestionFn: data => dispatch(setSelectedQuestion(data)),
   }),
 ) as any)
 export default class question_item extends PureComponent<IProps, any> {
@@ -67,7 +64,6 @@ export default class question_item extends PureComponent<IProps, any> {
   _onModify = () => {
     Overlay.hide(this.overlayKey);
     const {item} = this.props;
-    this.props.setSelectedQuestionFn(item);
     this.props.navigation.navigate('QuestionAdd', {
       title: '修改问题',
     });
@@ -357,7 +353,8 @@ const Tag = ({item, index, style,uri}) => {
         NavigationHelper.push('BaseQuestionList', {
           tagName: item,
           questionType: QuestionTypes.标签,
-          keyword: ''
+          keyword: '',
+          isPage: true
         });
       }}
       style={[

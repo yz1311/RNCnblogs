@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {Theme} from '@yz1311/teaset';
-import {ReducerResult} from "../utils/requestUtils";
+import {ReducerResult} from '@yz1311/react-native-state-view';
 
 export interface IProps extends FlatListProps<any>{
   data: Array<any>,

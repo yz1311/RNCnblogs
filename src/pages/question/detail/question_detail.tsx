@@ -15,7 +15,6 @@ import {
   Linking,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../../components/YZStateCommonView';
 import YZFlatList from '../../../components/YZFlatList';
 import YZBaseDataPage, {
   IBaseDataPageProps,
@@ -29,7 +28,12 @@ import {ReduxState} from '../../../reducers';
 import {NavigationBar, Theme} from "@yz1311/teaset";
 import {Api} from "../../../api";
 import {questionCommentModel, questionModel} from "../../../api/question";
-import {createReducerResult, dataToReducerResult, ReducerResult} from "../../../utils/requestUtils";
+import {
+  createReducerResult,
+  dataToReducerResult,
+  LoadDataResultStates,
+  ReducerResult, StateView,
+} from '@yz1311/react-native-state-view';
 import CommentItem from "../../blog/comment_item";
 import ToastUtils from "../../../utils/toastUtils";
 import ProfileServices from "../../../services/profileServices";
@@ -231,8 +235,8 @@ export default class question_detail extends Component<IProps, IState> {
     return (
       <YZSafeAreaView>
         <NavigationBar title='博问' />
-        <YZStateView
-            loadDataResult={createReducerResult({state: 'content'})}
+        <StateView
+            loadDataResult={createReducerResult({state: LoadDataResultStates.content})}
             placeholderTitle="暂无数据"
             errorButtonAction={this.loadData}>
           {this.state.loadDataResult.success &&
@@ -259,7 +263,7 @@ export default class question_detail extends Component<IProps, IState> {
                 </View>
               </ScrollView>
           ) : (
-              <YZStateView
+              <StateView
                   loadDataResult={this.state.loadDataResult}
                   placeholderTitle="-- 暂无评论 --"
                   errorButtonAction={this.loadData}>
@@ -279,9 +283,9 @@ export default class question_detail extends Component<IProps, IState> {
                         />
                     )}
                 />
-              </YZStateView>
+              </StateView>
           )}
-        </YZStateView>
+        </StateView>
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}
           headerTitle={this.state.headerTitle}

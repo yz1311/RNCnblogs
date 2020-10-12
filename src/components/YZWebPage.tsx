@@ -13,7 +13,7 @@ const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             meta.content = 'width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no';
             headArr[0].appendChild(meta);
             var bodyArr = document.getElementsByTagName('body');
-             
+
              bodyArr[0].style.padding='0px 0px 0px 0px';
             `;
 

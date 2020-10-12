@@ -97,7 +97,7 @@ export default class profile_index extends Component<IProps, IState> {
                   </View>
                   <Entypo name="chevron-thin-right" size={18} color={gColors.color999}/>
                 </View>
-                <View style={{flexDirection:'row',marginBottom:15,marginTop:15}}>
+                <View style={{flexDirection:'row'}}>
                   <TouchableOpacity
                     style={[styles.topButtonContainer]}
                     onPress={()=>{
@@ -117,7 +117,7 @@ export default class profile_index extends Component<IProps, IState> {
                     }}
                     style={[styles.topButtonContainer]}
                   >
-                    <Text style={[styles.topButtonDetail]}>{userInfo.stars}</Text>
+                    <Text style={[styles.topButtonDetail]}>{userInfo.follows}</Text>
                     <Text style={[styles.topButtonTitle]}>我的粉丝</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -275,7 +275,8 @@ const styles = StyleSheet.create({
   topButtonContainer: {
     flex:1,
     justifyContent:'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingVertical: 15
   },
   topButtonDetail: {
     fontWeight: '500',

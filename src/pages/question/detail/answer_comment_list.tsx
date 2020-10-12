@@ -13,7 +13,6 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import {connect} from 'react-redux';
-import YZStateView from '../../../components/YZStateCommonView';
 import YZFlatList from '../../../components/YZFlatList';
 import YZBaseDataPage, {
   IBaseDataPageProps,
@@ -24,7 +23,6 @@ import {Styles} from '../../../common/styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {ListRow, Theme} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import {
   getAnswerCommentList,
   clearAnswerCommentList,
@@ -38,6 +36,7 @@ import CommentItem from '../../blog/comment_item';
 import {ReduxState} from '../../../reducers';
 import {ServiceTypes} from "../../YZTabBarView";
 import YZSafeAreaView from "../../../components/YZSafeAreaView";
+import {StateView} from '@yz1311/react-native-state-view';
 
 interface IProps extends IBaseDataPageProps {
   item: any;
@@ -276,7 +275,7 @@ export default class answer_comment_list extends YZBaseDataPage<
             </View>
           </ScrollView>
         ) : (
-          <YZStateView
+          <StateView
             loadDataResult={this.props.loadDataResult}
             placeholderTitle="-- 暂无评论 --"
             errorButtonAction={this.loadData}>
@@ -297,7 +296,7 @@ export default class answer_comment_list extends YZBaseDataPage<
                 />
               )}
             />
-          </YZStateView>
+          </StateView>
         )}
         <YZCommentInput
           ref={ref => (this._commentInput = ref)}

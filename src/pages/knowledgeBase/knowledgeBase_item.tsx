@@ -1,11 +1,5 @@
 import React, {Component, PureComponent} from 'react';
 import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
-import {connect} from 'react-redux';
-import YZStateView from '../../components/YZStateCommonView';
-import YZFlatList from '../../components/YZFlatList';
-import {Styles} from '../../common/styles';
-import Feather from 'react-native-vector-icons/Feather';
-import {ListRow} from '@yz1311/teaset';
 import PropTypes from 'prop-types';
 import StringUtils from '../../utils/stringUtils';
 import {BorderShadow} from '@yz1311/react-native-shadow';
