@@ -31,6 +31,12 @@ import {ServiceTypes} from "../YZTabBarView";
 import Feather from "react-native-vector-icons/Feather";
 import ServiceUtils from "../../utils/serviceUtils";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import {
+  commentEmptyHtmlTemplate,
+  commentHtmlTemplate,
+  commentMoreHtmlTemplate,
+  contentHtmlTemplate
+} from "../../common/template";
 
 const injectedJsCode = `var headArr = document.getElementsByTagName('head');
             var meta = document.createElement('meta');
@@ -114,7 +120,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
   componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
     if(this.state.blogDetail !== prevState.blogDetail ||
         this.state.commentList !== prevState.commentList) {
-      if(!this.state.blogDetail || !this.state.getCommentListResult.success) {
+      if (!this.state.blogDetail || !this.state.getCommentListResult.success) {
         return;
       }
       const {item} = this.props;
@@ -127,124 +133,33 @@ export default class blog_detail extends PureComponent<IProps, IState> {
       let showMoreButton = visibleCommentList.length === 10;
       let commentHtml = ``;
       if (commentList.length === 0) {
-        commentHtml = `<div style="margin-top: 30px;min-height: 80px;display: flex;flex-direction: column;align-items: center;color:${
-            gColors.color666
-        }">-- 暂无评论 --</div>`;
+        commentHtml = commentEmptyHtmlTemplate();
       } else {
         commentHtml = `<div style="display: flex;flex-direction: column;">`;
         for (let comment of visibleCommentList) {
-          commentHtml += `
-                    <div style="display: flex; flex-direction: row;padding-top: 10px;">
-                        <img
-                        style="width: 40px;height: 40px; border-radius: 20px;border-width: 1px;border-color: #999999;"
-                        src="${comment.author.avatar ||
-          'https://pic.cnblogs.com/avatar/simple_avatar.gif'}" />
-                        <div style="display: flex; margin-left: 10px;flex-direction: column;flex: 1;">
-                            <span style="font-weight: bold;">
-                                <span style="color: salmon;">#${
-              comment.Floor
-          }楼</span>&nbsp;&nbsp;
-                                <span>${comment.author?.name}</span>
-                            </span>
-                            <span style="font-size: 15px;color: #666666;margin-top: 8px;">${
-              comment.content
-          }</span>
-                            <span style="font-size: 15px;color: #999999;margin-top: 8px;">${StringUtils.formatDate(
-              moment(comment.published).format('YYYY-MM-DD HH:mm'),
-          )}</span>
-                            <div style="height: 1px;background-color: #999999;margin-top: 10px;"></div>
-                        </div>
-                    </div>
-                `;
+          commentHtml += commentHtmlTemplate({
+            avatar: comment.author?.avatar,
+            Floor: comment.Floor,
+            userName: comment.author?.name,
+            content: comment.content,
+            dateDesc: StringUtils.formatDate(
+                moment(comment.published).format('YYYY-MM-DD HH:mm'))
+          });
         }
         commentHtml += `</div>`;
         if (showMoreButton) {
-          commentHtml += `<div
-                                onclick="window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                    type: 'loadMore'
-                                }))"
-                                style="display: flex;height: 50px;justify-content: center;align-items: center;">
-                                <span style="color:${
-              Theme.primaryColor
-          };font-size: medium;">点击查看全部评论</span>
-                            </div>`;
+          commentHtml += commentMoreHtmlTemplate({color: Theme.primaryColor});
         }
       }
-      let html = `<html>
-                <head>
-                <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-                <style type="text/css">
-                    img {
-                        height: auto;
-                        width: auto;
-                        max-width: 100%;
-                    }
-                    pre {
-                        background-color: #f5f5f5;
-                        font-family: Courier New!important;
-                        font-size: 12px!important;
-                        border: 1px solid #ccc;
-                        padding: 5px;
-                        overflow: auto;
-                        margin: 5px 0;
-                        color: #000;
-                    }
-                    /*p {*/
-                        /*word-break:normal;*/
-                        /*white-space: pre-warp;*/
-                        /*word-wrapL:break-word;*/
-                    /*}*/
-                </style>
-                <script>
-                    window.onload = function(){
-                        var imgs = document.getElementsByTagName("img");
-                        for (let i=0;i<imgs.length;i++) {
-                            imgs[i].onclick = function(){
-                                window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                    type: 'img_click',
-                                    url: imgs[i].src
-                                }))
-                            }
-                        }
-                        var links = document.getElementsByTagName("a");
-                        for (let i=0;i<links.length;i++) {
-                            links[i].onclick = function(){
-                                window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                    type: 'link_click',
-                                    url: links[i].href
-                                }));
-                                return false;
-                            }
-                        }
-                        /*记录滚动位置*/
-                        window.onscroll = function() {
-                            var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName("html")[0].scrollTop;
-                            try {
-                                window['ReactNativeWebView'].postMessage(JSON.stringify({
-                                type: 'scroll_position',
-                                value: scrollPos
-                                }));
-                            } catch (error) {
-
-                            }
-                        }
-                        if(${data.scrollPosition} > 0)
-                        {
-                           window.scrollTo(0,${data.scrollPosition});
-                        }
-                    };
-                </script>
-                </head>
-                <body style="padding: 0px;margin: 8px;"><div><div><h3>${
-          item.title
-      }</h3>
-                <span style="color:#666666;font-size: small">${
-          item.author?.name
-      }&nbsp;&nbsp;&nbsp;发布于&nbsp;${moment(item.published).format('YYYY-MM-DD HH:mm')}</span>
-                </div>${data.body}</div>
-                <div style="background-color: #f2f2f2;padding: 10px;color: #666;font-size: medium;margin: 10px -8px 10px -8px;">评论列表</div>
-                ${commentHtml}
-                </body></html>`;
+      let html = contentHtmlTemplate({
+        title: item.title,
+        avatar: item.author?.avatar,
+        userName: item.author?.name,
+        dateDesc: moment(item.published).format('YYYY-MM-DD HH:mm'),
+        body: data.body,
+        scrollPosition: data.scrollPosition,
+        commentHtml: commentHtml,
+      });
       this.setState({
         html
       });
