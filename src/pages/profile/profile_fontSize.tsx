@@ -15,6 +15,7 @@ import Slider from 'react-native-slider';
 import {ReduxState} from '../../reducers';
 import {NavigationBar, Theme} from "@yz1311/teaset";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import StorageUtils from "../../utils/storageUtils";
 
 interface IProps {
   dispatch: any;
@@ -91,8 +92,8 @@ export default class profile_fontSize extends Component<IProps, IState> {
             thumbTintColor={Theme.primaryColor}
             onValueChange={async value => {
               this.setState({value});
-              let themeInfo = await gStorage.load('themeInfo');
-              gStorage.save('themeInfo', {
+              let themeInfo = await StorageUtils.load('themeInfo');
+              StorageUtils.save('themeInfo', {
                 ...(themeInfo || {}),
                 fontSizeScaler: value,
               });

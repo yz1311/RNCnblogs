@@ -1,9 +1,10 @@
 import React from 'react';
 import {Theme} from "@yz1311/teaset";
+import StorageUtils from "./storageUtils";
 
 export default class themeUtils {
   static reloadTheme = async () => {
-    const themeInfo = await gStorage.load('themeInfo');
+    const themeInfo = await StorageUtils.load('themeInfo');
     if (themeInfo && themeInfo.primaryColor) {
       Theme.set({
         primaryColor: themeInfo.primaryColor,

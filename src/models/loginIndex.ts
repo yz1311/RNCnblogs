@@ -12,6 +12,7 @@ import CookieManager from '@react-native-community/cookies';
 import state from "@react-native-community/netinfo/lib/typescript/src/internal/state";
 import {ReduxState} from "./index";
 import ProfileServices from "../services/profileServices";
+import StorageUtils from "../utils/storageUtils";
 
 export interface IState {
     isLogin: boolean;
@@ -69,7 +70,7 @@ export default {
             try {
                 let response = yield Api.login.userLogin(action.payload);
                 const parData = action.payload;
-                gStorage.save(gStorageKeys.ServerPath,parData.request.serverPath);
+                StorageUtils.save(gStorageKeys.ServerPath,parData.request.serverPath);
                 yield effects.put({
                     type: 'setUserLogin',
                     payload: {
@@ -97,7 +98,7 @@ export default {
             try {
               //清除浏览器缓存
               yield CookieManager.clearAll();
-              yield gStorage.remove('token');
+              yield StorageUtils.remove('token');
               ToastUtils.showToast('退出成功!');
               NavigationHelper.resetTo('Login', {
                 deprecatedCookie: yield select((state:ReduxState)=>state.loginIndex.cookieValue)

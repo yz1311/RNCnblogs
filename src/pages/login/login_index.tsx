@@ -8,6 +8,7 @@ import CookieManager from '@react-native-community/cookies';
 import ToastUtils from "../../utils/toastUtils";
 import {NavigationBar, Theme} from "@yz1311/teaset";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import StorageUtils from "../../utils/storageUtils";
 
 interface IProps {
   dispatch: any;
@@ -55,7 +56,7 @@ export default class login_index extends Component<IProps, IState> {
           return ;
         }
         gUserData.token = Object.keys(res).map(key=>key+'='+res[key].value).join(';');
-        gStorage.save('token', res);
+        StorageUtils.save('token', res);
         console.log(gUserData.token);
         gStore.dispatch({
           type: 'loginIndex/setUserLogin',

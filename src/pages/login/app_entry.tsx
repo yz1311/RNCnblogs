@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Styles} from '../../common/styles';
 import {Theme} from "@yz1311/teaset";
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import StorageUtils from "../../utils/storageUtils";
 
 interface IProps {
   dispatch: any;
@@ -14,7 +15,7 @@ interface IProps {
 export default class app_entry extends Component<IProps, {}> {
 
   async componentDidMount() {
-    let res = await gStorage.load('token');
+    let res = await StorageUtils.load('token');
     if (res && res.hasOwnProperty('.Cnblogs.AspNetCore.Cookies')) {
       gUserData.token = Object.keys(res).map(key => key + '=' + res[key].value).join(';');
       gStore.dispatch({

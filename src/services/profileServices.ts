@@ -1,6 +1,7 @@
 import {Api} from "../api";
 import {messageModel} from "../api/message";
 import {userInfoModel} from "../api/login";
+import StorageUtils from "../utils/storageUtils";
 
 
 export default class ProfileServices {
@@ -91,7 +92,7 @@ export default class ProfileServices {
                     }
                 )(),
             ])
-            gStorage.save(gStorageKeys.CurrentUser,userInfo);
+            StorageUtils.save(gStorageKeys.CurrentUser,userInfo);
             gStore.dispatch({
                 type: 'loginIndex/setUserInfo',
                 payload: {

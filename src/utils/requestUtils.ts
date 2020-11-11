@@ -79,7 +79,7 @@ export default class RequestUtils {
             if(response.headers['set-cookie'] &&
                 response.headers['set-cookie'].length > 0 ) {
                 let tokenStr = response.headers['set-cookie'][0]?.replace(/path=\/,/g, '')?.replace(/Path=\//g, '');
-                let res = await gStorage.load('token');
+                let res = await StorageUtils.load('token');
                 console.log('------')
                 console.log(tokenStr)
                 let nextTokenObj = {} as any;
@@ -97,7 +97,7 @@ export default class RequestUtils {
                         ...res,
                         ...nextTokenObj
                     };
-                    gStorage.save('token', res);
+                    StorageUtils.save('token', res);
                     gUserData.token = Object.keys(res).map(key => key + '=' + res[key].value).join(';');
                 }
             }

@@ -18,6 +18,7 @@ import {QuestionTypes} from "../question/question_index";
 import {StatusTypes} from "../status/status_index";
 import SearchUserList from './user/search_user_list';
 import YZSafeAreaView from "../../components/YZSafeAreaView";
+import StorageUtils from "../../utils/storageUtils";
 
 
 export interface SearchParams {
@@ -127,7 +128,7 @@ export default class home_search extends Component<IProps, IState> {
   }
 
   loadSearchHistory = async () => {
-    let history = (await gStorage.load(this.storage_key)) || [];
+    let history = (await StorageUtils.load(this.storage_key)) || [];
     this.setState({
       searchHistory: history,
     });
@@ -144,7 +145,7 @@ export default class home_search extends Component<IProps, IState> {
     if(this.state.keyword) {
       set.delete(this.state.keyword);
       set = new Set([this.state.keyword].concat(Array.from(set)));
-      gStorage.save(this.storage_key, Array.from(set));
+      StorageUtils.save(this.storage_key, Array.from(set));
       this.setState({
         searchHistory: Array.from(set)
       });
@@ -277,7 +278,7 @@ export default class home_search extends Component<IProps, IState> {
                   {
                     text: '清空',
                     onPress: async () => {
-                      await gStorage.remove(this.storage_key);
+                      await StorageUtils.remove(this.storage_key);
                       this.setState({
                         searchHistory: [],
                       });

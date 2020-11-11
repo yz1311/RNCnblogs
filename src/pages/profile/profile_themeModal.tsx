@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import Feather from 'react-native-vector-icons/Feather';
 import ThemeUtils from '../../utils/themeUtils';
 import {Theme} from "@yz1311/teaset";
+import StorageUtils from "../../utils/storageUtils";
 
 interface IProps {
   dispatch?: any;
@@ -194,8 +195,8 @@ export default class profile_themeModal extends Component<IProps, IState> {
           ]}
           onPress={async () => {
             this.close();
-            let themeInfo = await gStorage.load('themeInfo');
-            await gStorage.save('themeInfo', {
+            let themeInfo = await StorageUtils.load('themeInfo');
+            await StorageUtils.save('themeInfo', {
               ...(themeInfo || {}),
               primaryColor: this.state.selectedTheme,
             });

@@ -1,5 +1,4 @@
 import './common/constants';
-import './utils/globalStorage';
 import codePush from 'react-native-code-push';
 import React, {Component, PureComponent} from 'react';
 import {

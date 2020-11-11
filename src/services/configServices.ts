@@ -1,4 +1,5 @@
 import {Api} from '../api';
+import StorageUtils from "../utils/storageUtils";
 
 //此变量将在标题在创建一篇日记，里面的内容作为配置数据
 //正常情况下千万不要修改，否则会导致配置丢失
@@ -17,7 +18,7 @@ export default class ConfigServices {
   static getConfig = async (forceUpdate?: boolean)=>{
     //默认会从本地
     if(!forceUpdate) {
-      let diary = await gStorage.load('CONFIG_DIARY');
+      let diary = await StorageUtils.load('CONFIG_DIARY');
       if(diary) {
         try {
           return (JSON.parse(diary.body) || {}) as Partial<IConfigData>;
@@ -35,19 +36,19 @@ export default class ConfigServices {
       let diaryList = response.data.postList || [];
       let configDiary = diaryList.filter(x=>x.title==CONFIG_TITLE)[0];
       if(configDiary&&configDiary.url) {
-        gStorage.save('CONFIG_DIARY', configDiary);
+        StorageUtils.save('CONFIG_DIARY', configDiary);
         let contentResponse = await Api.diary.getDiaryContent({
           request: {
             url: 'https:'+configDiary.url
           }
         });
-        gStorage.save('CONFIG_DIARY', {
+        StorageUtils.save('CONFIG_DIARY', {
           ...configDiary,
           body: contentResponse.data.body,
           blogId: contentResponse.data.blogId
         });
         let data = JSON.parse(contentResponse.data.body);
-        gStorage.save('CONFIG_DATA', data);
+        StorageUtils.save('CONFIG_DATA', data);
         return data as Partial<IConfigData>;
       }
     } catch (e) {
@@ -60,7 +61,7 @@ export default class ConfigServices {
    * 保存配置对象
    */
   static saveConfig = async (data)=>{
-    let diary = await gStorage.load('CONFIG_DIARY');
+    let diary = await StorageUtils.load('CONFIG_DIARY');
     try {
       let response;
       if(diary) {
