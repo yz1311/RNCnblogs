@@ -1860,10 +1860,10 @@
   resolved "https://registry.npmjs.org/@yz1311/react-native-shadow/-/react-native-shadow-0.1.0.tgz#7c2eab30bac0025486525d52eb0902ec6e694b77"
   integrity sha512-0GPuh3dKhgyQqsa0NLwM/a/N6Y/vUAdwMTBA0TbBACLnxDBCRVmktoeJOd9ipXzzfS77t8nQakOkQf5dKMvaRg==
 
-"@yz1311/react-native-state-view@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/@yz1311/react-native-state-view/-/react-native-state-view-0.0.8.tgz#46c40e09a0afc82026ed5fa6b716d312845480b5"
-  integrity sha512-lCcWIrVwOQP6u02luWyF90gBpQbilc7L/QAB84QkHOtOvWeQEQr0JbZw7WVubjPR4QdgEy5kQjRB5IM9u5azuQ==
+"@yz1311/react-native-state-view@0.0.19":
+  version "0.0.19"
+  resolved "https://registry.npmjs.org/@yz1311/react-native-state-view/-/react-native-state-view-0.0.19.tgz#3db5702631ff6cd7322481a4514e63f3a9e48cb1"
+  integrity sha512-BlObgg+Ktk1qRjCECA/n6gXR2bSkbMgOr3E6+4kwRIH8bkxjE4Ynv7HRTL06Vt0Rmd+OQwG5ZSDS6H7BE/wQSQ==
 
 "@yz1311/react-native-wheel-picker@^0.2.5":
   version "0.2.5"
@@ -1884,10 +1884,10 @@
   resolved "https://registry.npmjs.org/@yz1311/teaset-navigation/-/teaset-navigation-0.2.3.tgz#c9d783ce9606a6ac409a01f700792c9ce4149d6f"
   integrity sha512-Fhy0kH1Y+cD/+DJ4xP6ODfbnVt+LFtXLuj5dxwjPIb/PiictQkakJ7M1I8dpisFs+FHpkaWegbiOu3cwy4ToHw==
 
-"@yz1311/teaset@^0.7.11":
-  version "0.7.11"
-  resolved "https://registry.npmjs.org/@yz1311/teaset/-/teaset-0.7.11.tgz#0504c61c92596cb2d1b15edd5049b4db72e17202"
-  integrity sha512-702Hefdh7jvG8XZ8eSsGo+JTo5QGy72kSOkUfg+NRm5oJuD3tC8zZUdg6z8/7JWZOmNlxke4KECvUSXBuHdUGg==
+"@yz1311/teaset@^0.7.19":
+  version "0.7.19"
+  resolved "https://registry.npm.taobao.org/@yz1311/teaset/download/@yz1311/teaset-0.7.19.tgz#53a40e6def1b0f4d2c04ef89a177750e86a87bdf"
+  integrity sha1-U6QObe8bD00sBO+JoXd1Doaoe98=
   dependencies:
     hoist-non-react-statics latest
     prop-types "^15.5.10"

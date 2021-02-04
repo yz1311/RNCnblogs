@@ -3,10 +3,6 @@ import Modal from 'react-native-modal';
 import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Theme} from "@yz1311/teaset";
 import {statusOtherInfoModel} from "../../../api/status";
-import ServiceUtils from "../../../utils/serviceUtils";
-import {Styles} from "../../../common/styles";
-import {Colors} from "react-native/Libraries/NewAppScreen";
-import Entypo from "react-native-vector-icons/Entypo";
 import StatusItem from "../status_item";
 import {ReducerResult, StateView} from '@yz1311/react-native-state-view';
 

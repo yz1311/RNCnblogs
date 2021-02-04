@@ -5,7 +5,6 @@ import {Theme} from "@yz1311/teaset";
 import {statusOtherInfoModel} from "../../../api/status";
 import ServiceUtils from "../../../utils/serviceUtils";
 import {Styles} from "../../../common/styles";
-import Entypo from "react-native-vector-icons/Entypo";
 import {ReducerResult, StateView} from '@yz1311/react-native-state-view';
 
 interface IProps {
