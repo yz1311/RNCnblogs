@@ -140,7 +140,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           onPress={() => {
             ServiceUtils.viewProfileDetail(
               gStore.dispatch,
-              this.props.userId,
+              item.id,
               item.avatar,
             );
           }}
@@ -154,7 +154,10 @@ export default class base_star_list extends PureComponent<IProps, IState> {
             resizeMode="contain"
             source={{uri: item?.avatar}}
           />
-          <Text style={[Styles.userName]}>{item?.name}</Text>
+          <View>
+            <Text style={[Styles.userName, {fontSize: gFont.size15}]}>{item?.name}</Text>
+            <Text style={[Styles.starDate]}>{'关注于'+item?.date}</Text>
+          </View>
         </TouchableOpacity>
         <View style={{flex:1}}/>
         {item.id === this.props.userInfo?.id ?

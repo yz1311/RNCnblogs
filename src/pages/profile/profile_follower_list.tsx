@@ -128,7 +128,10 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
             resizeMode="contain"
             source={{uri: item?.avatar}}
           />
-          <Text style={[Styles.userName]}>{item?.name}</Text>
+          <View>
+            <Text style={[Styles.userName, {fontSize: gFont.size15}]}>{item?.name}</Text>
+            <Text style={[Styles.starDate]}>{'关注于'+item?.date}</Text>
+          </View>
           <View style={{flex:1}}/>
           <Entypo name={'chevron-thin-right'} size={18} color={gColors.color999}/>
         </TouchableOpacity>

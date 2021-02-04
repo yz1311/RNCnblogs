@@ -13,7 +13,11 @@ export type followingModel = {
   uri: string,
   name: string,
   id: string,
-  avatar: string
+  avatar: string;
+  /**
+   * 关注时间
+   */
+  date: string;
 }
 
 export type fullUserInfoModel = {
@@ -25,7 +29,11 @@ export type fullUserInfoModel = {
   follows: number,
   stars: number,
   nickName: string,
-  isStar: boolean
+  isStar: boolean;
+  /**
+   * 被关注时间
+   */
+  date: string;
 };
 
 export const getPersonInfo = (data:RequestModel<{userAlias: string}>) => {
@@ -229,8 +237,13 @@ export const resolveUserHtml = (result)=>{
       uri: (match.match(/<a href=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
       name: (match.match(/<a[\s\S]+?(?=\">)/) || [])[0]?.replace(/[\s\S]+\"/,''),
       avatar: (match.match(/<img src=\"[\s\S]+?(?=\")/) || [])[0]?.replace(/[\s\S]+\"/,''),
-      id: ''
+      id: '',
+      date: ''
     };
+    if(user.name && user.name.indexOf('关注于')>=0) {
+      user.date = user.name.split('关注于')[1]?.trim();
+      user.name = user.name.split('关注于')[0]?.replace(/&#10;/g, '')?.trim();
+    }
     user.uri = 'https://home.cnblogs.com'+user.uri;
     if(user.avatar!=undefined&&user.avatar!=''&&user.avatar.indexOf('http')!=0) {
       user.avatar = 'https:'+user.avatar;

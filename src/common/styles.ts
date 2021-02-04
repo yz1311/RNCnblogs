@@ -117,6 +117,12 @@ export const Styles =  StyleSheet.create({
     marginLeft: 7,
     fontWeight: 'bold',
   },
+  starDate: {
+    color: gColors.color999,
+    fontSize: gFont.size12,
+    marginLeft: 7,
+    marginTop: 7,
+  },
   text4Pie: {
     lineHeight: Platform.OS === 'android' && Platform.Version >= 28 ? 20 : null,
   },
