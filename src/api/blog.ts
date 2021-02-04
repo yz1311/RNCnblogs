@@ -89,7 +89,7 @@ export const getPersonalBlogList = async (data: RequestModel<{pageIndex:number,p
     }
   }
   return RequestUtils.get(URL, {
-    resolveResult: resolvePersonalBlogHtml
+    resolveResult: (result) => resolvePersonalBlogHtml(result, data.request.userId)
   });
 };
 
@@ -307,7 +307,7 @@ export const resolveBlogHtml = (result)=>{
 }
 
 
-export const resolvePersonalBlogHtml = (result)=>{
+export const resolvePersonalBlogHtml = (result, userId)=>{
   let items:Array<any> = [];
   if(Array.isArray(result)) {
     return result;
@@ -316,49 +316,31 @@ export const resolvePersonalBlogHtml = (result)=>{
   if(!result) {
     return [];
   }
+  const $ = cheerio.load(result, { decodeEntities: false });
   let matches = result.match(/class=\"day\"[\s\S]+?class=\"postDesc[\s\S]+?(?=class=\"clear\")/g)|| [];
-
-  for (let match of matches) {
-    let item:Partial<blogModel> = {};
-    //解析digg
-    item.diggs = parseInt((match.match(/class=\"post-digg-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.link = (match.match(/class=\"postTitle2 vertical-middle\" href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+="/,'');
-    //不能根据link来截取，部分link后面并不是id
-    //2020-08-24 先就这样吧
-    item.id = item.link.replace(/[\s\S]+\//,'').replace(/\.[\s\S]+$/,'');
-    // item.id = (match.match(/id=\"digg_count_\d+?(?=\")/)||[])[0]?.replace(/id=\"digg_count_/,'');
+  //存在一个day下面多个文章的情况，导致只加载一页
+  let count = $(this).find('div.dayTitle').length;
+  Array.from({length: count}).map((ii, index) => {
+    let item: Partial<blogModel> = {};
+    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class')?.indexOf('active')>=0;
+    item.link = $(this).find('a[class^="postTitle2 vertical-middle"]')[index]?.attr('href')?.trim();
+    item.id = $(this).find('div.postDesc>span:nth-child(1)')[index]?.attr("data-post-id");
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
-    item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
-    item.title = (match.match(/class=\"postTitle2 vertical-middle\"[\s\S]+?(?=<\/a>)/)||[])[0]?.replace(/[\s\S]+?>/,'')?.trim();
-    if(item.title.indexOf('<span>[置顶]</span>')>=0) {
-      item.isSticky = true;
-      item.title = item.title.replace('<span>[置顶]</span>', '');
-    }
-    //清空span，不然标题会有空格
-    if(item.title) {
-      item.title = item.title
-          .replace(/^<span>/, '')
-          .replace(/<\/span>$/, '')
-          ?.trim();
-    }
-    item.summary = (match.match(/class=\"c_b_p_desc\"[\s\S]+?(?=<a href[\s\S]+?c_b_p_desc_readmore)/)||[])[0]?.replace(/[\s\S]+>/,'').trim();
-    //太突兀，加上...
-    if(item.summary) {
-      item.summary += ' ...';
-    }
+    item.blogapp = '';
+    item.title = $(this).find('a[class^="postTitle2 vertical-middle"]')[index]?.text()?.trim();
+    item.summary = $(this).find('div.c_b_p_desc')[index]?.text().replace(/阅读全文/,'').trim();
     item.author = {
-      id: '',
-      //没有头像
+      id: userId,
       avatar: '',
-      name: (match.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}[\s\S]+?(?=<span class=\"post-view-count)/)||[])[0]?.substr(16)?.trim(),
-      uri: (match.match(/class=\"post-item-body\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
+      name: '',
+      uri: '',
     };
-    item.author.id = (item.author?.uri?.replace(/^https:\/\/[\s\S]+?\//,'')?.match(/[\s\S]+?(?=\/)/)||[])[0];
-    item.published = (match.match(/class=\"postDesc\"[\s\S]+?\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])[0]?.replace(/[\s\S]+@ /,'')?.trim();
-    item.comments = parseInt((match.match(/class=\"post-comment-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
-    item.views = parseInt((match.match(/class=\"post-view-count\"[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+    item.published = $(this).find('div.postDesc')[index]?.next()?.trim()+':00';
+    item.views = parseInt($(this).find('div.postDesc>span:nth-child(1)')[index]?.text()?.replace('(阅读','').replace('',')')?.trim());
+    item.comments = parseInt($(this).find('div.postDesc>span:nth-child(2)')[index]?.text()?.replace('(评论','').replace('',')')?.trim());
+    item.diggs = parseInt($(this).find('div.postDesc>span:nth-child(3)')[index]?.text()?.replace('(推荐','').replace('',')')?.trim());
     items.push(item);
-  }
+  });
   return items;
 }
 
