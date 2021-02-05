@@ -204,6 +204,8 @@ export default class answer_item extends PureComponent<IProps, any> {
                 ServiceUtils.viewProfileDetail(
                   this.props.dispatch,
                   item.AnswerUserInfo.Alias,
+                  //TODO:
+                  item.AnswerUserInfo.Name,
                   avator,
                 );
               }}

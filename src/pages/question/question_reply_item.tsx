@@ -57,6 +57,7 @@ const QuestionReplayItem:FC<IProps> = ({clickable, item,showAll})=>{
                 ServiceUtils.viewProfileDetail(
                   this.props.dispatch,
                   item.author?.id,
+                  item.author?.name,
                   faceUrl,
                 );
               }}

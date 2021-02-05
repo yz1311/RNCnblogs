@@ -42,7 +42,7 @@ export interface IState {
   tabIndex?: number;
 }
 
-class base_blog_list extends PureComponent<IProps,IState> {
+class base_blog_list extends PureComponent<IProps,Partial<IState>> {
 
   protected mustLogin: boolean = false;
   pageIndex = 1;

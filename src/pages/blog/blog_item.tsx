@@ -51,6 +51,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
                 if (this.props.canViewProfile) {
                   NavigationHelper.navigate('ProfilePerson', {
                     userAlias: item.author?.id,
+                    userName: item.author?.name,
                     avatorUrl: item.author?.uri,
                   });
                 }

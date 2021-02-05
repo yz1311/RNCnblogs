@@ -313,6 +313,7 @@ export default class blog_detail extends PureComponent<IProps, IState> {
             ServiceUtils.viewProfileDetail(
                 gStore.dispatch,
                 filter.author?.id,
+                filter.author?.name,
                 filter.author?.avatar,
             );
           }

@@ -286,6 +286,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
               ServiceUtils.viewProfileDetail(
                 this.props.dispatch,
                 alias,
+                userName,
                 iconUrl,
               );
               return;
@@ -295,6 +296,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
               ServiceUtils.viewProfileDetail(
                   this.props.dispatch,
                   userId,
+                  userName,
                   iconName,
               );
             }

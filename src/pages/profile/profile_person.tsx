@@ -31,6 +31,7 @@ const avatorRadius = 40;
 
 interface IProps extends IReduxProps {
   userAlias: string;
+  userName: string;
   avatorUrl: string;
 }
 
@@ -75,6 +76,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
   private blogPageIndex = 1;
   private statusPageIndex = 1;
   private questionPageIndex = 1;
+  private stickyList: Array<blogModel> = [];
 
   constructor(props) {
     super(props);
@@ -306,6 +308,23 @@ export default class profile_person extends PureComponent<IProps, IState> {
           userId: this.props.userAlias
         }
       });
+      const {avatorUrl, userName} = this.props;
+      (response.data || []).forEach(item => {
+        item.author = {
+          ...item.author,
+          name: userName,
+          avatar: avatorUrl,
+          // uri: personInfo.link,
+        }
+      });
+      if(this.blogPageIndex === 1) {
+        if((response.data||[]).length>10) {
+          this.stickyList = (response.data || []).filter(x => x.isSticky);
+          response.data = (response.data || []).filter(x => !x.isSticky);
+        } else {
+          this.stickyList = [];
+        }
+      }
       let pagingResult = dataToPagingResult(this.state.blogList,response.data || [],this.blogPageIndex,10);
       this.setState({
         blogList: pagingResult.dataList,

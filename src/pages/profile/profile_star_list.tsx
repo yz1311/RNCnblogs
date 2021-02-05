@@ -130,7 +130,8 @@ export default class base_star_list extends PureComponent<IProps, IState> {
           onPress={()=>{
             NavigationHelper.push('ProfilePerson', {
               userAlias: item.id,
-              avatorUrl: '',
+              userName: item.name,
+              avatorUrl: item.avatar,
             });
           }}
           style={{backgroundColor:gColors.bgColorF,flexDirection:'row',alignItems:'center',justifyContent:'space-between',
@@ -141,6 +142,7 @@ export default class base_star_list extends PureComponent<IProps, IState> {
             ServiceUtils.viewProfileDetail(
               gStore.dispatch,
               item.id,
+              item.name,
               item.avatar,
             );
           }}

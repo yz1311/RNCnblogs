@@ -57,6 +57,7 @@ export default class RankList extends PureComponent<IProps,IState>{
           ServiceUtils.viewProfileDetail(
             gStore.dispatch,
             item.id,
+            item.name,
             '',
           );
         }}

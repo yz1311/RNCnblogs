@@ -29,6 +29,7 @@ const SearchUserListItem:FC<IProps> = ({item, clickable})=>{
                         ServiceUtils.viewProfileDetail(
                             gStore.dispatch,
                             item.id,
+                            item.name,
                             item.avatar,
                         );
                     }

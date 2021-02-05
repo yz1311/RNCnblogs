@@ -44,10 +44,11 @@ export default class serviceUtils {
 
   static async searchUserAliasByName(userName) {}
 
-  static viewProfileDetail(dispatch, alias, iconUrl) {
+  static viewProfileDetail(dispatch, alias, name, iconUrl) {
     if (alias) {
       NavigationHelper.navigate('ProfilePerson', {
         userAlias: alias,
+        userName: name,
         avatorUrl: iconUrl,
       });
       return true;

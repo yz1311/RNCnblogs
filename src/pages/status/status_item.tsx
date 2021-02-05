@@ -185,6 +185,7 @@ export default class status_item extends PureComponent<IProps, IState> {
                     ServiceUtils.viewProfileDetail(
                       this.props.dispatch,
                       item.author?.id,
+                      item.author?.name,
                       item.author?.avatar,
                     );
                   }

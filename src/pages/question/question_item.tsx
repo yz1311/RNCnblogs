@@ -203,6 +203,7 @@ export default class question_item extends PureComponent<IProps, any> {
                     ServiceUtils.viewProfileDetail(
                       this.props.dispatch,
                       item.author?.id,
+                      item.author?.name,
                       faceUrl,
                     );
                   }

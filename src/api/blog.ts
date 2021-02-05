@@ -317,28 +317,35 @@ export const resolvePersonalBlogHtml = (result, userId)=>{
     return [];
   }
   const $ = cheerio.load(result, { decodeEntities: false });
-  let matches = result.match(/class=\"day\"[\s\S]+?class=\"postDesc[\s\S]+?(?=class=\"clear\")/g)|| [];
   //存在一个day下面多个文章的情况，导致只加载一页
-  let count = $(this).find('div.dayTitle').length;
+  let count = $('div.postTitle').length;
   Array.from({length: count}).map((ii, index) => {
     let item: Partial<blogModel> = {};
-    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class')?.indexOf('active')>=0;
-    item.link = $(this).find('a[class^="postTitle2 vertical-middle"]')[index]?.attr('href')?.trim();
-    item.id = $(this).find('div.postDesc>span:nth-child(1)')[index]?.attr("data-post-id");
-    //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
+    item.isLike = $('a[id^="post-meta-item btn"]').attr('class')?.indexOf('active')>=0;
+    item.link = $($('a[class^="postTitle2 vertical-middle"]')[index])?.attr('href')?.trim();
+    item.id = $($('div.postDesc>span:nth-child(1)')[index])?.attr("data-post-id");
     item.blogapp = '';
-    item.title = $(this).find('a[class^="postTitle2 vertical-middle"]')[index]?.text()?.trim();
-    item.summary = $(this).find('div.c_b_p_desc')[index]?.text().replace(/阅读全文/,'').trim();
+    item.title = $($('a[class^="postTitle2 vertical-middle"]')[index])?.text()?.trim();
+    if(item.title.indexOf('[置顶]')>=0) {
+      item.isSticky = true;
+      item.title = '[置顶] '+item.title.replace('[置顶]', '')?.trim();
+    }
+    item.summary = $($('div.c_b_p_desc')[index])?.text().replace(/阅读全文/,'').trim();
+    //太突兀，加上...
+    if(item.summary) {
+      item.summary += ' ...';
+    }
     item.author = {
       id: userId,
       avatar: '',
       name: '',
       uri: '',
     };
-    item.published = $(this).find('div.postDesc')[index]?.next()?.trim()+':00';
-    item.views = parseInt($(this).find('div.postDesc>span:nth-child(1)')[index]?.text()?.replace('(阅读','').replace('',')')?.trim());
-    item.comments = parseInt($(this).find('div.postDesc>span:nth-child(2)')[index]?.text()?.replace('(评论','').replace('',')')?.trim());
-    item.diggs = parseInt($(this).find('div.postDesc>span:nth-child(3)')[index]?.text()?.replace('(推荐','').replace('',')')?.trim());
+    let postDesc = $($('div.postDesc')[index])?.text()?.trim();
+    item.published = (postDesc.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)||[])[0]+':00';
+    item.views = parseInt(($($('div.postDesc>span:nth-child(1)')[index])?.text()?.match(/\d+/)||[])[0]);
+    item.comments = parseInt(($($('div.postDesc>span:nth-child(2)')[index])?.text()?.match(/\d+/)||[])[0]);
+    item.diggs = parseInt(($($('div.postDesc>span:nth-child(3)')[index])?.text()?.match(/\d+/)||[])[0]);
     items.push(item);
   });
   return items;

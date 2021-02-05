@@ -114,6 +114,7 @@ export default class base_follow_list extends PureComponent<IProps, IState> {
             ServiceUtils.viewProfileDetail(
               gStore.dispatch,
               item.id,
+              item.name,
               item.avatar,
             );
           }}

@@ -52,6 +52,7 @@ const StatusStarModal:FC<IProps> = ({isVisible,onVisibleChange, statusOtherInfo,
                                                 ServiceUtils.viewProfileDetail(
                                                     gStore.dispatch,
                                                     item.id,
+                                                    item.name,
                                                     item.avatar,
                                                 );
                                             }, 0);
