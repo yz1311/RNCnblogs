@@ -173,7 +173,11 @@ export const getBlogCommentCount = (data: RequestModel<{postId: string,userId:st
   return RequestUtils.get<number>(URL);
 }
 
-
+/**
+ * 开启/取消点赞
+ * @param data
+ * isAbandoned 是否推荐
+ */
 export const voteBlog = (data: RequestModel<{userId: string, postId: number, isAbandoned:boolean, voteType?:string}>) => {
   data.request.voteType = 'Digg';
   const URL = `https://www.cnblogs.com/${data.request.userId}/ajax/vote/blogpost`;
@@ -283,8 +287,8 @@ export const resolveBlogHtml = (result)=>{
     let match = $(this).html();
     //解析digg
     item.diggs = parseInt($(this).find('span[id^=digg_count_]').text()?.trim());
-    //无效
-    item.isLike = $(this).find('a[id^="post-meta-item btn"]').attr('class')?.indexOf('active')>=0;
+    //官网有bug
+    item.isLike = !$(this).find('a[class^="post-meta-item btn"]').attr('onclick');
     item.link = $(this).find('a.post-item-title').attr('href')?.trim();
     item.id = $(this).find('span[id^=digg_count_]').attr('id')?.replace(/digg_count_/,'');
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">

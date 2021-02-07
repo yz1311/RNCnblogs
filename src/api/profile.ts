@@ -1,5 +1,5 @@
 import RequestUtils from "../utils/requestUtils";
-
+const cheerio = require('react-native-cheerio');
 
 export type getUserAliasByUserNameRequest = RequestModel<{
   userName: string;
@@ -135,9 +135,10 @@ export const getFullUserInfo = (data:RequestModel<{userId:string}>) => {
   const URL = `https://home.cnblogs.com/u/${data.request.userId}/`;
   return RequestUtils.get<fullUserInfoModel>(URL, {
       resolveResult: (result)=>{
+        const $ = cheerio.load(result, { decodeEntities: false });
         //Todo:完善信息
         let user:Partial<fullUserInfoModel> = {};
-        user.avatar = (result.match(/class=\"user_avatar[\s\S]+?src=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'');
+        user.avatar = $('div.user_avatar>img:first-child').attr('src');
         if(user.avatar.indexOf('http')!==0) {
           user.avatar = 'https:'+user.avatar;
         }
@@ -150,13 +151,12 @@ export const getFullUserInfo = (data:RequestModel<{userId:string}>) => {
           }
         }
         user.uuid = ((result.match(/var currentUserId = \"[\s\S]+?(?=\")/) || [])[0])?.replace(/[\s\S]+\"/,'');
-        user.seniority = ((result.match(/入园时间：[\s\S]+?(?=<\/span>)/) || [])[0])?.replace(/[\s\S]+>/,'');
-        user.isStar = /id=\"followedPanel\"[\s\S]{2,10}\"display:block\">/.test(result);
-        //可能
-        user.link = ((result.match(/博客：[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'');
-        user.name = ((result.match(/display_name\"[\s\S]+?(?=<\/h1>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim();
-        user.stars = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followees\/\"[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim());
-        user.follows = parseInt(((result.match(/id=\"following_count\"[\s\S]+?followers\/\"[\s\S]+?(?=<\/a>)/) || [])[0])?.replace(/[\s\S]+>/,'')?.trim());
+        user.seniority = $('span[title^="入园时间"]').text()?.trim();
+        user.isStar = $('ul.dropdown-wrapper').attr('style') !== 'display: none';
+        user.link = $('a[id^="blog_url"]').attr("href")?.trim();;
+        user.name = $('h1.display_name').text()?.trim();
+        user.stars = parseInt($('div.follow_count>a[id="following_count"]').text());
+        user.follows = parseInt($('div.follow_count>a[id="follower_count"]').text());
         return user;
       }
   });

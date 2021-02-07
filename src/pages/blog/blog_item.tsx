@@ -117,7 +117,7 @@ export default class blog_item extends PureComponent<IProps, IState> {
                     request: {
                       userId: item.author.id,
                       postId: parseInt(item.id),
-                      isAbandoned: false
+                      isAbandoned: item.isLike
                     }
                   }).then(result => {
                     if(result.data.isSuccess) {
