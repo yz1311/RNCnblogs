@@ -73,6 +73,11 @@ export type getBlogCommentListRequest = RequestModel<{
   pageSize: number;
 }>;
 
+
+export type personalDynamicModel = {
+
+};
+
 export const getPersonalBlogList = async (data: RequestModel<{pageIndex:number,pageSize:number,userId?: string}>) => {
   if(!data.request.userId) {
     data.request.userId = gUserData.userId;
@@ -90,6 +95,27 @@ export const getPersonalBlogList = async (data: RequestModel<{pageIndex:number,p
   }
   return RequestUtils.get(URL, {
     resolveResult: (result) => resolvePersonalBlogHtml(result, data.request.userId)
+  });
+};
+
+export const getPersonalDynamicList = (data: RequestModel<{
+  userId: string;
+}>) => {
+  const URL = `https://home.cnblogs.com/ajax/feed/recent?alias=${data.request.userId}`
+  return RequestUtils.get<Array<personalDynamicModel>>(URL,{
+    resolveResult:(result)=>{
+      let items:Array<any> = [];
+      const $ = cheerio.load(result, { decodeEntities: false });
+      $('tr.ng-star-inserted').each(function (index, element) {
+        let item: Partial<personalDynamicModel> = {};
+        let match = $(this).html();
+        // item.id = $(this).find('a[href^="/tags/posts"]').attr('ref').replace(/[\s\S]+=/, '');
+        // item.name = $(this).find('a[href^="/tags/posts"]').text();
+        // item.num = parseInt((match.match(/\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''));
+        items.push(item);
+      });
+      return items;
+    }
   });
 };
 

@@ -14,16 +14,18 @@ export const contentHtmlTemplate = ({title, avatar, userName, dateDesc, body, sc
         <html>
             <head>
             <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+            <link rel="stylesheet" href="https://www.cnblogs.com/css/blog-common.min.css?v=${new Date().getTime()}">
             <style type="text/css">
                 img {
                     height: auto;
                     width: auto;
                     max-width: 100%;
                 }
-                pre {
+                 pre {
                     background-color: #f5f5f5;
                     font-family: Courier New!important;
                     font-size: 12px!important;
+                    line-height: 1.5 !important;
                     border: 1px solid #ccc;
                     padding: 5px;
                     overflow: auto;
@@ -36,6 +38,7 @@ export const contentHtmlTemplate = ({title, avatar, userName, dateDesc, body, sc
                     /*word-wrapL:break-word;*/
                 /*}*/
             </style>
+            <script src="https://common.cnblogs.com/highlight/10.3.1/highlight.min.js"></script>
             <script>
                 window.onload = function(){
                     var imgs = document.getElementsByTagName("img");
@@ -89,6 +92,7 @@ export const contentHtmlTemplate = ({title, avatar, userName, dateDesc, body, sc
                 <div style="background-color: #f2f2f2;padding: 10px;color: #666;font-size: medium;margin: 10px -8px 10px -8px;">评论列表</div>
                 ${commentHtml}
             </body>
+            <script>hljs.initHighlightingOnLoad();</script>
         </html>
     `;
 }
