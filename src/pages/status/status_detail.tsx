@@ -1,7 +1,9 @@
 import React, {PureComponent} from 'react';
 import {
+  BackHandler,
   DeviceEventEmitter,
   EmitterSubscription,
+  NativeEventSubscription,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -59,6 +61,7 @@ interface IState {
 export default class status_detail extends PureComponent<IProps, IState> {
 
   private reloadListener: EmitterSubscription;
+  private backListener: NativeEventSubscription;
   private _commentInput: any;
   private _flatList: any;
   private pageIndex: number;
@@ -82,6 +85,7 @@ export default class status_detail extends PureComponent<IProps, IState> {
       'reload_status_detail',
       this.loadData,
     );
+    this.backListener = BackHandler.addEventListener('hardwareBackPress', this._onBack);
   }
 
   componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
@@ -94,6 +98,12 @@ export default class status_detail extends PureComponent<IProps, IState> {
 
   componentWillUnmount() {
     this.reloadListener && this.reloadListener.remove();
+    this.backListener && this.backListener.remove();
+  }
+
+  _onBack = ()=>{
+    NavigationHelper.goBack();
+    return true;
   }
 
   loadData = async ()=>{

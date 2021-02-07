@@ -105,7 +105,7 @@ export default class status_index extends Component<IProps, IState> {
 
   componentDidMount() {
     this.loadOtherData();
-    let backListener = BackHandler.addEventListener('hardwareBackPress', this._onBack);
+    this.backListener = BackHandler.addEventListener('hardwareBackPress', this._onBack);
   }
 
   _onBack = () => {
