@@ -1,5 +1,15 @@
 import React, {PureComponent} from 'react';
-import {findNodeHandle, Image, InteractionManager, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  BackHandler,
+  findNodeHandle,
+  Image,
+  InteractionManager,
+  NativeEventSubscription,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Styles} from '../../common/styles';
 import {NavigationBar, Theme} from '@yz1311/teaset';
 import {connect} from 'react-redux';
@@ -17,7 +27,6 @@ import {
 } from '@yz1311/react-native-state-view';
 import {Api} from '../../api';
 import {fullUserInfoModel} from '../../api/profile';
-import {BlurView} from '@react-native-community/blur';
 import ToastUtils from '../../utils/toastUtils';
 import YZStickyTabView from '../../components/YZStickyTabView';
 import {blogModel} from '../../api/blog';
@@ -77,6 +86,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
   private statusPageIndex = 1;
   private questionPageIndex = 1;
   private stickyList: Array<blogModel> = [];
+  private backListener: NativeEventSubscription;
 
   constructor(props) {
     super(props);
@@ -103,6 +113,7 @@ export default class profile_person extends PureComponent<IProps, IState> {
     InteractionManager.runAfterInteractions(()=>{
       this.loadData();
     });
+    this.backListener = BackHandler.addEventListener('hardwareBackPress', this._onBack);
   }
 
   loadData = async () => {
@@ -126,7 +137,12 @@ export default class profile_person extends PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
+    this.backListener && this.backListener.remove();
+  }
 
+  _onBack = ()=>{
+    NavigationHelper.goBack();
+    return true;
   }
 
   star = async ()=>{
