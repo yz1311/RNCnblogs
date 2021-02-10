@@ -56,7 +56,7 @@ interface IState {
     userInfo: state.loginIndex.userInfo,
     isLogin: state.loginIndex.isLogin
   })) as any)
-export default class news_comment_list extends Component<IProps, IState> {
+export default class news_comment_list extends Component<IProps, Partial<IState>> {
   pageIndex = 1;
 
   static propTypes = {

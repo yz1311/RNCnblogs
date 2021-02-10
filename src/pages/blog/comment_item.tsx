@@ -251,7 +251,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
       onComment,
     } = this.props;
     let avator = iconName;
-    if (iconName.indexOf('http') === -1) {
+    if (iconName && iconName.indexOf('http') === -1) {
       avator = `https://pic.cnblogs.com/face/${iconName}`;
     }
     return (

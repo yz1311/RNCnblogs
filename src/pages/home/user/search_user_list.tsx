@@ -34,7 +34,7 @@ export interface IState {
     tabIndex?: number;
 }
 
-export default class SearchUserList extends PureComponent<IProps,IState> {
+export default class SearchUserList extends PureComponent<IProps,Partial<IState>> {
 
     protected mustLogin: boolean = false;
     pageIndex = 1;

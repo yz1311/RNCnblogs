@@ -57,7 +57,7 @@ interface IState {
     dispatch,
   }),
 ) as any)
-export default class blog_comment_list extends PureComponent<IProps, IState> {
+export default class blog_comment_list extends PureComponent<IProps, Partial<IState>> {
   pageIndex = 1;
 
   private _commentInput: any;
