@@ -1884,10 +1884,10 @@
   resolved "https://registry.npmjs.org/@yz1311/teaset-navigation/-/teaset-navigation-0.2.3.tgz#c9d783ce9606a6ac409a01f700792c9ce4149d6f"
   integrity sha512-Fhy0kH1Y+cD/+DJ4xP6ODfbnVt+LFtXLuj5dxwjPIb/PiictQkakJ7M1I8dpisFs+FHpkaWegbiOu3cwy4ToHw==
 
-"@yz1311/teaset@^0.7.19":
-  version "0.7.19"
-  resolved "https://registry.npm.taobao.org/@yz1311/teaset/download/@yz1311/teaset-0.7.19.tgz#53a40e6def1b0f4d2c04ef89a177750e86a87bdf"
-  integrity sha1-U6QObe8bD00sBO+JoXd1Doaoe98=
+"@yz1311/teaset@^0.7.20":
+  version "0.7.20"
+  resolved "https://registry.npmjs.org/@yz1311/teaset/-/teaset-0.7.20.tgz#d59e502c5779c3e271b99b2fd2761479d87e949a"
+  integrity sha512-uxLd1ZEmrAErAy33fuukMiDBKd9HmKcXUVQTkV3jg/ftDu1G7prFaevblmvlEgCsKFM+i6QP27AwdagK+z1oCA==
   dependencies:
     hoist-non-react-statics latest
     prop-types "^15.5.10"

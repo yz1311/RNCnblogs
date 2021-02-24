@@ -70,21 +70,21 @@ const SearchUserListItem:FC<IProps> = ({item, clickable})=>{
                         </TouchableOpacity>
                     </View>
                 </View>
-                {item.id === userInfo.id ? (
-                    <TouchableOpacity
-                        ref={ref => (this.fromView = ref)}
-                        activeOpacity={activeOpacity}
-                        style={{
-                            position: 'absolute',
-                            right: 0,
-                            top: 0,
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                        }}
-                        onPress={this.showMenu}>
-                        <Feather name="more-horizontal" size={25} color={gColors.color0} />
-                    </TouchableOpacity>
-                ) : null}
+                {/*{item.id === userInfo.id ? (*/}
+                {/*    <TouchableOpacity*/}
+                {/*        ref={ref => (this.fromView = ref)}*/}
+                {/*        activeOpacity={activeOpacity}*/}
+                {/*        style={{*/}
+                {/*            position: 'absolute',*/}
+                {/*            right: 0,*/}
+                {/*            top: 0,*/}
+                {/*            paddingVertical: 10,*/}
+                {/*            paddingHorizontal: 12,*/}
+                {/*        }}*/}
+                {/*        onPress={this.showMenu}>*/}
+                {/*        <Feather name="more-horizontal" size={25} color={gColors.color0} />*/}
+                {/*    </TouchableOpacity>*/}
+                {/*) : null}*/}
             </TouchableOpacity>
         </BorderShadow>
     );

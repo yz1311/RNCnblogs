@@ -29,7 +29,7 @@
     "@yz1311/react-native-shadow": "^0.1.0",
     "@yz1311/react-native-state-view": "0.0.19",
     "@yz1311/react-native-wheel-picker": "^0.2.5",
-    "@yz1311/teaset": "^0.7.19",
+    "@yz1311/teaset": "^0.7.20",
     "@yz1311/teaset-code-push": "^0.3.2",
     "@yz1311/teaset-navigation": "^0.2.3",
     "axios": "0.18.1",

@@ -55,7 +55,7 @@ const QuestionReplayItem:FC<IProps> = ({clickable, item,showAll})=>{
               activeOpacity={activeOpacity}
               onPress={() => {
                 ServiceUtils.viewProfileDetail(
-                  this.props.dispatch,
+                  gStore.dispatch,
                   item.author?.id,
                   item.author?.name,
                   faceUrl,

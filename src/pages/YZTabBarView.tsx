@@ -31,6 +31,8 @@ import YZImageViewer from "../components/YZImageViewer";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Theme} from "@yz1311/teaset";
 import YZSafeAreaView from "../components/YZSafeAreaView";
+import {Api} from "../api";
+import HomeServices from "../services/homeServices";
 
 interface IProps extends IReduxProps {
   isLogin?: boolean;
@@ -142,6 +144,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
         //     //否则跳转到登录界面
         //     NavigationHelper.resetTo('Login');
         //   }
+        HomeServices.getStatusCounts();
         } else {
           //否则跳转到登录界面
           NavigationHelper.resetTo('Login');
@@ -152,6 +155,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
 
   _onChangeTab = obj => {
     this.selectedTabIndex = obj.i;
+    HomeServices.getStatusCounts();
     switch (obj.i) {
       case 0:
         break;

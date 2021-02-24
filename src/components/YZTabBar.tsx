@@ -10,8 +10,9 @@ import {
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {Theme} from '@yz1311/teaset';
+import {Theme, Badge} from '@yz1311/teaset';
 import {BorderlessButton} from "react-native-gesture-handler";
+import {ReduxState} from "../models";
 
 export interface IProps {
   goToPage?: any; // 跳转到对应tab的方法
@@ -23,9 +24,14 @@ export interface IProps {
   scrollValue?: any;
   selectedTabIconNames: Array<string>;
   onClick?: any;
+  statusMetionCount?: number;
+  statusReplyCount?: number;
 }
 
-@(connect(state => ({})) as any)
+@(connect((state:ReduxState) => ({
+  statusMetionCount: state.profileIndex.statusMetionCount,
+  statusReplyCount: state.profileIndex.statusReplyCount,
+})) as any)
 export default class YZTabBar extends React.Component<IProps, {}> {
   static propTypes = {
     goToPage: PropTypes.func, // 跳转到对应tab的方法
@@ -50,6 +56,9 @@ export default class YZTabBar extends React.Component<IProps, {}> {
   }
 
   render() {
+    console.log(this.props.statusMetionCount)
+    console.log(this.props.statusReplyCount)
+    console.log('0000')
     return (
       <View style={styles.tabs}>
         {this.props.tabs.map((tap, i) => {
@@ -82,6 +91,11 @@ export default class YZTabBar extends React.Component<IProps, {}> {
                 <Text style={{color: color, fontSize: 12}}>
                   {this.props.tabNames[i]}
                 </Text>
+                {i==2 && this.props.statusMetionCount+this.props.statusReplyCount>0?
+                <Badge
+                    style={{position:'absolute', top: -6, right: -6}}
+                    count={this.props.statusMetionCount+this.props.statusReplyCount}
+                />:null}
                 {/*{i===1?*/}
                 {/*<View style={{position:'absolute',right:0,width:10,height:10,borderRadius:5,backgroundColor:gColors.colorRed}}/>:null}*/}
               </View>

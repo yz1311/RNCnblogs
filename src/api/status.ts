@@ -8,6 +8,7 @@ import moment from "moment";
 import {SearchParams} from "../pages/home/home_search";
 import {Api} from "./index";
 import cheerio from "react-native-cheerio";
+import {AxiosResponse} from "axios";
 
 export type statusModel = {
   id: string,
@@ -104,6 +105,27 @@ export const getSearchStatusList = (data: RequestModel<{Keywords: string,
   return RequestUtils.get(URL, {
     resolveResult: resolveSearchStatusHtml
   });
+};
+
+
+export const getUnviewedStatusCount = (data: RequestModel<{}>) => {
+  //获取提到我和回复我的数量
+  return new Promise<AxiosResponse<{metionCount: number; replyCount: number;}>>(async (resolve, reject) => {
+    try {
+      let [mentionResonse, replyResponse] = await Promise.all([
+          RequestUtils.get('https://ing.cnblogs.com/ajax/ing/UnviewedMentionCount'),
+          RequestUtils.get('https://ing.cnblogs.com/ajax/ing/UnviewedReplyToMeCount'),
+      ]);
+      resolve({
+        data: {
+          metionCount: mentionResonse.data,
+          replyCount: replyResponse.data,
+        }
+      } as AxiosResponse);
+    } catch (e) {
+      reject(e);
+    }
+  })
 };
 
 export const getStatusDetail = (data: RequestModel<{id: string, userId: string}>) => {

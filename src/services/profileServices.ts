@@ -1,5 +1,4 @@
 import {Api} from "../api";
-import {messageModel} from "../api/message";
 import {userInfoModel} from "../api/login";
 import StorageUtils from "../utils/storageUtils";
 
