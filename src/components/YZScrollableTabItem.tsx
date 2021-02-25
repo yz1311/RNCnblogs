@@ -15,6 +15,8 @@ import {
   Image,
   Animated,
   ViewPropTypes,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -73,7 +75,7 @@ export default class YZScrollableTabItem<
       height: 4,
       backgroundColor: 'white',
       bottom: 0,
-    };
+    } as StyleProp<ViewStyle>;
     const left = {
       transform: [
         {
