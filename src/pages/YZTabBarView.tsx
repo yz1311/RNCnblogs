@@ -109,6 +109,7 @@ export default class YZTabBarView extends Component<IProps, IState> {
 
   async componentDidMount() {
     ConfigServices.getConfig(true);
+    HomeServices.getStatusCounts();
     // this._handleAppStateChange('active');
     AppState.addEventListener('change', this._handleAppStateChange);
     this.reloadThemeListener = DeviceEventEmitter.addListener(

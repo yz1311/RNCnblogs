@@ -26,6 +26,11 @@ export type statusModel = {
     author: string,
     authorUri: string,
   },
+  //回复的闪存
+  orign: {
+    uri: string;
+    title: string;
+  },
   comments: Array<statusModel>,
   commentCount: number,
   published: string,
@@ -345,6 +350,25 @@ export const addStatus = (data:RequestModel<{publicFlag: 1|0,content:string}>) =
   return RequestUtils.post<{isSuccess:boolean,responseText}>(URL, formData);
 };
 
+
+/**
+ * 设置单个的回复我的闪存为已读
+ * @param data
+ */
+export const updateReplyToMeViewStatus = (data: RequestModel<{commentId: string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/UpdateReplyToMeViewStatus`;
+  return RequestUtils.get<statusModel>(URL);
+};
+
+/**
+ * 设置单个的提及我的闪存为已读
+ * @param data
+ */
+export const updateMentionViewStatus = (data: RequestModel<{commentId: string}>) => {
+  const URL = `https://ing.cnblogs.com/ajax/ing/UpdateMentionViewStatus`;
+  return RequestUtils.get<statusModel>(URL);
+};
+
 export const resolveStatusHtml = (result)=>{
   let items:Array<any> = [];
   const $ = cheerio.load(result, { decodeEntities: false });
@@ -359,8 +383,10 @@ export const resolveStatusHtml = (result)=>{
     item.author = {
       id: '',
       avatar: $(this).find('div.feed_avatar').find('img').attr('src'),
-      uri: (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,''),
-      name: $(this).find('a.ing-author').text(),
+      uri:
+          (match.match(/class=\"feed_avatar\"[\s\S]+?href=\"[\s\S]+?(?=\")/)||[])[0]?.replace(/[\s\S]+\"/,'')
+          || $(this).find('a[id^=comment_author_]').attr('href'),
+      name: $(this).find('a.ing-author').text() || $(this).find('a[id^=comment_author_]').text(),
       no: (match.match(/showCommentBox[\s\S]+?(?=\))/)||[])[0]?.replace(/[\s\S]+,/,'')?.trim(),
     };
     item.author.id = item.author?.uri.replace(/^[\s\S]+\/(?=[\s\S]+\/$)/,'').replace('/','');
@@ -369,6 +395,13 @@ export const resolveStatusHtml = (result)=>{
     }
     if(item.author.uri!=undefined&&item.author.uri!=''&&item.author.uri.indexOf('http')!=0) {
       item.author.uri = 'https:'+item.author.uri;
+    }
+    //说明是回复我的
+    if($(this).find('div.comment-body-topline').length>0) {
+      item.orign = {
+        uri: $(this).find('div.comment-body-topline>a:nth-child(2)').attr('href'),
+        title: $(this).find('div.comment-body-topline>a:nth-child(2)').text(),
+      }
     }
     item.published = $(this).find('a[class^="ing_time"]').text();
     if(/^\d{2}:\d{2}$/.test(item.published)) {

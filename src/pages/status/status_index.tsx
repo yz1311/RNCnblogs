@@ -16,8 +16,6 @@ import ScrollableTabView, {
 import BaseStatusList from './base_status_list';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from 'react-native-action-button';
-import {ReduxState} from '../../reducers';
-import {NavigationScreenProp, NavigationState} from 'react-navigation';
 import {Overlay, Theme} from "@yz1311/teaset";
 import {Api} from "../../api";
 import {Colors} from "react-native/Libraries/NewAppScreen";
@@ -28,6 +26,8 @@ import StatusLuckModal from "./other/status_luck_modal";
 import {statusOtherInfoModel} from "../../api/status";
 import YZBackHandler from "../../components/YZBackHandler";
 import {createReducerResult, dataToReducerResult, LoadDataResultStates, ReducerResult} from "@yz1311/react-native-state-view";
+import StatusTabBar from "./status_tabBar";
+import {ReduxState} from "../../models";
 
 interface IProps extends IReduxProps {
   navigation: any;
@@ -63,6 +63,8 @@ export enum StatusTypes {
 @(connect(
   (state: ReduxState) => ({
     isLogin: state.loginIndex.isLogin,
+    statusMetionCount: state.profileIndex.statusMetionCount,
+    statusReplyCount: state.profileIndex.statusReplyCount,
   }),
 ) as any)
 export default class status_index extends Component<IProps, IState> {
@@ -181,11 +183,15 @@ export default class status_index extends Component<IProps, IState> {
         />
         <ScrollableTabView
           renderTabBar={() => (
-            <ScrollableTabBar
+            <StatusTabBar
               ref={bar => (this.tabBar = bar)}
               style={{
                 backgroundColor: Theme.navColor,
               }}
+              //@ts-ignore
+              statusMetionCount={this.props.statusMetionCount}
+                //@ts-ignore
+              statusReplyCount={this.props.statusReplyCount}
               activeTextColor={gColors.bgColorF}
               inactiveTextColor={'#DBDBDB'}
               activeTextFontSize={Theme.px2dp(36)}
