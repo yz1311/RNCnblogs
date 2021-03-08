@@ -261,7 +261,7 @@ export default class comment_item extends PureComponent<IProps, IState> {
           onComment &&
             onComment(
               item,
-              userName + (userId == authorUserId ? '(作者)' : ''),
+              userName,
             );
         }}
         style={{
