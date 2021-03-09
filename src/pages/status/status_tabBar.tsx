@@ -22,23 +22,25 @@ export default class StatusTabBar extends ScrollableTabBar {
             onPress={() => onPressHandler(page)}
             onLayout={onLayoutHandler}
         >
-            <View style={[styles.tab, this.props.tabStyle, ]}>
-                <Text style={[{color: textColor, fontSize: textFontSize, fontWeight, }, textStyle, ]}>
-                    {name}
-                </Text>
+            <View>
+                <View style={[styles.tab, this.props.tabStyle, ]}>
+                    <Text style={[{color: textColor, fontSize: textFontSize, fontWeight, }, textStyle, ]}>
+                        {name}
+                    </Text>
+                </View>
+                {(statusMetionCount>0) && page === 5?
+                    <Badge
+                        style={{position:'absolute', top: Theme.px2dp(10), right: -Theme.px2dp(10)}}
+                        type="dot"
+                        count={statusMetionCount}
+                    />:null}
+                {(statusReplyCount>0) && page === 6?
+                    <Badge
+                        style={{position:'absolute', top: Theme.px2dp(10), right: -Theme.px2dp(10)}}
+                        type="dot"
+                        count={statusReplyCount}
+                    />:null}
             </View>
-            {(statusMetionCount>0) && page === 5?
-                <Badge
-                    style={{position:'absolute', top: Theme.px2dp(10), right: -Theme.px2dp(10)}}
-                    type="dot"
-                    count={statusMetionCount}
-                />:null}
-            {(statusReplyCount>0) && page === 6?
-                <Badge
-                    style={{position:'absolute', top: Theme.px2dp(10), right: -Theme.px2dp(10)}}
-                    type="dot"
-                    count={statusReplyCount}
-                />:null}
         </Button>;
     }
 }
