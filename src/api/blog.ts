@@ -320,7 +320,10 @@ export const resolveBlogHtml = (result)=>{
     //onclick="DiggPost('xiaoyangjia',11535486,34640,1)">
     item.blogapp = (match.match(/DiggPost\(([\s\S]+?,){2}[\s\S]+?(?=,\d+\))/)||[])[0]?.replace(/^([\s\S]+,){2}/,'');
     item.title = $(this).find('a.post-item-title').html()?.trim();
-    item.summary = $(this).find('p.post-item-summary').html().replace(/[\s\S]+?>/,'').trim();
+    item.summary = $(this).find('p.post-item-summary')
+        .html().trim();
+    //去掉头像
+    item.summary = item.summary.replace(/^<a[\s\S]+?class=\"avatar\"[\s\S]+?<\/a>/, '')?.trim();
     item.author = {
       id: '',
       avatar: $(this).find('p.post-item-summary').find('img.avatar').attr('src'),
