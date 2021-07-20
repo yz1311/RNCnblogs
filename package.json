@@ -41,7 +41,7 @@
     "mime": "^2.4.6",
     "moment": "^2.29.1",
     "react": "16.13.1",
-    "react-native": "0.63.3",
+    "react-native": "0.64.1",
     "react-native-action-button": "^2.8.5",
     "react-native-auto-height-image": "^3.2.3",
     "react-native-autogrow-textinput": "^5.4.0",
