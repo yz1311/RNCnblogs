@@ -171,10 +171,12 @@ export const getBlogDetail = (data: getBlogDetailRequest) => {
   // });
   return RequestUtils.get<{body:string,id:string}>(data.request.url, {
     resolveResult: (result)=>{
+      const $ = cheerio.load(result, { decodeEntities: false });
+      let body = $('div[id=cnblogs_post_body]').html()?.trim();
+      const id = (result.match(/onclick=\"AddToWz\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,'');
       return {
-        body: (result.match(/id=\"cnblogs_post_body\"[\s\S]+?\">[\s\S]+?(?=id=\"MySignature\")/) || [])[0]
-            ?.replace(/id=\"cnblogs_post_body\"[\s\S]+?\">/,'')?.trim(),
-        id: (result.match(/onclick=\"AddToWz\(\d+?(?=\))/)||[])[0]?.replace(/[\s\S]+\(/,''),
+        body: body,
+        id: id,
       }
     }
   });
